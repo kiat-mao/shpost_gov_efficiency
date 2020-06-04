@@ -1,0 +1,47 @@
+<%= form_for @business, :html => { :class => 'form-horizontal' } do |f| %>
+  <% @business.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+  <% end %>
+  <div class="control-group">
+    <%= f.label :code, :class => 'control-label' %>
+    <font color="red">(必填)</font>
+    <div class="controls">
+      <%= f.text_field :code, :class => 'text_field', :id => 'code' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :name, :class => 'control-label' %>
+    <font color="red">(必填)</font>
+    <div class="controls">
+      <%= f.text_field :name, :class => 'text_field', :id => 'name' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :btype, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :btype, :class => 'text_field', :id => 'btype' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :industry, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :industry, :class => 'text_field', :id => 'industry' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :time_limit, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :time_limit, :class => 'text_field', :id => 'time_limit' %>
+    </div>
+  </div>
+
+
+ 
+  <div class="form-actions">
+    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <% if can? :index, Business%>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                businesses_path, :class => 'btn' %>
+    <% end %>
+  </div>
+<% end %>

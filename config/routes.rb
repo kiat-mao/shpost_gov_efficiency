@@ -33,5 +33,8 @@ Rails.application.routes.draw do
       post 'up_download_export' => 'up_downloads#up_download_export'
     end
   end
+
+  resources :businesses
+  
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

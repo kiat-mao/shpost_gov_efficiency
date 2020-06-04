@@ -291,6 +291,9 @@ zh-CN:
       up_download:
         one: 上传下载模板
         other: 上传下载模板
+      business:
+        one: 商户管理
+        other: 商户管理
     attributes:
       user:
         email: "电子邮件"
@@ -332,6 +335,48 @@ zh-CN:
         object_symbol: "对象标识"
         created_at: "创建时间"
         updated_at: "更新时间"
+      business:
+        code: "客户代号"
+        name: "客户名称"
+        btype: "客户类别"
+        industry: "二级行业名称"
+        time_limit: "催投警告时限（小时）"
+
+  menu:
+    permission:
+      name: "权限管理"
+      needrole:
+        can: :read
+        role: :User
+      submenu:
+        admin:
+          name: "用户管理"
+          link: "/users/"
+          need_count: false
+          needrole:
+            can: :read
+            role: :User
+        unit_admin:
+          name: "单位管理"
+          link: "/units/"
+          need_count: false
+          needrole:
+            can: :read
+            role: :User
+        # role_admin:
+        #   name: "角色管理"
+        #   link: "/roles/"
+        #   needrole:
+        #     can: :read
+        #     role: :User
+    business:
+      name: "商户管理"
+      submenu:
+        business:
+          name: "商户管理"
+          link: "/businesses"
+          need_count: false
+
   user_navigation:
     update_self: "个人信息"
     show_unit: "单位信息"
@@ -343,3 +388,4 @@ zh-CN:
     destroy: "删除"
     check: "确认"
     close: "关闭"
+

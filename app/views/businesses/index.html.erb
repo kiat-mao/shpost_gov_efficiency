@@ -1,0 +1,31 @@
+<%- model_class = Business -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => [:'helpers.titles.index', '%{model} Manage'], :model => model_class.model_name.human.titleize %></h1>
+  <%= render partial: '/layouts/page_size' %>
+  <div style="float:right">
+    <% if can? :new, Business %>
+      <%= link_to t('.new', :default => t("helpers.links.new")),
+                  new_business_path,
+                  :class => 'btn btn-primary' %>
+    <% end %>
+  </div>
+</div>
+
+<%= grid(@businesses_grid) do |g|
+    g.column name: model_class.human_attribute_name(:code), attribute: 'code'
+
+    g.column name: model_class.human_attribute_name(:name), attribute: 'name'
+
+    g.column name: model_class.human_attribute_name(:type), attribute: 'btype'
+
+    g.column name: model_class.human_attribute_name(:industry), attribute: 'industry'
+
+    g.column name: model_class.human_attribute_name(:time_limit), attribute: 'time_limit'
+   
+    g.column do |business|
+      ActiveSupport::SafeBuffer.new << 
+        (link_to t('.edit', :default => t("helpers.links.edit")), edit_business_path(business), :class => 'btn btn-xs btn-primary' if can? :update, business) << ' ' <<
+        (link_to t('.destroy', :default => t("helpers.links.destroy")), business_path(business), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default => '确定删除?')) }, :class => 'btn btn-xs btn-danger' if can? :destroy, business)
+    end
+  end 
+%>
