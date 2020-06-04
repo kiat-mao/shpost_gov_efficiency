@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
     end
     
     if !controller_name.singularize.blank?
-      object = eval("@#{controller_name.singularize}")
+      object ||= eval("@#{controller_name.singularize}")
     end
 
     operation = args.first[:operation]

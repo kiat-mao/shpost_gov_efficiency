@@ -18,7 +18,7 @@ class User < ApplicationRecord
 
   validate :password_complexity
 
-  ROLE = { superadmin: '超级管理员', unitadmin: '系统管理员', user: '普通用户' }
+  ROLE = { superadmin: '超级管理员', unitadmin: '机构管理员', user: '普通用户' }
   STATUS_NAME = { locked: '已停用', unlocked: '已启用'}
 
   def status_name

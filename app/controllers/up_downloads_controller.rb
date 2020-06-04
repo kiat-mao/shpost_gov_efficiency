@@ -19,22 +19,29 @@ class UpDownloadsController < ApplicationController
   end
 
   def create
+    respond_to do |format|
       unless request.get?
-        if !@up_download.name.empty?
-          if file = upload_up_download(params[:file]['file'])       
-        
-            @up_download = UpDownload.new(up_download_params)
-        
-            @up_download.url = file
-            @up_download.oper_date = Time.now.strftime("%Y-%m-%d %H:%m:%S")
-            @up_download.save
-
-            flash[:alert] = "上传成功"
-
-            redirect_to up_downloads_url
-          end 
-        end 
+        if ! params[:file].blank? && ! params[:file]['file'].blank?
+          file  = params[:file]['file']
+          @up_download = UpDownload.new(up_download_params)
+          file_path = UpDownload.upload(file)       
+      
+          @up_download.url = file_path
+          @up_download.oper_date = Time.now
+          
+          # redirect_to up_downloads_url
+        end
       end
+      if @up_download.save
+        UpDownload.write(file, file_path)
+        flash[:alert] = "上传成功"
+        format.html { redirect_to up_downloads_url, notice: I18n.t('controller.create_success_notice', model: '模板') }
+        format.json { render action: 'show', status: :created, location: @up_download}
+      else
+        format.html { render action: 'up_download_import' }
+        format.json { render json: @up_download.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   def update
@@ -65,65 +72,24 @@ class UpDownloadsController < ApplicationController
 
   end
 
-  def up_download_import
-    unless request.get?
-      if file = upload_up_download(params[:file]['file'])       
-        
-          @up_download = UpDownload.new(up_download_params)
-        
-          @up_download.url = file
-          @up_download.oper_date = Time.now.strftime("%Y-%m-%d %H:%m:%S")
-          @up_download.save
-          flash[:alert] = "上传成功"
-
-          
-          redirect_to up_downloads_url
-      end   
-    end
-  end
-
-  def upload_up_download(file)
-     if !file.original_filename.empty?
-       direct = "#{Rails.root}/public/download/"
-       
-       if !File.exist?(direct)
-           Dir.mkdir(direct)          
-       end
-
-       filename_before = file.original_filename[0,file.original_filename.rindex('.')]
-       filename_after = file.original_filename.split('.').last
-       filename = "#{Time.now.strftime("%Y-%m-%d %H:%m:%S")}_#{filename_before+'.'+filename_after}"
-       # filename = "#{Time.now.strftime("%Y-%m-%d %H:%m:%S")}_#{file.original_filename}"
-
-       file_path = direct + filename
-       
-       File.open(file_path, "wb") do |f|
-          f.write(file.read)
-       end
-       file_path
-     end
-  end
-
+  
   def up_download_export
-    @up_download=UpDownload.find(params[:id])
+    up_download=UpDownload.find(params[:id])
     
-    if @up_download.nil?
+    if up_download.nil?
        flash[:alert] = "无此文档模板"
        redirect_to :action => 'index'
     else
-       file_path = @up_download.url
-        if File.exist?(file_path)
-          io = File.open(file_path)
-          filename_before = @up_download.url.split('/').last[0,@up_download.url.split('/').last.rindex('.')]
-          filename_after = @up_download.url.split('.').last
-          filename = filename_before + '.' + filename_after
-          # send_data(io.read,:filename => @up_download.name,:type => "text/excel;charset=utf-8; header=present", disposition: 'attachment')
-          # send_data(io.read,:filename => filename,:type => "application/octet-stream", disposition: 'attachment')
-          send_data(io.read,:filename => filename,:type => "text/excel;charset=utf-8; header=present", disposition: 'attachment')
-          io.close
-        else
-          redirect_to up_downloads_path, :notice => '模板不存在，下载失败！'
-        end
+      file_path = up_download.url
+      if File.exist?(file_path)
+        io = File.open(file_path)
+        # send_data(io.read,:filename => @up_download.name,:type => "text/excel;charset=utf-8; header=present", disposition: 'attachment')
+        # send_data(io.read,:filename => filename,:type => "application/octet-stream", disposition: 'attachment')
+        send_data(io.read,:filename => up_download.filename,:type => "text/excel;charset=utf-8; header=present", disposition: 'attachment')
+        io.close
+      else
+        redirect_to up_downloads_path, :notice => '模板不存在，下载失败！'
+      end
     end
   end
 
