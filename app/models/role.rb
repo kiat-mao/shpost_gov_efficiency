@@ -11,3 +11,4 @@ class Role < ApplicationRecord
     Role.where("user_id = ?", user_id).group(:unit_id)
   end
 end
+	
