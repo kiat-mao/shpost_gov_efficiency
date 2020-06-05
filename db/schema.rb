@@ -10,7 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_01_072038) do
+ActiveRecord::Schema.define(version: 2020_06_04_053459) do
+
+  create_table "expresses", force: :cascade do |t|
+    t.string "express_no"
+    t.integer "business_id"
+    t.integer "post_unit_id"
+    t.datetime "posting_date"
+    t.integer "last_unit_id"
+    t.string "status"
+    t.string "last_op_at"
+    t.string "last_op_desc"
+    t.string "sign"
+    t.string "desc"
+    t.integer "delivered_days"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "roles", force: :cascade do |t|
     t.integer "user_id"

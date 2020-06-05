@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Expresses</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @expresses.each do |express| %>
+      <tr>
+        <td><%= link_to 'Show', express %></td>
+        <td><%= link_to 'Edit', edit_express_path(express) %></td>
+        <td><%= link_to 'Destroy', express, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Express', new_express_path %>

@@ -13,10 +13,10 @@ class Ability
         can :update, User, id: user.id
         can :manage, UpDownload
         #can :manage, User
-    elsif user.admin?
-        can :manage, Unit, unit_type: 'branch'
-        can :read, Unit, unit_type: ['delivery', 'postbuy']
-        can :user, Unit, unit_type: ['delivery', 'postbuy']
+    elsif user.unitadmin?
+        can :manage, Unit, id: user.unit.id
+        can :read, Unit
+        can :user, Unit, id: user.unit.id
 
         can :read, UserLog, user: {unit_id: user.unit_id}
 
