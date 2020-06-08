@@ -4,6 +4,7 @@ class BusinessesController < ApplicationController
   # GET /businesses
   # GET /businesses.json
   def index
+    # @businesses = Business.all
     @businesses_grid = initialize_grid(@businesses, :per_page => params[:page_size])
   end
 

@@ -12,8 +12,9 @@ class Ability
         cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
         can :update, User, id: user.id
         can :manage, UpDownload
+        can :manage, Business
         #can :manage, User
-    elsif user.admin?
+    elsif user.unitadmin?
         can :manage, Unit, unit_type: 'branch'
         can :read, Unit, unit_type: ['delivery', 'postbuy']
         can :user, Unit, unit_type: ['delivery', 'postbuy']
@@ -28,6 +29,7 @@ class Ability
         can :update, User, id: user.id
 
         can :manage, UpDownload
+        can :manage, Business
     else
         can :update, User, id: user.id
         can :read, UserLog, user: {id: user.id}

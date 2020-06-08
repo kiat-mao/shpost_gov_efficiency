@@ -1,1 +1,1 @@
-json.partial! "businesses/business", business: @business
+json.extract! @business, :id, :code, :name, :type, :industry, :time_limit
