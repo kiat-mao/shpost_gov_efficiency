@@ -1,4 +1,5 @@
 class Express < ApplicationRecord
+  belongs_to :business
   validates_presence_of :express_no, :business_id, :message => '不能为空'
 
   enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns'}
