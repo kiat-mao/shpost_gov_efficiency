@@ -5,7 +5,7 @@ class CreateBusinesses < ActiveRecord::Migration[6.0]
     	t.string   :name, :null => false
     	t.string   :btype
     	t.string   :industry
-    	t.integer   :time_limit
+    	t.integer  :time_limit
 
       t.timestamps
     end
