@@ -23,3 +23,12 @@ test:
 production:
   <<: *default
   database: db/production.sqlite3
+
+# mail_message
+pkp_data_source_development:
+  <<: *default
+  database: ../shpost_mail_message/db/development.sqlite3
+
+pkp_data_source_production:
+  <<: *default
+  database: ../shpost_mail_message/db/production.sqlite3

@@ -75,11 +75,17 @@ zh-CN:
       month: 月
       year: 年
   errors: &errors
-    format: "%{attribute}%{message}"
+    access_deny:
+      title: 没有权限!
+      message: 您所使用的用户没有访问该页面的相关权限。
+    get_errors:
+      title: 发生错误!
+      message: 您所进行的操作发生了错误，请返回并检查相关操作是否正确。
+    format: ! '%{attribute} %{message}'
     messages:
       accepted: 必须是可被接受的
       blank: 不能为空字符
-      confirmation: 与 %{attribute} 不匹配
+      confirmation: 与确认值不匹配
       empty: 不能留空
       equal_to: 必须等于 %{count}
       even: 必须为双数
@@ -88,29 +94,21 @@ zh-CN:
       greater_than_or_equal_to: 必须大于或等于 %{count}
       inclusion: 不包含于列表中
       invalid: 是无效的
-      record_invalid: 字段错误
       less_than: 必须小于 %{count}
       less_than_or_equal_to: 必须小于或等于 %{count}
-      model_invalid: '验证失败: %{errors}'
       not_a_number: 不是数字
       not_an_integer: 必须是整数
       odd: 必须为单数
-      other_than: 长度非法（不可为 %{count} 个字符
-      present: 必须是空白
-      required: 必须存在
+      record_invalid: ! '验证失败: %{errors}'
       taken: 已经被使用
       too_long: 过长（最长为 %{count} 个字符）
       too_short: 过短（最短为 %{count} 个字符）
       wrong_length: 长度非法（必须为 %{count} 个字符）
     template:
       body: 如下字段出现错误：
-      header: 有 %{count} 个错误发生导致“%{model}”无法被保存。
-    access_deny:
-      title: 没有权限!
-      message: 您所使用的用户没有访问该页面的相关权限。
-    get_errors:
-      title: 发生错误!
-      message: 您所进行的操作发生了错误，请返回并检查相关操作是否正确。
+      header:
+        one: 有 1 个错误发生导致「%{model}」无法被保存。
+        other: 有 %{count} 个错误发生导致「%{model}」无法被保存。
   helpers:
     index: 序号
     select:
@@ -335,6 +333,18 @@ zh-CN:
           name: "商户管理"
           link: "/businesses"
           need_count: false
+    express:
+      express_no: "邮件号"
+      business_id: "大客户"
+      post_unit_id: "收寄单位"
+      posting_date: "收寄日期"
+      last_unit_id: "最后所在单位"
+      status: "状态"
+      last_op_at: "最后操作时间"
+      last_op_desc: "最后操作信息"
+      sign: "标记"
+      desc: "备注"
+      delivered_days: "妥投天数"
 
   user_navigation:
     update_self: "个人信息"

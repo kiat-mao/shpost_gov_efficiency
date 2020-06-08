@@ -15,9 +15,9 @@ class Ability
         can :manage, Business
         #can :manage, User
     elsif user.unitadmin?
-        can :manage, Unit, unit_type: 'branch'
-        can :read, Unit, unit_type: ['delivery', 'postbuy']
-        can :user, Unit, unit_type: ['delivery', 'postbuy']
+        can :manage, Unit, id: user.unit.id
+        can :read, Unit
+        can :user, Unit, id: user.unit.id
 
         can :read, UserLog, user: {unit_id: user.unit_id}
 
