@@ -122,7 +122,8 @@ zh-CN:
       edit: 修改
       new: 新增
       new_user: 新增用户
-      new_branch: 新增区分公司
+      new_unit: 新增单位
+      # new_branch: 新增区分公司
       destroy: 删除
       cancel: 取消
       back: 返回
@@ -133,16 +134,6 @@ zh-CN:
       reset_pwd: 重置密码
       image_index: 图片管理
       import: 导入
-      cover_upload: 商品图片上传
-      cover_show: 查看商品图片
-      contracts_upload: 合同上传
-      contracts_show: 查看合同
-      to_check: 送审
-      to_recheck: 通过
-      check_decline: 驳回
-      place: 下单
-      recheck_decline: 驳回
-      confirm: 收货
     titles:
       edit: 编辑%{model}
       new: 新增%{model}
@@ -261,13 +252,14 @@ zh-CN:
         "no": "编号"
         name: "单位名称"
         desc: "单位描述"
-        short_name: "英文缩写"
-        tcbd_khdh: "商务投递客户编号"
+        short_name: "缩写"
         unit_type: "单位类别"
+        level: "级别"
+        parent_unit: "上级单位"
+        parent_id: "上级单位"
+        # child_unit: "下级单位"
         # parent_id: "上级单位"
-        unit_type_branch: "区分公司"
-        unit_type_delivery: "寄递事业部"
-        unit_type_postbuy: "国际邮购"
+
         created_at: "创建时间"
         updated_at: "更新时间"
       role:
@@ -298,54 +290,18 @@ zh-CN:
         btype: "客户类别"
         industry: "二级行业名称"
         time_limit: "催投警告时限（小时）"
-
-  menu:
-    permission:
-      name: "权限管理"
-      needrole:
-        can: :read
-        role: :User
-      submenu:
-        admin:
-          name: "用户管理"
-          link: "/users/"
-          need_count: false
-          needrole:
-            can: :read
-            role: :User
-        unit_admin:
-          name: "单位管理"
-          link: "/units/"
-          need_count: false
-          needrole:
-            can: :read
-            role: :User
-        # role_admin:
-        #   name: "角色管理"
-        #   link: "/roles/"
-        #   needrole:
-        #     can: :read
-        #     role: :User
-    business:
-      name: "商户管理"
-      submenu:
-        business:
-          name: "商户管理"
-          link: "/businesses"
-          need_count: false
-    express:
-      express_no: "邮件号"
-      business_id: "大客户"
-      post_unit_id: "收寄单位"
-      posting_date: "收寄日期"
-      last_unit_id: "最后所在单位"
-      status: "状态"
-      last_op_at: "最后操作时间"
-      last_op_desc: "最后操作信息"
-      sign: "标记"
-      desc: "备注"
-      delivered_days: "妥投天数"
-
+      express:
+        express_no: "邮件号"
+        business_id: "大客户"
+        post_unit_id: "收寄单位"
+        posting_date: "收寄日期"
+        last_unit_id: "最后所在单位"
+        status: "状态"
+        last_op_at: "最后操作时间"
+        last_op_desc: "最后操作信息"
+        sign: "标记"
+        desc: "备注"
+        delivered_days: "妥投天数"
   user_navigation:
     update_self: "个人信息"
     show_unit: "单位信息"

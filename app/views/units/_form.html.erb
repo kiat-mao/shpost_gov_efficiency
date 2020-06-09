@@ -2,6 +2,7 @@
   <% @unit.errors.full_messages.each do |msg| %>
       <li><%= msg %></li>
   <% end %>
+ 
   <div class="control-group">
     <%= f.label :no, :class => 'control-label' %>
     <div class="controls">
@@ -17,7 +18,6 @@
   </div>
   <div class="control-group">
     <%= f.label :short_name, :class => 'control-label' %>
-    <font color="red">(必填)</font>
     <div class="controls">
       <%= f.text_field :short_name, :class => 'text_field', :id => 'short_name' %>
     </div>
@@ -28,13 +28,17 @@
       <%= f.text_field :desc, :class => 'text_field', :id => 'desc' %>
     </div>
   </div>
- <!--
- <div hidden class="control-group">
-    <%= f.label :unit_type, :class => 'control-label' %>
-    <div hidden class="controls">
-      <%= f.select(:unit_type, Unit::TYPE.invert) %>
+  <% if ! @unit.parent_id.blank?%>
+    <% if ! @unit.persisted? %>
+      <%= hidden_field(:unit, :parent_id, {value: @parent_id||@unit.parent_id})%>
+    <% end %>
+  <div class="control-group">
+    <%= f.label :parent_unit, :class => 'control-label' %>
+    <div class="controls">
+      <%= @parent_unit.try(:name) || @unit.parent_unit.try(:name)%>
     </div>
-  </div> -->
+  </div>
+  <% end %>
 
   <!-- <div class="control-group">
     <%= f.label :parent_id, :class => 'control-label' %>
@@ -48,3 +52,6 @@
             units_path, :class => 'btn btn-default' %>
  
 <% end %>
+
+
+

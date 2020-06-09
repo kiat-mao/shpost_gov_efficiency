@@ -5,8 +5,13 @@ class UnitsController < ApplicationController
   # GET /units.json
   def index
     #@unit = Unit.all
-    @units_grid = initialize_grid(@units, :per_page => params[:page_size])
+    @units_grid = initialize_grid(@units.where(parent_id: params[:id]), :per_page => params[:page_size])
   end
+
+  # def child_units
+  #   @parentid = params[:id]
+  #   @unit = Unit.new
+  # end
 
   # GET /units/1
   # GET /units/1.json
@@ -15,7 +20,9 @@ class UnitsController < ApplicationController
 
   # GET /units/new
   def new
-    #@unit = Unit.new
+    # @parent_id = params[:id]
+    # @parent_unit = Unit.find(@parent_id) if ! @parent_id.blank?
+    @unit.parent_id = params[:id]
   end
 
   # GET /units/1/edit
@@ -25,8 +32,10 @@ class UnitsController < ApplicationController
   # POST /units
   # POST /units.json
   def create
+    @unit = Unit.new(unit_params)
+
     respond_to do |format|
-      @unit.unit_type = 'branch'
+      # @unit.unit_type = 'branch'
        if @unit.save
         format.html { redirect_to @unit, notice: I18n.t('controller.create_success_notice', model: '单位')}
         format.json { render action: 'show', status: :created, location: @unit }
@@ -41,7 +50,7 @@ class UnitsController < ApplicationController
   # PATCH/PUT /units/1.json
   def update
     respond_to do |format|
-      if @unit.update(unit_params)
+      if @unit.update(unit_params_4_update)
         format.html { redirect_to @unit, notice: I18n.t('controller.update_success_notice', model: '单位') }
         format.json { head :no_content }
       else
@@ -73,6 +82,10 @@ class UnitsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def unit_params
-      params.require(:unit).permit(:no, :name, :desc, :short_name, :tcbd_khdh, :unit_level, :parent_id, :unit_type)
+      params.require(:unit).permit(:no, :name, :desc, :short_name, :level, :parent_id, :unit_type)
+    end
+
+    def unit_params_4_update
+      params.require(:unit).permit(:no, :name, :desc, :short_name, :unit_type)
     end
 end

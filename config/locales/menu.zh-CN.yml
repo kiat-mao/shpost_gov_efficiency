@@ -1,4 +1,4 @@
-zh-CN: 
+zh-CN:
   menu:
     permission:
       name: "权限管理"
@@ -20,6 +20,13 @@ zh-CN:
           needrole:
             can: :read
             role: :User
+    business:
+      name: "商户管理"
+      submenu:
+        business:
+          name: "商户管理"
+          link: "/businesses"
+          need_count: false
     up_downloads:
       name: "模板管理"
       needrole:
