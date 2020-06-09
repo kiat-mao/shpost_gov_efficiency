@@ -36,6 +36,8 @@ Rails.application.routes.draw do
   end
 
   resources :businesses
+
+  match "/shpost_gov_eff_monitor/reports/deliver_market_report" => "reports#deliver_market_report", via: [:get, :post]
   
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

@@ -54,4 +54,32 @@ class Express < ApplicationRecord
     end
     self.delivered_days = nil
   end
+
+  def self.get_deliver_market_result(expresses)
+    results = {}
+
+    business_ids = expresses.select(:business_id).distinct
+    total_amount = expresses.group("businesses.btype").count
+    status_amount = expresses.group("businesses.btype", "expresses.status").count
+    deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("businesses.btype").count
+    deliver3 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").group("businesses.btype").count
+
+    business_ids.each do |x|
+# debugger
+      btype = Business.find(x.business_id).btype
+      total_am = total_amount[btype]
+      deliver_am = status_amount[[btype, "delivered"]].blank? ? 0 : status_amount[[btype, "delivered"]]
+      deliver_per = (deliver_am/total_am.to_f*100).round(2)
+      deliver3_per = deliver3[btype].blank? ? 0 : (deliver3[btype]/total_am.to_f*100).round(2)
+      deliver2_per = deliver2[btype].blank? ? 0 : (deliver2[btype]/total_am.to_f*100).round(2)
+      waiting_am = status_amount[[btype, "waiting"]].blank? ? 0 : status_amount[[btype, "waiting"]]
+      waiting_per = (waiting_am/total_am.to_f*100).round(2)
+      return_am = status_amount[[btype, "returns"]].blank? ? 0 : status_amount[[btype, "returns"]]
+      return_per = (return_am/total_am.to_f*100).round(2)
+
+      results[btype] = [total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per]
+    end
+
+    return results
+  end
 end

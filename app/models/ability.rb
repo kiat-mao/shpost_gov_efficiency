@@ -13,6 +13,7 @@ class Ability
         can :update, User, id: user.id
         can :manage, UpDownload
         can :manage, Business
+        can "report", "DeliverMarketReport"
         #can :manage, User
     elsif user.unitadmin?
         can :manage, Unit, id: user.unit.id
@@ -30,12 +31,14 @@ class Ability
 
         can :manage, UpDownload
         can :manage, Business
+        can "report", "DeliverMarketReport"
     else
         can :update, User, id: user.id
         can :read, UserLog, user: {id: user.id}
 
         can :read, Unit, id: user.unit_id
         can [:read, :up_download_export], UpDownload
+        can "report", "DeliverMarketReport"
     end
 
     

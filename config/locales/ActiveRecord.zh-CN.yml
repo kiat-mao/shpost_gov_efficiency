@@ -298,6 +298,18 @@ zh-CN:
         btype: "客户类别"
         industry: "二级行业名称"
         time_limit: "催投警告时限（小时）"
+      express:
+        express_no: "邮件号"
+        business_id: "大客户"
+        post_unit_id: "收寄单位"
+        posting_date: "收寄日期"
+        last_unit_id: "最后所在单位"
+        status: "状态"
+        last_op_at: "最后操作时间"
+        last_op_desc: "最后操作信息"
+        sign: "标记"
+        desc: "备注"
+        delivered_days: "妥投天数"
 
   menu:
     permission:
@@ -333,18 +345,14 @@ zh-CN:
           name: "商户管理"
           link: "/businesses"
           need_count: false
-    express:
-      express_no: "邮件号"
-      business_id: "大客户"
-      post_unit_id: "收寄单位"
-      posting_date: "收寄日期"
-      last_unit_id: "最后所在单位"
-      status: "状态"
-      last_op_at: "最后操作时间"
-      last_op_desc: "最后操作信息"
-      sign: "标记"
-      desc: "备注"
-      delivered_days: "妥投天数"
+    report:
+      name: "报表管理"
+      submenu:
+        deliver_market_report:
+          name: "投递情况监控报表"
+          link: "/shpost_gov_eff_monitor/reports/deliver_market_report"
+          need_count: false
+    
 
   user_navigation:
     update_self: "个人信息"

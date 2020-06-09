@@ -12,6 +12,16 @@
 
 ActiveRecord::Schema.define(version: 2020_06_04_053459) do
 
+  create_table "businesses", force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", null: false
+    t.string "btype"
+    t.string "industry"
+    t.integer "time_limit"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "expresses", force: :cascade do |t|
     t.string "express_no"
     t.integer "business_id"
@@ -94,16 +104,6 @@ ActiveRecord::Schema.define(version: 2020_06_04_053459) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["username"], name: "index_users_on_username", unique: true
-  end
-
-  create_table "businesses", force: :cascade do |t|
-    t.string "code", null: false
-    t.string "name", null: false
-    t.string "btype"
-    t.string "industry"
-    t.integer "time_limit"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
   end
 
 end

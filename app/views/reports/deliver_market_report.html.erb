@@ -1,0 +1,62 @@
+
+<br><br>
+<font face="微软雅黑" color='#006030' size=6>投递情况监控报表-市场维度</font>   
+
+<br><br><br>
+ 
+
+<%= form_tag("", name: 'form1') do -%>
+<table>
+    <tr style="line-height: 40px;height: 40px;">
+        <td><%= label_tag(:industry, "二级行业名称:") %></td>
+        <td><%= select_tag("industry", options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,"全部"), :selected=> @filters["industry"]), id: "industry") %></td>
+        <td><%= label_tag(:btype, "客户类别:") %></td>
+        <td><%= select_tag("btype", options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,"全部"), :selected=> @filters["btype"]), id: "btype") %></td>
+        <td><%= label_tag(:business, "客户:") %></td>
+        <td><%= text_field("business","business", value: @filters['business']) %></td>  
+    </tr>
+    <tr style="line-height: 40px;height: 40px;">
+        <td><%= label_tag(:posting_date_start, "收寄范围:") %></td>
+        <td><%= text_field("posting_date_start","posting_date_start", value: @filters['posting_date_start']) %></td>
+        <td><%= label_tag(:posting_date_end, "-") %></td>
+        <td><%= text_field("posting_date_end","posting_date_end", value: @filters['posting_date_end']) %></td>
+        
+    </tr>
+</table>
+    <%= submit_tag "报表导出",:class => 'btn btn-primary', onclick: "form1.action='/shpost_gov_eff_monitor/reports/deliver_market_report?is_query=false';form1.submit();" %>
+    <%= submit_tag "查询",:class => 'btn btn-primary', onclick: "form1.action='/shpost_gov_eff_monitor/reports/deliver_market_report?is_query=true';form1.submit();" %>
+       
+<% end -%>
+
+<br><br><br>
+<% if !@results.blank? %>
+<table border="1" table-layout="fixed">
+    <tr class= 'nowrap'>
+        <td><b>行业市场</b></td>
+        <td><b>收寄数</b></td>
+        <td><b>总妥投数</b></td>
+        <td><b>妥投率</b></td>
+        <td><b>三日妥投率</b></td>
+        <td><b>次日妥投率</b></td>
+        <td><b>未妥投总数</b></td>
+        <td><b>未妥投率</b></td>
+        <td><b>退回数</b></td>
+        <td><b>退回率</b></td>
+    </tr>
+    <% @results.each do |k, v| %>
+        <tr class= 'nowrap'>
+            <td><%= k %></td>
+            <td><%= v[0] %></td>
+            <td><%= v[1] %></td>
+            <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
+            <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
+            <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
+            <td><%= v[5] %></td>
+            <td><%= v[6].to_s(:rounded, precision: 2)+"%" %></td>
+            <td><%= v[7] %></td>
+            <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
+        </tr>
+    <% end %>
+    
+</table>
+<% end %>
