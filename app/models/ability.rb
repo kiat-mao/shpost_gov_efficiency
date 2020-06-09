@@ -17,6 +17,7 @@ class Ability
         #can :manage, User
     elsif user.unitadmin?
         can :manage, Unit, id: user.unit.id
+        can :manage, Unit, parent_id: user.unit.id
         can :read, Unit
         can :user, Unit, id: user.unit.id
 

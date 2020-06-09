@@ -7,7 +7,19 @@ Rails.application.routes.draw do
   resources :user_logs, only: [:index, :show, :destroy]
 
   resources :units do
+    collection do
+      get 'import'
+      post 'import' => 'units#import'
+    end
     resources :users, :controller => 'unit_users'
+
+    member do 
+      # get 'index'
+      get 'new_child_unit' => 'units#new'
+      get 'child_units' => 'units#index'
+      # get 'update_unit'
+      # get 'destroy_unit'
+    end
   end
 
   resources :users do
