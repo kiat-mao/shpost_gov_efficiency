@@ -47,15 +47,15 @@
         <% @results.each do |k, v| %>
             <tr class= 'nowrap'>
                 <td><%= k %></td>
-                <td><%= link_to v[0], get_expresses_path(k, nil), target: '_blank' %></td>
-                <td><%= link_to v[1], get_expresses_path(k, "delivered"), target: '_blank' %></td>
+                <td><u><%= link_to v[0], get_expresses_path(k, nil), target: '_blank' %></u></td>
+                <td><u><%= link_to v[1], get_expresses_path(k, "delivered"), target: '_blank' %></u></td>
                 <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
                 <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
                 <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
-                <td><%= link_to v[5], get_expresses_path(k, "waiting"), target: '_blank' %></td>
+                <td><u><%= link_to v[5], get_expresses_path(k, "waiting"), target: '_blank' %></u></td>
                 <td><%= v[6].to_s(:rounded, precision: 2)+"%" %></td>
-                <td><%= link_to v[7], get_expresses_path(k, "returns"), target: '_blank' %></td>
-                <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
+                <td><u><%= link_to v[7], get_expresses_path(k, "returns"), target: '_blank' %></u></td>
+                <td><u><%= v[8].to_s(:rounded, precision: 2)+"%" %></u></td>
             </tr>
         <% end %>
         
