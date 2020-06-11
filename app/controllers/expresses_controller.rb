@@ -1,10 +1,14 @@
 class ExpressesController < ApplicationController
-  before_action :set_express, only: [:show, :edit, :update, :destroy]
+  load_and_authorize_resource :express
 
   # GET /expresses
   # GET /expresses.json
   def index
-    @expresses = Express.all
+    @expresses = Express.get_filter_expresses(params)
+    @expresss_grid = initialize_grid(@expresses, :per_page => params[:page_size],
+      :enable_export_to_csv => true,
+      :csv_file_name => 'expresses')
+    export_grid_if_requested
   end
 
   # GET /expresses/1
@@ -61,6 +65,7 @@ class ExpressesController < ApplicationController
     end
   end
 
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_express

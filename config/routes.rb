@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
-  resources :expresses
+  resources :expresses do
+    collection do
+      get 'deliver_market_detail'
+      post 'deliver_market_detail'
+    end
+  end
+
   root 'welcome#index'
   
   devise_for :users, controllers: { sessions: "users/sessions" }
@@ -49,7 +55,15 @@ Rails.application.routes.draw do
 
   resources :businesses
 
-  match "/shpost_gov_eff_monitor/reports/deliver_market_report" => "reports#deliver_market_report", via: [:get, :post]
+  resources :reports do
+    collection do
+      get 'deliver_market_report'
+      post 'deliver_market_report'
+      post 'deliver_market_report_export'
+    end
+  end
+
+  # match "/reports/deliver_market_report" => "reports#deliver_market_report", via: [:get, :post]
   
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

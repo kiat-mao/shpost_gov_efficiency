@@ -233,6 +233,9 @@ zh-CN:
       business:
         one: 商户管理
         other: 商户管理
+      express:
+        one: 邮件
+        other: 邮件
     attributes:
       user:
         email: "电子邮件"

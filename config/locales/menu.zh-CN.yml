@@ -27,6 +27,13 @@ zh-CN:
           name: "商户管理"
           link: "/businesses"
           need_count: false
+    report:
+      name: "报表管理"
+      submenu:
+        deliver_market_report:
+          name: "投递情况监控报表"
+          link: "/reports/deliver_market_report"
+          need_count: false
     up_downloads:
       name: "模板管理"
       needrole:

@@ -5,6 +5,7 @@ class Express < ApplicationRecord
   validates_presence_of :express_no, :business_id, :message => '不能为空'
 
   enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns'}
+  STATUS_NAME = { waiting: '未妥投', delivered: '妥投', returns: '退回'}
 
 	def self.init_express(business, pkp_waybill_base, mail_trace)
 		express = Express.find_by(express_no: pkp_waybill_base.waybill_no)
@@ -83,5 +84,43 @@ class Express < ApplicationRecord
     end
 
     return results
+  end
+
+  def status_name
+    status.blank? ? "" : Express::STATUS_NAME["#{status}".to_sym]
+  end
+
+  def self.get_filter_expresses(params)
+    expresses = Express.left_outer_joins(:business).all
+    # byebug
+    if !params[:industry].blank?
+      expresses = expresses.where("businesses.industry = ?", params[:industry])
+    end
+    
+    if !params[:btype].blank?
+      expresses = expresses.where("businesses.btype = ?", params[:btype])
+    end
+
+    if !params[:business].blank?
+      expresses = expresses.where("businesses.code like ? or businesses.name like ?", "%#{params[:business]}%", "%#{params[:business]}%")
+    end
+    
+    if !params[:posting_date_start].blank?
+      expresses = expresses.where("expresses.posting_date >= ?", params[:posting_date_start])
+    end
+
+    if !params[:posting_date_end].blank?
+      expresses = expresses.where("expresses.posting_date < ?", params[:posting_date_end])
+    end
+
+    if !params[:detail_btype].blank?
+      expresses = expresses.where("businesses.btype = ?", params[:detail_btype])
+    end
+
+    if !params[:status].blank?
+      expresses = expresses.where("expresses.status = ?", params[:status])
+    end
+
+    return expresses
   end
 end
