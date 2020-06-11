@@ -6,6 +6,7 @@ class ExpressesController < ApplicationController
   def index
     @expresses = Express.get_filter_expresses(params)
     @expresss_grid = initialize_grid(@expresses, :per_page => params[:page_size],
+      name: 'expresses',
       :enable_export_to_csv => true,
       :csv_file_name => 'expresses')
     export_grid_if_requested
