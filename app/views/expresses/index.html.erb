@@ -4,68 +4,12 @@
 <div class="page-header">
   <h1><%=t '.title', :default => [:'helpers.titles.index', '%{model} Manage'], :model => model_class.model_name.human.titleize %></h1>
   <%= render partial: '/layouts/page_size' %>
+  
+  <div style="float:right">
+    <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="expresses">导出</button>
+  </div>
 </div>
-<div style="float:right">
-  <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="expresses">导出</button>
-</div>
+<%= render partial: 'expresses_grid' %>
 
 
-<%= grid(@expresss_grid) do |g|
-  g.column name: model_class.human_attribute_name(:express_no), attribute: 'express_no'
 
-  g.column name: model_class_b.human_attribute_name(:industry), attribute: 'industry', assoc: :business do |express|
-    express.business.try :industry
-  end
-
-  g.column name: model_class_b.human_attribute_name(:btype), attribute: 'btype', assoc: :business do |express|
-    express.business.try :btype
-  end
-
-  g.column name: model_class_b.human_attribute_name(:code), attribute: 'code', assoc: :business do |express|
-    express.business.try :code
-  end
-
-  g.column name: model_class_b.human_attribute_name(:name), attribute: 'name', assoc: :business do |express|
-    express.business.try :name
-  end
-
-  g.column name: '收寄单位机构代码', attribute: 'no', assoc: :post_unit do |express|
-    express.post_unit.try :no
-  end
-
-  g.column name: '收寄单位名称', attribute: 'name', assoc: :post_unit do |express|
-    express.post_unit.try :name
-  end
-
-  g.column name: '收寄单位区分公司', attribute: 'name', assoc: :post_unit do |express|
-    express.post_unit.try(:parent_unit).try(:name)
-  end
-
-  g.column name: model_class.human_attribute_name(:posting_date), attribute: 'posting_date' do |express|
-    l express.posting_date
-  end
-
-  g.column name: '最后投递单位所属区分公司', attribute: 'name', assoc: :last_unit do |express|
-    express.last_unit.try(:parent_unit).try(:name)
-  end
-
-  g.column name: '最后投递单位代号', attribute: 'no', assoc: :last_unit do |express|
-    express.last_unit.try(:no)
-  end
-
-  g.column name: '最后投递单位名称', attribute: 'name', assoc: :last_unit do |express|
-    express.last_unit.try(:name)
-  end
-
-  g.column name: model_class.human_attribute_name(:status), attribute: 'status' do |express|
-    express.status_name
-  end
-
-  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc'
-
-  g.column name: model_class.human_attribute_name(:last_op_at), attribute: 'last_op_at' do |express|
-    l express.last_op_at
-  end
-
-end
-%>
