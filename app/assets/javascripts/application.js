@@ -17,6 +17,8 @@
 //= require bootstrap-datepicker
 //= require wice_grid
 
+//= require bootstrap-table/bootstrap-table
+
 //= require turbolinks
 //= require_tree .
 
