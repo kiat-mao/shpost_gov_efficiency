@@ -1,7 +1,7 @@
 class Express < ApplicationRecord
   belongs_to :business
-  belongs_to :post_unit, class_name: 'Unit'
-  belongs_to :last_unit, class_name: 'Unit'
+  belongs_to :post_unit, class_name: 'Unit', optional: true
+  belongs_to :last_unit, class_name: 'Unit', optional: true
   validates_presence_of :express_no, :business_id, :message => '不能为空'
 
   enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns'}
