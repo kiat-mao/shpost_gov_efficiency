@@ -41,9 +41,9 @@ class ReportsController < ApplicationController
 	    book = Spreadsheet::Workbook.new  
 	    sheet1 = book.create_worksheet :name => "统计表"  
 	    
-	    title = Spreadsheet::Format.new :weight => :bold, :size => 12
-	    filter = Spreadsheet::Format.new :size => 10
-	    body = Spreadsheet::Format.new :size => 10, :border => :thin, :align => :center
+	    title = Spreadsheet::Format.new :weight => :bold, :size => 12, :border => :thin, :align => :center
+	    filter = Spreadsheet::Format.new :size => 11
+	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
 
 	    sheet1.row(0).default_format = filter
 	    sheet1.row(1).default_format = filter
@@ -52,7 +52,13 @@ class ReportsController < ApplicationController
 	    sheet1[0,8] = "客户:#{params["business"]}"
 	    sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 
-	    sheet1.row(3).default_format = title
+	    0.upto(9) do |x|
+	      sheet1.column(x).width = 16
+	    end
+
+	    0.upto(9) do |x|
+	      sheet1.row(3).set_format(x, title)
+	    end
 	    sheet1.row(3).concat %w{行业市场 收寄数 总妥投数 妥投率 三日妥投率 次日妥投率 未妥投总数 未妥投率 退回数 退回率}
 
 	    count_row = 4
@@ -69,7 +75,9 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,8] = v[7]
 	      sheet1[count_row,9] = v[8].to_s(:rounded, precision: 2)+"%"
 	      
-	      sheet1.row(count_row).default_format = body
+	      0.upto(9) do |i|
+		      sheet1.row(count_row).set_format(i, body)
+		    end 
 	      
 	      count_row += 1
 	    end

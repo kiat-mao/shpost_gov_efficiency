@@ -21,33 +21,33 @@
     express.business.try :name
   end
 
-  g.column name: '收寄单位机构代码', attribute: 'no', assoc: :post_unit do |express|
-    express.post_unit.try :no
-  end
+  # g.column name: '收寄单位机构代码', attribute: 'no', assoc: :post_unit do |express|
+  #   express.post_unit.try :no
+  # end
 
-  g.column name: '收寄单位名称', attribute: 'name', assoc: :post_unit do |express|
-    express.post_unit.try :name
-  end
+  # g.column name: '收寄单位名称', attribute: 'name', assoc: :post_unit do |express|
+  #   express.post_unit.try :name
+  # end
 
-  g.column name: '收寄单位区分公司', attribute: 'name', assoc: :post_unit do |express|
-    express.post_unit.try(:parent_unit).try(:name)
-  end
+  # g.column name: '收寄单位区分公司', attribute: 'name', assoc: :post_unit do |express|
+  #   express.post_unit.try(:parent_unit).try(:name)
+  # end
 
   g.column name: model_class.human_attribute_name(:posting_date), attribute: 'posting_date' do |express|
     l express.posting_date
   end
 
-  g.column name: '最后投递单位所属区分公司', attribute: 'name', assoc: :last_unit do |express|
-    express.last_unit.try(:parent_unit).try(:name)
-  end
+  # g.column name: '最后投递单位所属区分公司', attribute: 'name', assoc: :last_unit do |express|
+  #   express.last_unit.try(:parent_unit).try(:name)
+  # end
 
-  g.column name: '最后投递单位代号', attribute: 'no', assoc: :last_unit do |express|
-    express.last_unit.try(:no)
-  end
+  # g.column name: '最后投递单位代号', attribute: 'no', assoc: :last_unit do |express|
+  #   express.last_unit.try(:no)
+  # end
 
-  g.column name: '最后投递单位名称', attribute: 'name', assoc: :last_unit do |express|
-    express.last_unit.try(:name)
-  end
+  # g.column name: '最后投递单位名称', attribute: 'name', assoc: :last_unit do |express|
+  #   express.last_unit.try(:name)
+  # end
 
   g.column name: model_class.human_attribute_name(:status), attribute: 'status' do |express|
     express.status_name
