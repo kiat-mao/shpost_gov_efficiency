@@ -122,7 +122,11 @@ class Express < ApplicationRecord
     end
 
     if !params[:last_unit_id].blank?
-      expresses = expresses.where("expresses.last_unit_id = ?", params[:last_unit_id])
+      if params[:last_unit_id].eql?"其他"
+        expresses = expresses.where(last_unit_id: nil)
+      else
+        expresses = expresses.where(last_unit_id: params[:last_unit_id])
+      end
     end
 
     return expresses
@@ -130,8 +134,8 @@ class Express < ApplicationRecord
 
   def self.get_deliver_unit_result(expresses)
     results = {}
-
-    last_units = expresses.select(:last_unit_id).distinct
+    
+    last_units = expresses.joins("left join units as u on expresses.last_unit_id = u.id").select(:last_unit_id).order("u.parent_id desc").order(last_unit_id: :desc).distinct
     total_amount = expresses.group(:last_unit_id).count
     status_amount = expresses.group(:last_unit_id, :status).count
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
@@ -140,7 +144,7 @@ class Express < ApplicationRecord
     last_units.each do |x|
 # debugger
       last_unit_id = x.last_unit_id
-      parent_id = Unit.find(last_unit_id).parent_id
+      parent_id = last_unit_id.blank? ? nil : Unit.find(last_unit_id).parent_id
       total_am = total_amount[last_unit_id].blank? ? 0 : total_amount[last_unit_id]
       deliver_am =status_amount[[last_unit_id, "delivered"]].blank? ? 0 : status_amount[[last_unit_id, "delivered"]]
       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0

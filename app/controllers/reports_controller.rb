@@ -136,10 +136,11 @@ class ReportsController < ApplicationController
 	    sheet1.row(3).concat %w{单位 网点 总邮件数 总妥投数 妥投率 三日妥投率 次日妥投率 未妥投总数 未妥投率 退回数 退回率}
 
 	    count_row = 4
+	    last_pid = nil
 
 	    results.each do |k, v|
-	      sheet1[count_row,0] = Unit.find(v[0]).name
-	      sheet1[count_row,1] = Unit.find(k).name
+	      sheet1[count_row,0] = k.blank? ? "" : ((v[0] == last_pid) ? "" : Unit.find(v[0]).name)
+	      sheet1[count_row,1] = k.blank? ? "其他" : Unit.find(k).name
 	      sheet1[count_row,2] = v[1]
 	      sheet1[count_row,3] = v[2]
 	      sheet1[count_row,4] = v[3].to_s(:rounded, precision: 2)+"%"
@@ -149,6 +150,7 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,8] = v[7].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,9] = v[8]
 	      sheet1[count_row,10] = v[9].to_s(:rounded, precision: 2)+"%"
+	      last_pid = v[0]
 	      
 	      0.upto(10) do |i|
 		      sheet1.row(count_row).set_format(i, body)
