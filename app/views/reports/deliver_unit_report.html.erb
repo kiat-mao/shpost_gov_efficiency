@@ -1,10 +1,10 @@
 
 <br>
-<font face="微软雅黑" color='#006030' size=6>投递情况监控报表-市场维度</font>   
+<font face="微软雅黑" color='#006030' size=6>投递情况监控报表-投递维度</font>   
 
 
 
-<%= form_tag(deliver_market_report_reports_path, name: 'form', method: 'post') do %>
+<%= form_tag(deliver_unit_report_reports_path, name: 'form', method: 'post') do %>
   <table>
     <tr style="line-height: 40px;height: 40px;">
       <td><%= label_tag(:industry, "二级行业名称:") %></td>
@@ -24,7 +24,7 @@
     </tr>
   </table>
   <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %>
-  <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end]), :class => 'btn btn-primary', method: :post%>
+  <%= link_to "报表导出", deliver_unit_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end]), :class => 'btn btn-primary', method: :post%>
 
 <% end -%>      
   <br>
@@ -33,8 +33,9 @@
     data-height="400">
       <thead>
         <tr class= 'nowrap'>
-          <th><b>行业市场</b></th>
-          <th><b>收寄数</b></th>
+          <th><b>单位</b></th>
+          <th><b>网点</b></th>
+          <th><b>总邮件数</b></th>
           <th><b>总妥投数</b></th>
           <th><b>妥投率</b></th>
           <th><b>三日妥投率</b></th>
@@ -48,16 +49,17 @@
       <tbody>
       <% @results.each do |k, v| %>
        <tr class= 'nowrap'>
-        <td><%= k %></td>
-        <td><u><%= link_to v[0], get_expresses_path(k, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[1], get_expresses_path(k, "delivered", nil), target: '_blank' %></u></td>
-        <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= Unit.find(v[0]).name %></td>
+        <td><%= Unit.find(k).name %></td>
+        <td><u><%= link_to v[1], get_expresses_path(nil, nil, k), target: '_blank' %></u></td>
+        <td><u><%= link_to v[2], get_expresses_path(nil, "delivered", k), target: '_blank' %></u></td>
         <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
-        <td><u><%= link_to v[5], get_expresses_path(k, "waiting", nil), target: '_blank' %></u></td>
-        <td><%= v[6].to_s(:rounded, precision: 2)+"%" %></td>
-        <td><u><%= link_to v[7], get_expresses_path(k, "returns", nil), target: '_blank' %></u></td>
-        <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[5].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><u><%= link_to v[6], get_expresses_path(nil, "waiting", k), target: '_blank' %></u></td>
+        <td><%= v[7].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><u><%= link_to v[8], get_expresses_path(nil, "returns", k), target: '_blank' %></u></td>
+        <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
       </tr>
       <% end %>
       </tbody>

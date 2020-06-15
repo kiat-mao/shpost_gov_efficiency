@@ -60,6 +60,9 @@ Rails.application.routes.draw do
       get 'deliver_market_report'
       post 'deliver_market_report'
       post 'deliver_market_report_export'
+      get 'deliver_unit_report'
+      post 'deliver_unit_report'
+      post 'deliver_unit_report_export'
     end
   end
 
