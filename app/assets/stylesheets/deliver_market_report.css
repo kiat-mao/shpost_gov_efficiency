@@ -7,3 +7,13 @@
    /*overflow:hidden;*/
    /*text-overflow: ellipsis;*/
 }
+
+#waiting a:link {
+	text-decoration:underline;
+	color: red;
+}
+
+.red {
+	color: red;
+}
+

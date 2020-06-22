@@ -58,10 +58,24 @@ class Express < ApplicationRecord
     self.delivered_days = nil
   end
 
-  def self.get_deliver_market_result(expresses)
+  def self.get_deliver_market_result(expresses, params)
     results = {}
-
-    btypes = Business.select(:btype).distinct
+    businesses = Business.all
+    total_hj = 0
+    deliver_hj = 0
+    deliver3_hj = 0
+    deliver2_hj = 0
+    waiting_hj = 0
+    return_hj = 0
+    
+    if !params[:industry].blank?
+      businesses = businesses.where(industry: params[:industry])
+    end
+    if !params[:btype].blank?
+      businesses = businesses.where(btype: params[:btype])
+    end
+    btypes = businesses.select(:btype).distinct
+                
     total_amount = expresses.group("businesses.btype").count
     status_amount = expresses.group("businesses.btype", "expresses.status").count
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("businesses.btype").count
@@ -71,17 +85,30 @@ class Express < ApplicationRecord
 # debugger
       btype = x.btype
       total_am = total_amount[btype].blank? ? 0 : total_amount[btype]
+      total_hj += total_am
       deliver_am =status_amount[[btype, "delivered"]].blank? ? 0 : status_amount[[btype, "delivered"]]
+      deliver_hj += deliver_am
       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
       deliver3_per = deliver3[btype].blank? ? 0 : (deliver3[btype]/total_am.to_f*100).round(2)
+      deliver3_hj += deliver3[btype].blank? ? 0 : deliver3[btype]
       deliver2_per = deliver2[btype].blank? ? 0 : (deliver2[btype]/total_am.to_f*100).round(2)
+      deliver2_hj += deliver2[btype].blank? ? 0 : deliver2[btype]
       waiting_am = status_amount[[btype, "waiting"]].blank? ? 0 : status_amount[[btype, "waiting"]]
+      waiting_hj += waiting_am
       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
       return_am = status_amount[[btype, "returns"]].blank? ? 0 : status_amount[[btype, "returns"]]
+      return_hj += return_am
       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
 
       results[btype] = [total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per]
     end
+    deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
+    deliver3_per_hj = deliver3_hj.blank? ? 0 : (deliver3_hj/total_hj.to_f*100).round(2)
+    deliver2_per_hj = deliver2_hj.blank? ? 0 : (deliver2_hj/total_hj.to_f*100).round(2)
+    waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
+    return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
+      
+    results["合计"] = [total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj]
 
     return results
   end
@@ -92,6 +119,7 @@ class Express < ApplicationRecord
 
   def self.get_filter_expresses(params)
     expresses = Express.left_outer_joins(:business).all
+    
     # byebug
     if !params[:industry].blank?
       expresses = expresses.where("businesses.industry = ?", params[:industry])
@@ -104,13 +132,17 @@ class Express < ApplicationRecord
     if !params[:business].blank?
       expresses = expresses.where("businesses.code like ? or businesses.name like ?", "%#{params[:business]}%", "%#{params[:business]}%")
     end
-    
-    if !params[:posting_date_start].blank?
-      expresses = expresses.where("expresses.posting_date >= ?", params[:posting_date_start])
-    end
 
-    if !params[:posting_date_end].blank?
-      expresses = expresses.where("expresses.posting_date < ?", params[:posting_date_end])
+    if params[:posting_date_start].blank? && params[:posting_date_end].blank?
+      expresses = expresses.where("expresses.posting_date >= ? and expresses.posting_date < ?", Time.now-7.days, Time.now)
+    else    
+      if !params[:posting_date_start].blank?
+        expresses = expresses.where("expresses.posting_date >= ?", params[:posting_date_start])
+      end
+
+      if !params[:posting_date_end].blank?
+        expresses = expresses.where("expresses.posting_date < ?", params[:posting_date_end])
+      end
     end
 
     if !params[:detail_btype].blank?
@@ -134,6 +166,12 @@ class Express < ApplicationRecord
 
   def self.get_deliver_unit_result(expresses)
     results = {}
+    total_hj = 0
+    deliver_hj = 0
+    deliver3_hj = 0
+    deliver2_hj = 0
+    waiting_hj = 0
+    return_hj = 0
     
     last_units = expresses.joins("left join units as u on expresses.last_unit_id = u.id").select(:last_unit_id).order("u.parent_id desc").order(last_unit_id: :desc).distinct
     total_amount = expresses.group(:last_unit_id).count
@@ -146,16 +184,32 @@ class Express < ApplicationRecord
       last_unit_id = x.last_unit_id
       parent_id = last_unit_id.blank? ? nil : Unit.find(last_unit_id).parent_id
       total_am = total_amount[last_unit_id].blank? ? 0 : total_amount[last_unit_id]
+      total_hj += total_am
       deliver_am =status_amount[[last_unit_id, "delivered"]].blank? ? 0 : status_amount[[last_unit_id, "delivered"]]
+      deliver_hj += deliver_am
       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
       deliver3_per = deliver3[last_unit_id].blank? ? 0 : (deliver3[last_unit_id]/total_am.to_f*100).round(2)
+      deliver3_hj += deliver3[last_unit_id].blank? ? 0 : deliver3[last_unit_id]
       deliver2_per = deliver2[last_unit_id].blank? ? 0 : (deliver2[last_unit_id]/total_am.to_f*100).round(2)
+      deliver2_hj += deliver2[last_unit_id].blank? ? 0 : deliver2[last_unit_id]
       waiting_am = status_amount[[last_unit_id, "waiting"]].blank? ? 0 : status_amount[[last_unit_id, "waiting"]]
+      waiting_hj += waiting_am
       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
       return_am = status_amount[[last_unit_id, "returns"]].blank? ? 0 : status_amount[[last_unit_id, "returns"]]
+      return_hj += return_am
       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
 
       results[last_unit_id] = [parent_id, total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per]
+    end
+
+    deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
+    deliver3_per_hj = deliver3_hj.blank? ? 0 : (deliver3_hj/total_hj.to_f*100).round(2)
+    deliver2_per_hj = deliver2_hj.blank? ? 0 : (deliver2_hj/total_hj.to_f*100).round(2)
+    waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
+    return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
+    
+    if total_hj>0
+      results["合计"] = ["", total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj]
     end
 
     return results

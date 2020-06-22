@@ -43,6 +43,7 @@ class ReportsController < ApplicationController
 	    title = Spreadsheet::Format.new :weight => :bold, :size => 12, :border => :thin, :align => :center
 	    filter = Spreadsheet::Format.new :size => 11
 	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
+	    red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
 
 	    sheet1.row(0).default_format = filter
 	    sheet1.row(1).default_format = filter
@@ -74,9 +75,15 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,8] = v[7]
 	      sheet1[count_row,9] = v[8].to_s(:rounded, precision: 2)+"%"
 	      
-	      0.upto(9) do |i|
+	      0.upto(5) do |i|
 		      sheet1.row(count_row).set_format(i, body)
+		    end
+		    6.upto(7) do |i|
+		      sheet1.row(count_row).set_format(i, red)
 		    end 
+		    8.upto(9) do |i|
+		      sheet1.row(count_row).set_format(i, body)
+		    end  
 	      
 	      count_row += 1
 	    end
@@ -93,7 +100,7 @@ class ReportsController < ApplicationController
 	  		  	
     	expresses = Express.get_filter_expresses(params)
 
-      @results = Express.get_deliver_market_result(expresses)
+      @results = Express.get_deliver_market_result(expresses, params)
   	end
 
   	def init_result_unit
@@ -114,6 +121,7 @@ class ReportsController < ApplicationController
 	    title = Spreadsheet::Format.new :weight => :bold, :size => 12, :border => :thin, :align => :center
 	    filter = Spreadsheet::Format.new :size => 11
 	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
+	    red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
 
 	    sheet1.row(0).default_format = filter
 	    sheet1.row(1).default_format = filter
@@ -139,8 +147,8 @@ class ReportsController < ApplicationController
 	    last_pid = nil
 
 	    results.each do |k, v|
-	      sheet1[count_row,0] = k.blank? ? "" : ((v[0] == last_pid) ? "" : Unit.find(v[0]).name)
-	      sheet1[count_row,1] = k.blank? ? "其他" : Unit.find(k).name
+	      sheet1[count_row,0] = (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : Unit.find(v[0]).name)
+	      sheet1[count_row,1] = k.blank? ? "其他" : ((k.eql?"合计") ? k : Unit.find(k).name)
 	      sheet1[count_row,2] = v[1]
 	      sheet1[count_row,3] = v[2]
 	      sheet1[count_row,4] = v[3].to_s(:rounded, precision: 2)+"%"
@@ -152,9 +160,16 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,10] = v[9].to_s(:rounded, precision: 2)+"%"
 	      last_pid = v[0]
 	      
-	      0.upto(10) do |i|
+	      0.upto(6) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end 
+		    7.upto(8) do |i|
+		      sheet1.row(count_row).set_format(i, red)
+		    end 
+		    9.upto(10) do |i|
+		      sheet1.row(count_row).set_format(i, body)
+		    end 
+
 	      
 	      count_row += 1
 	    end
