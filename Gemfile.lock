@@ -65,9 +65,6 @@ GEM
     activerecord (6.0.3.1)
       activemodel (= 6.0.3.1)
       activesupport (= 6.0.3.1)
-    activerecord-oracle_enhanced-adapter (6.0.3)
-      activerecord (~> 6.0.0)
-      ruby-plsql (>= 0.6.0)
     activestorage (6.0.3.1)
       actionpack (= 6.0.3.1)
       activejob (= 6.0.3.1)
@@ -194,7 +191,7 @@ GEM
       nio4r (~> 2.0)
     puma (4.3.5-java)
       nio4r (~> 2.0)
-    rack (2.2.2)
+    rack (2.2.3)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (6.0.3.1)
@@ -232,11 +229,7 @@ GEM
     responders (3.0.0)
       actionpack (>= 5.0)
       railties (>= 5.0)
-    ruby-oci8 (2.2.8)
-    ruby-oci8 (2.2.8-x64-mingw32)
-    ruby-oci8 (2.2.8-x86-mingw32)
     ruby-ole (1.2.12.2)
-    ruby-plsql (0.7.1)
     rubyzip (2.3.0)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
@@ -309,7 +302,6 @@ PLATFORMS
   x86-mswin32
 
 DEPENDENCIES
-  activerecord-oracle_enhanced-adapter
   bootsnap (>= 1.4.2)
   bootstrap-datepicker-rails
   bootstrap-table-rails (~> 1.13, >= 1.13.4)
@@ -326,7 +318,6 @@ DEPENDENCIES
   momentjs-rails (>= 2.9.0)
   puma (~> 4.1)
   rails (~> 6.0.3, >= 6.0.3.1)
-  ruby-oci8
   sass-rails (>= 6)
   selenium-webdriver
   spreadsheet (~> 1.2, >= 1.2.6)
