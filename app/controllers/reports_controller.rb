@@ -34,6 +34,18 @@ class ReportsController < ApplicationController
     end
   end
 
+  def deliver_market_monitor
+  	unless request.get?
+			init_result
+		end
+	end
+
+	def deliver_unit_monitor
+		unless request.get?
+			init_result_unit
+		end
+	end
+
   private
   	def deliver_market_report_xls_content_for(params,results)
 	  	xls_report = StringIO.new  
@@ -50,7 +62,9 @@ class ReportsController < ApplicationController
 	    sheet1[0,0] = "二级行业名称:#{params["industry"]}"
 	    sheet1[0,4] = "客户类别:#{params["btype"]}"
 	    sheet1[0,8] = "客户:#{params["business"]}"
-	    sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    if !params[:is_monitor].eql?"true"
+	    	sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    end
 
 	    0.upto(9) do |x|
 	      sheet1.column(x).width = 16
@@ -128,7 +142,9 @@ class ReportsController < ApplicationController
 	    sheet1[0,0] = "二级行业名称:#{params["industry"]}"
 	    sheet1[0,4] = "客户类别:#{params["btype"]}"
 	    sheet1[0,8] = "客户:#{params["business"]}"
-	    sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    if !params[:is_monitor].eql?"true"
+	    	sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    end
 
 	    0.upto(1) do |x|
 	      sheet1.column(x).width = 20

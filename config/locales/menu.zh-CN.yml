@@ -38,20 +38,31 @@ zh-CN:
           name: "投递监控报表(投递)"
           link: "/reports/deliver_unit_report"
           need_count: false
-    up_downloads:
-      name: "模板管理"
-      needrole:
-        can: :read
-        role: :UpDownload
+    monitor:
+      name: "实时监控"
       submenu:
-        up_download:
-          name: "模板上传下载"
-          link: "/up_downloads"
+        deliver_market_monitor:
+          name: "投递监控(市场)"
+          link: "/reports/deliver_market_monitor"
           need_count: false
-    logs:
-      name: "日志查询"
-      submenu:
-        user_log:
-          name: "日志查询"
-          link: "/user_logs"
+        deliver_unit_monitor:
+          name: "投递监控(投递)"
+          link: "/reports/deliver_unit_monitor"
           need_count: false
+    # up_downloads:
+    #   name: "模板管理"
+    #   needrole:
+    #     can: :read
+    #     role: :UpDownload
+    #   submenu:
+    #     up_download:
+    #       name: "模板上传下载"
+    #       link: "/up_downloads"
+    #       need_count: false
+    # logs:
+    #   name: "日志查询"
+    #   submenu:
+    #     user_log:
+    #       name: "日志查询"
+    #       link: "/user_logs"
+    #       need_count: false

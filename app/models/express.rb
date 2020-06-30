@@ -145,7 +145,7 @@ class Express < ApplicationRecord
       end
     end
 
-    if !params[:detail_btype].blank?
+    if !params[:detail_btype].blank? && !(params[:detail_btype].eql?"合计")
       expresses = expresses.where("businesses.btype = ?", params[:detail_btype])
     end
 
@@ -153,7 +153,7 @@ class Express < ApplicationRecord
       expresses = expresses.where("expresses.status = ?", params[:status])
     end
 
-    if !params[:last_unit_id].blank?
+    if !params[:last_unit_id].blank? && !(params[:last_unit_id].eql?"合计")
       if params[:last_unit_id].eql?"其他"
         expresses = expresses.where(last_unit_id: nil)
       else

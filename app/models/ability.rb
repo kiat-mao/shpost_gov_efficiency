@@ -18,21 +18,21 @@ class Ability
         can "report", "DeliverUnitReport"
         #can :manage, User
     elsif user.unitadmin?
-        can :manage, Unit, id: user.unit.id
-        can :manage, Unit, parent_id: user.unit.id
-        can :read, Unit
-        can :user, Unit, id: user.unit.id
+        # can :manage, Unit, id: user.unit.id
+        # can :manage, Unit, parent_id: user.unit.id
+        # can :read, Unit
+        # can :user, Unit, id: user.unit.id
 
-        can :read, UserLog, user: {unit_id: user.unit_id}
+        # can :read, UserLog, user: {unit_id: user.unit_id}
 
-        can :read, User, role: 'unitadmin'
-        can :manage, User, role: 'user'
+        # can :read, User, role: 'unitadmin'
+        # can :manage, User, role: 'user'
 
-        cannot [:create, :destroy, :update], User, role: ['unitadmin', 'superadmin']
+        # cannot [:create, :destroy, :update], User, role: ['unitadmin', 'superadmin']
         
-        can :update, User, id: user.id
+        # can :update, User, id: user.id
 
-        can :manage, UpDownload
+        # can :manage, UpDownload
         can :manage, Business
         can "report", "DeliverMarketReport"
         can :manage, Express

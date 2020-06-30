@@ -1,0 +1,81 @@
+
+<br>
+<font face="微软雅黑" color='#006030' size=6>投递情况监控-市场维度</font>   
+
+
+
+<%= form_tag(deliver_market_monitor_reports_path, name: 'form', method: 'post') do %>
+  <table>
+    <tr style="line-height: 40px;height: 40px;">
+      <td><%= label_tag(:industry, "二级行业名称:") %></td>
+      <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
+      <td><%= label_tag(:btype, "客户类别:") %></td>
+      <td><%= select_tag(:btype, options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+      <td><%= label_tag(:business, "客户:") %></td>
+      <td><%= text_field_tag(:business, params[:business]) %></td>  
+    </tr>
+  </table>
+  <%= hidden_field_tag('posting_date_start', Time.now.strftime("%Y-%m-%d")) %>
+  <%= hidden_field_tag('posting_date_end', (Time.now+1.day).strftime("%Y-%m-%d")) %>
+  <table>
+    <tr>
+      <td>
+        <div id="market_monitor_search">
+          <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %></td>
+        </div>
+      <td>
+        <div id="market_monitor_export">
+          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true"), :class => 'btn btn-primary', method: :post%>
+        </div>
+      </td>
+    </tr>
+  </table>
+<% end -%>      
+  <br>
+  <% if !@results.blank? %>
+    <table data-toggle="table" 
+    data-height="400">
+      <thead>
+        <tr class= 'nowrap'>
+          <th><b>行业市场</b></th>
+          <th><b>收寄数</b></th>
+          <th><b>总妥投数</b></th>
+          <th><b>妥投率</b></th>
+          <th><b>三日妥投率</b></th>
+          <th><b>次日妥投率</b></th>
+          <th><b>未妥投总数</b></th>
+          <th><b>未妥投率</b></th>
+          <th><b>退回数</b></th>
+          <th><b>退回率</b></th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @results.each do |k, v| %>
+       <tr class= 'nowrap'>
+        <td><%= k %></td>
+        <td><u><%= link_to v[0], get_expresses_path(k, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[1], get_expresses_path(k, "delivered", nil), target: '_blank' %></u></td>
+        <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
+        <td id='waiting'><%= link_to v[5], get_expresses_path(k, "waiting", nil), target: '_blank' %></td>
+        <td><font color="red"><%= v[6].to_s(:rounded, precision: 2)+"%" %></font></td>
+        <td><u><%= link_to v[7], get_expresses_path(k, "returns", nil), target: '_blank' %></u></td>
+        <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
+      </tr>
+      <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+<script language="javascript" type="text/javascript"> 
+
+$(document).ready(function(){
+  $("#market_monitor_export").hide();
+
+  $("#market_monitor_search").click(function() { 
+    $("#market_monitor_export").show();
+  })
+})
+
+</script>
