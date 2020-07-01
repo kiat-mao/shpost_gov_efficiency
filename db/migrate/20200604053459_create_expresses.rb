@@ -4,7 +4,7 @@ class CreateExpresses < ActiveRecord::Migration[6.0]
     	t.string   :express_no
       t.integer  :business_id
       t.integer  :post_unit_id
-      t.datetime :posting_date
+      t.date :posting_date
       t.integer  :last_unit_id
       t.string	 :status
       t.datetime :last_op_at

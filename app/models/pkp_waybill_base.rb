@@ -1,22 +1,5 @@
 class PkpWaybillBase < PkpDataRecord
-  def self.get_query_records_schedule
-    start_date = Date.today - 2.day
-    end_date = Date.today - 1.day
-    get_query_records(start_date, end_date)
-  end
   
-  def self.get_query_records(start_date, end_date)
-    businesses = Business.all
-    businesses.each do |x|
-      pkp_waybill_bases = self.where(sender_no: no).where("biz_occur_date >= '#{start_date}' and biz_occur_date < '#{end_date}'").where(created_day: start_date.strftime("%d"))
-      ActiveRecord::Base.transaction do
-        pkp_waybill_bases.each do |x|
-          mail_trace = MailTrace.find_by(mail_no: pkp_waybill_bases.waybill_no)
-          Express.init_express(business, pkp_waybill_base, mail_trace)
-        end
-      end
-    end
-  end
 
   #  # 4 common
   # def self.get_pkp_waybill_bases_yesterday(name)

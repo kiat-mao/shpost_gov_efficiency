@@ -7,34 +7,120 @@ class Express < ApplicationRecord
   enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns'}
   STATUS_NAME = { waiting: '未妥投', delivered: '妥投', returns: '退回'}
 
-	def self.init_express(business, pkp_waybill_base, mail_trace)
+  def self.init_expresses_yesterday
+    start_date = Date.today - 1.day
+    end_date = Date.today
+    Express.init_expresses(start_date, end_date)
+  end
+
+  def self.refresh_traces_last_week
+    start_date = Date.today - 7.day
+    end_date = Date.today - 2.day
+    Express.refresh_traces(start_date, end_date)
+  end
+
+  def self.refresh_traces_yesterday
+    start_date = Date.today - 1.day
+    end_date = Date.today
+    Express.refresh_traces(start_date, end_date)
+  end
+  
+  def self.init_expresses(start_date, end_date)
+    businesses = Business.all
+    businesses.each do |business|
+      ActiveRecord::Base.transaction do
+        Express.init_expresses_by_business(business, start_date, end_date)
+      end
+    end
+  end
+
+  def self.refresh_traces(start_date, end_date)
+    businesses = Business.all
+    businesses.each do |business|
+      ActiveRecord::Base.transaction do
+        Express.refresh_traces_by_business(business, start_date, end_date)
+      end
+    end
+  end
+
+  def self.refresh_traces_by_business(business, start_date, end_date)
+    if business.blank? || start_date.blank? || end_date.blank?
+      return
+    end
+    expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).where(status: Express::statuses[:waiting])
+
+    expresses.each do |express|
+      express.refresh_trace!
+    end
+  end
+
+  def self.init_expresses_by_business(business, start_date, end_date)
+    if business.blank? || start_date.blank? || end_date.blank?
+      return
+    end
+    pkp_waybill_bases = PkpWaybillBase.where(sender_no: business.code).where("biz_occur_date >= ? and biz_occur_date < ?", start_date, end_date)
+    if end_date.to_date - start_date.to_date <= 1
+      pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
+    end
+    pkp_waybill_bases.each do |pkp_waybill_base|
+      Express.init_express(pkp_waybill_base, business)
+    end
+  end
+
+	def self.init_express(pkp_waybill_base, business = nil)
+    business ||= Business.find_by code: pkp_waybill_base.sender_no
+    if business.blank?
+      return
+    end
+
+    #Maybe express_no is duplication furture
 		express = Express.find_by(express_no: pkp_waybill_base.waybill_no)
 		express ||= Express.new
 
 		express.express_no = pkp_waybill_base.waybill_no
-    express.business_id = business.try :id
+    express.business = business
     
-    if !pkp_waybill_base.post_org_no.blank?
+    if ! pkp_waybill_base.post_org_no.blank?
       post_unit = Unit.find_by no: pkp_waybill_base.post_org_no
-      express.post_unit_id = post_unit.try :id
+      express.post_unit_no = pkp_waybill_base.post_org_no
+      express.post_unit = post_unit
     end
 
-    express.posting_date = pkp_waybill_base.biz_occur_date
-    # express.posting_date = pkp_waybill_base.biz_occur_date.to_date
-    #express.last_unit_id = mail_trace.
-    if ! mail_trace.blank? && mail_trace.mail_no.eql?(pkp_waybill_base.waybill_no)
-      express.status = Express.to_status(mail_trace.status) || Express::statuses[:waiting]
-      express.last_op_at = mail_trace.operated_at
-      express.last_op_desc = mail_trace.result
-    else
-      express.status = Express::statuses[:waiting]
-    end
+    # express.posting_date = pkp_waybill_base.biz_occur_date
+    express.posting_date = pkp_waybill_base.biz_occur_date.to_date
+
+    
+    express.refresh_trace
+
     #express.sign = nil
     #express.desc = nil
     
-    express.fill_delivered_days
-
     express.save!
+  end
+
+  def refresh_trace!
+    self.refresh_trace
+    self.save!
+  end
+
+  def refresh_trace
+    mail_trace = MailTrace.find_by mail_no: self.express_no
+
+    if ! mail_trace.blank?
+      self.status = Express.to_status(mail_trace.status) || Express::statuses[:waiting]
+      self.last_op_at = mail_trace.operated_at
+      self.last_op_desc = mail_trace.result
+
+      if ! mail_trace.last_trace.blank?
+        last_unit_no = JSON.parse(mail_trace.last_trace)["opOrgCode"]
+        self.last_unit_no = last_unit_no
+        self.last_unit = Unit.find_by no: last_unit_no
+      end
+
+      self.fill_delivered_days
+    else
+      self.status ||= Express::statuses[:waiting]
+    end
   end
 
   def self.to_status(status)
