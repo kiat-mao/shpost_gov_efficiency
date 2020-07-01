@@ -15,7 +15,7 @@ class Express < ApplicationRecord
 
   def self.refresh_traces_last_week
     start_date = Date.today - 7.day
-    end_date = Date.today - 2.day
+    end_date = Date.today - 1.day
     Express.refresh_traces(start_date, end_date)
   end
 
