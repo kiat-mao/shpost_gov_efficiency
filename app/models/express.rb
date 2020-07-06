@@ -26,6 +26,7 @@ class Express < ApplicationRecord
   end
   
   def self.init_expresses(start_date, end_date)
+    puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
     businesses = Business.all
     businesses.each do |business|
       ActiveRecord::Base.transaction do
@@ -35,9 +36,11 @@ class Express < ApplicationRecord
   end
 
   def self.refresh_traces(start_date, end_date)
+    puts("#{Time.now}, refresh_traces, start_date: #{start_date}, end_date: #{end_date}")
     businesses = Business.all
     businesses.each do |business|
       ActiveRecord::Base.transaction do
+        
         Express.refresh_traces_by_business(business, start_date, end_date)
       end
     end
@@ -47,17 +50,25 @@ class Express < ApplicationRecord
     if business.blank? || start_date.blank? || end_date.blank?
       return
     end
+
+    puts("#{Time.now}, refresh_traces_by_business, #{business.name},  start")
+
     expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).where(status: Express::statuses[:waiting])
 
     expresses.each do |express|
       express.refresh_trace!
     end
+
+    puts("#{Time.now}, refresh_traces_by_business, #{business.name}, count: #{expresses.size}, end")
   end
 
   def self.init_expresses_by_business(business, start_date, end_date)
     if business.blank? || start_date.blank? || end_date.blank?
       return
     end
+
+    puts("#{Time.now}  init_expresses_by_business, #{business.name}, start")
+
     pkp_waybill_bases = PkpWaybillBase.where(sender_no: business.code).where("biz_occur_date >= ? and biz_occur_date < ?", start_date, end_date)
     if end_date.to_date - start_date.to_date <= 1
       pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
@@ -65,6 +76,8 @@ class Express < ApplicationRecord
     pkp_waybill_bases.each do |pkp_waybill_base|
       Express.init_express(pkp_waybill_base, business)
     end
+
+    puts("#{Time.now}, init_expresses_by_business, #{business.name}, count: #{pkp_waybill_bases.size}, end")
   end
 
 	def self.init_express(pkp_waybill_base, business = nil)
