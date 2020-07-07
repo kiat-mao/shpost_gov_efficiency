@@ -17,9 +17,9 @@
     <tr style="line-height: 40px;height: 40px;">
       <td><%= label_tag(:posting_date_start, "收寄范围:") %></td>
       <td><%= text_field_tag(:posting_date_start, params[
-        :posting_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: Date.today-7.day) %></td>
+        :posting_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:posting_date_start].blank? ? Date.today-7.day : params[:posting_date_start]) %></td>
         <td><%= label_tag(:posting_date_end, "-") %></td>
-        <td><%= text_field_tag(:posting_date_end, params[:posting_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: Date.today-2.day) %></td>
+        <td><%= text_field_tag(:posting_date_end, params[:posting_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:posting_date_end].blank? ? Date.today-2.day : params[:posting_date_end]) %></td>
 
     </tr>
   </table>
@@ -60,8 +60,8 @@
       <% last_pid = nil %>
       <% @results.each do |k, v| %>
          <tr class= 'nowrap'>
-          <td><%= (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : Unit.find(v[0]).name) %></td>
-          <td><%= k.blank? ? "其他" : ((k.eql?"合计") ? k : Unit.find(k).name) %></td>
+          <td><%= (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : (k.parent_id.blank? ? "" : k.parent_unit.name)) %></td>
+          <td><%= k.blank? ? "其他" : ((k.eql?"合计") ? k : k.name) %></td>
           <td><u><%= link_to v[1], get_expresses_path(nil, nil, (k.blank? ? "其他" : k)), target: '_blank' %></u></td>
           <td><u><%= link_to v[2], get_expresses_path(nil, "delivered", (k.blank? ? "其他" : k)), target: '_blank' %></u></td>
           <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>

@@ -261,27 +261,25 @@ class Express < ApplicationRecord
   def self.get_deliver_unit_result(expresses)
     results = {}
     
-    last_units = expresses.select(:last_unit_id).distinct.left_outer_joins(:last_unit).order(["'PARENT_ID'", :last_unit_id])
-    total_amount = expresses.group(:last_unit_id).count
+    total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id desc'", last_unit_id: :desc).group(:last_unit).count
     status_amount = expresses.group(:last_unit_id, :status).count
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
     deliver3 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").group("expresses.last_unit_id").count
 
-    last_units.each do |x|
+    total_amount.each do |k, v|
 # debugger
-      last_unit_id = x.last_unit_id
-      parent_id = last_unit_id.blank? ? nil : Unit.find(last_unit_id).parent_id
-      total_am = total_amount[last_unit_id].blank? ? 0 : total_amount[last_unit_id]
-      deliver_am =status_amount[[last_unit_id, "delivered"]].blank? ? 0 : status_amount[[last_unit_id, "delivered"]]
+      last_unit = k
+      total_am = v
+      deliver_am =status_amount[[last_unit.try(:id), "delivered"]].blank? ? 0 : status_amount[[last_unit.try(:id), "delivered"]]
       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
-      deliver3_per = deliver3[last_unit_id].blank? ? 0 : (deliver3[last_unit_id]/total_am.to_f*100).round(2)
-      deliver2_per = deliver2[last_unit_id].blank? ? 0 : (deliver2[last_unit_id]/total_am.to_f*100).round(2)
-      waiting_am = status_amount[[last_unit_id, "waiting"]].blank? ? 0 : status_amount[[last_unit_id, "waiting"]]
+      deliver3_per = deliver3[last_unit.try(:id)].blank? ? 0 : (deliver3[last_unit.try(:id)]/total_am.to_f*100).round(2)
+      deliver2_per = deliver2[last_unit.try(:id)].blank? ? 0 : (deliver2[last_unit.try(:id)]/total_am.to_f*100).round(2)
+      waiting_am = status_amount[[last_unit.try(:id), "waiting"]].blank? ? 0 : status_amount[[last_unit.try(:id), "waiting"]]
       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
-      return_am = status_amount[[last_unit_id, "returns"]].blank? ? 0 : status_amount[[last_unit_id, "returns"]]
+      return_am = status_amount[[last_unit.try(:id), "returns"]].blank? ? 0 : status_amount[[last_unit.try(:id), "returns"]]
       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
 
-      results[last_unit_id] = [parent_id, total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per]
+      results[last_unit] = [k.try(:parent_id), total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per]
     end
 
     total_hj = expresses.count
