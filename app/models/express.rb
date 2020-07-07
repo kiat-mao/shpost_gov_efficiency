@@ -260,12 +260,6 @@ class Express < ApplicationRecord
 
   def self.get_deliver_unit_result(expresses)
     results = {}
-    total_hj = 0
-    deliver_hj = 0
-    deliver3_hj = 0
-    deliver2_hj = 0
-    waiting_hj = 0
-    return_hj = 0
     
     last_units = expresses.left_outer_joins(:last_unit).order(parent_id: :desc).order(last_unit_id: :desc).uniq
     total_amount = expresses.group(:last_unit_id).count
@@ -278,30 +272,30 @@ class Express < ApplicationRecord
       last_unit_id = x.last_unit_id
       parent_id = last_unit_id.blank? ? nil : Unit.find(last_unit_id).parent_id
       total_am = total_amount[last_unit_id].blank? ? 0 : total_amount[last_unit_id]
-      total_hj += total_am
       deliver_am =status_amount[[last_unit_id, "delivered"]].blank? ? 0 : status_amount[[last_unit_id, "delivered"]]
-      deliver_hj += deliver_am
       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
       deliver3_per = deliver3[last_unit_id].blank? ? 0 : (deliver3[last_unit_id]/total_am.to_f*100).round(2)
-      deliver3_hj += deliver3[last_unit_id].blank? ? 0 : deliver3[last_unit_id]
       deliver2_per = deliver2[last_unit_id].blank? ? 0 : (deliver2[last_unit_id]/total_am.to_f*100).round(2)
-      deliver2_hj += deliver2[last_unit_id].blank? ? 0 : deliver2[last_unit_id]
       waiting_am = status_amount[[last_unit_id, "waiting"]].blank? ? 0 : status_amount[[last_unit_id, "waiting"]]
-      waiting_hj += waiting_am
       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
       return_am = status_amount[[last_unit_id, "returns"]].blank? ? 0 : status_amount[[last_unit_id, "returns"]]
-      return_hj += return_am
       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
 
       results[last_unit_id] = [parent_id, total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per]
     end
 
+    total_hj = expresses.count
+    deliver_hj =  expresses.where("expresses.status = 'delivered'").count
+    deliver3_hj = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").count
+    deliver2_hj = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").count
+    waiting_hj = expresses.where("expresses.status = 'waiting'").count
+    return_hj = expresses.where("expresses.status = 'returns'").count
     deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
     deliver3_per_hj = deliver3_hj.blank? ? 0 : (deliver3_hj/total_hj.to_f*100).round(2)
     deliver2_per_hj = deliver2_hj.blank? ? 0 : (deliver2_hj/total_hj.to_f*100).round(2)
     waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
     return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
-    
+
     if total_hj>0
       results["合计"] = ["", total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj]
     end
