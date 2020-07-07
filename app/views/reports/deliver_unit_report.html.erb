@@ -17,9 +17,9 @@
     <tr style="line-height: 40px;height: 40px;">
       <td><%= label_tag(:posting_date_start, "收寄范围:") %></td>
       <td><%= text_field_tag(:posting_date_start, params[
-        :posting_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd') %></td>
+        :posting_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: Date.today-7.day) %></td>
         <td><%= label_tag(:posting_date_end, "-") %></td>
-        <td><%= text_field_tag(:posting_date_end, params[:posting_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd') %></td>
+        <td><%= text_field_tag(:posting_date_end, params[:posting_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: Date.today-2.day) %></td>
 
     </tr>
   </table>

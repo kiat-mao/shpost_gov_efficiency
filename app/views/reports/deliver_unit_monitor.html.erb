@@ -15,8 +15,8 @@
       <td><%= text_field_tag(:business, params[:business]) %></td>  
     </tr>
   </table>
-  <%= hidden_field_tag('posting_date_start', Time.now.strftime("%Y-%m-%d")) %>
-  <%= hidden_field_tag('posting_date_end', (Time.now+1.day).strftime("%Y-%m-%d")) %>
+  <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
+  <%= hidden_field_tag('posting_date_end', Date.today) %>
   <table>
     <tr>
       <td>

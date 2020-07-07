@@ -181,7 +181,6 @@ class Express < ApplicationRecord
     deliver3 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").group("businesses.btype").count
 
     btypes.each do |x|
-# debugger
       btype = x.btype
       total_am = total_amount[btype].blank? ? 0 : total_amount[btype]
       total_hj += total_am
@@ -217,7 +216,7 @@ class Express < ApplicationRecord
   end
 
   def self.get_filter_expresses(params)
-    expresses = Express.left_outer_joins(:business).all
+    expresses = Express.left_outer_joins(:business)
     
     # byebug
     if !params[:industry].blank?
@@ -232,18 +231,14 @@ class Express < ApplicationRecord
       expresses = expresses.where("businesses.code like ? or businesses.name like ?", "%#{params[:business]}%", "%#{params[:business]}%")
     end
 
-    if params[:posting_date_start].blank? && params[:posting_date_end].blank?
-      expresses = expresses.where("expresses.posting_date >= ? and expresses.posting_date < ?", Time.now-7.days, Time.now)
-    else    
-      if !params[:posting_date_start].blank?
-        expresses = expresses.where("expresses.posting_date >= ?", params[:posting_date_start])
-      end
-
-      if !params[:posting_date_end].blank?
-        expresses = expresses.where("expresses.posting_date < ?", params[:posting_date_end])
-      end
+    if !params[:posting_date_start].blank?
+      expresses = expresses.where("expresses.posting_date >= ?", params[:posting_date_start])
     end
 
+    if !params[:posting_date_end].blank?
+      expresses = expresses.where("expresses.posting_date <= ?", params[:posting_date_end])
+    end
+    
     if !params[:detail_btype].blank? && !(params[:detail_btype].eql?"合计")
       expresses = expresses.where("businesses.btype = ?", params[:detail_btype])
     end
@@ -272,7 +267,7 @@ class Express < ApplicationRecord
     waiting_hj = 0
     return_hj = 0
     
-    last_units = expresses.joins("left join units as u on expresses.last_unit_id = u.id").select(:last_unit_id).order("u.parent_id desc").order(last_unit_id: :desc).distinct
+    last_units = expresses.left_outer_joins(:last_unit).order(parent_id: :desc).order(last_unit_id: :desc).uniq
     total_amount = expresses.group(:last_unit_id).count
     status_amount = expresses.group(:last_unit_id, :status).count
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
