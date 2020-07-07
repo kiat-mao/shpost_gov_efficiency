@@ -261,7 +261,7 @@ class Express < ApplicationRecord
   def self.get_deliver_unit_result(expresses)
     results = {}
     
-    last_units = expresses.left_outer_joins(:last_unit).order(parent_id: :desc).order(last_unit_id: :desc).uniq
+    last_units = expresses.select(:last_unit_id).distinct.left_outer_joins(:last_unit).order(["'PARENT_ID'", :last_unit_id])
     total_amount = expresses.group(:last_unit_id).count
     status_amount = expresses.group(:last_unit_id, :status).count
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
