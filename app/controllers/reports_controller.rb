@@ -6,6 +6,10 @@ class ReportsController < ApplicationController
 			init_result
 			@is_search = "yes"
 		end
+
+		# respond_to do |format|
+  #     format.js 
+  #   end
 	end
 
   def deliver_market_report_export

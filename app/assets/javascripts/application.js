@@ -23,18 +23,3 @@
 
 // var ready;
 
-
-var ready;
-ready = function() {
-	if($("#is_search").val()=="yes"){
-		$("#export").show();
-	}else{
-		$("#export").hide();
-	}
-
-}
-
-
-
-$(document).ready(ready);
-$(document).on('page:load', ready);
