@@ -1,8 +1,10 @@
 class ReportsController < ApplicationController
 
 	def deliver_market_report
+		@is_search = nil
 		unless request.get?
 			init_result
+			@is_search = "yes"
 		end
 	end
 
@@ -11,38 +13,77 @@ class ReportsController < ApplicationController
 
   	if @results.blank?
       flash[:alert] = "无数据"
-      redirect_to :action => 'deliver_market_report'
+      redirect_to request.referer
     else
     	send_data(deliver_market_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "投递情况监控报表-市场维度_#{Time.now.strftime("%Y%m%d")}.xls")  
     end
   end
 
   def deliver_unit_report
-		unless request.get?
-			init_result_unit
-		end
+  	@is_search = nil
+	unless request.get?
+		init_result_unit
+		@is_search = "yes"
 	end
+	
+  end
 
   def deliver_unit_report_export
   	init_result_unit
 
   	if @results.blank?
       flash[:alert] = "无数据"
-      redirect_to :action => 'deliver_unit_report'
+      redirect_to request.referer
     else
     	send_data(deliver_unit_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "投递情况监控报表-投递维度_#{Time.now.strftime("%Y%m%d")}.xls")  
     end
   end
 
   def deliver_market_monitor
+  	@is_search = nil
   	unless request.get?
 			init_result
+			@is_search = "yes"
 		end
 	end
 
 	def deliver_unit_monitor
+		@is_search = nil
 		unless request.get?
 			init_result_unit
+			@is_search = "yes"
+		end
+	end
+
+	def court_deliver_market_report
+		@is_search = nil
+		unless request.get?
+			init_result
+			@is_search = "yes"
+		end
+	end
+
+	def court_deliver_unit_report
+  	@is_search = nil
+		unless request.get?
+			init_result_unit
+			@is_search = "yes"
+		end
+	end
+
+	def court_deliver_market_monitor
+  	@is_search = nil
+  	unless request.get?
+			init_result
+			@is_search = "yes"
+		end
+	end
+
+	def court_deliver_unit_monitor
+		@is_search = nil
+		unless request.get?
+			init_result_unit
+			@is_search = "yes"
 		end
 	end
 
@@ -163,8 +204,8 @@ class ReportsController < ApplicationController
 	    last_pid = nil
 
 	    results.each do |k, v|
-	      sheet1[count_row,0] = (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : Unit.find(v[0]).name)
-	      sheet1[count_row,1] = k.blank? ? "其他" : ((k.eql?"合计") ? k : Unit.find(k).name)
+	      sheet1[count_row,0] =  (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : (k.parent_id.blank? ? "" : k.parent_unit.name))
+	      sheet1[count_row,1] = k.blank? ? "其他" : ((k.eql?"合计") ? k : k.name)
 	      sheet1[count_row,2] = v[1]
 	      sheet1[count_row,3] = v[2]
 	      sheet1[count_row,4] = v[3].to_s(:rounded, precision: 2)+"%"

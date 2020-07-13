@@ -1,16 +1,14 @@
 
 <br>
-<font face="微软雅黑" color='#006030' size=6>投递情况监控-投递维度</font>   
+<font face="微软雅黑" color='#006030' size=6>法院异地投递情况监控-投递维度</font>   
 
 
 
-<%= form_tag(deliver_unit_monitor_reports_path, name: 'form', method: 'post') do %>
+<%= form_tag(court_deliver_unit_monitor_reports_path, name: 'form', method: 'post') do %>
   <table>
     <tr style="line-height: 40px;height: 40px;">
-      <td><%= label_tag(:industry, "二级行业名称:") %></td>
-      <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
       <td><%= label_tag(:btype, "客户类别:") %></td>
-      <td><%= select_tag(:btype, options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+      <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
       <td><%= label_tag(:business, "客户:") %></td>
       <td><%= text_field_tag(:business, params[:business]) %></td>  
     </tr>
@@ -18,6 +16,7 @@
   <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
   <%= hidden_field_tag('posting_date_end', Date.today) %>
   <%= hidden_field_tag('is_search', @is_search) %>
+  <%= hidden_field_tag('industry', '法院') %>
   <table>
     <tr>
       <td>

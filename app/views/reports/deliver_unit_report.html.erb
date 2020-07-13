@@ -30,13 +30,14 @@
           <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %>
         </div>
       <td>
-        <div id="unit_report_export">
+        <div id="export">
           <%= link_to "报表导出", deliver_unit_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end]), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
     </tr>
   </table>
 <% end -%>      
+<%= hidden_field_tag('is_search', @is_search) %>
   <br>
   <% if !@results.blank? %>
     <table data-toggle="table" 
@@ -81,11 +82,9 @@
 <script language="javascript" type="text/javascript"> 
 
 $(document).ready(function(){
-  $("#unit_report_export").hide();
-
-  $("#unit_report_search").click(function() { 
-    $("#unit_report_export").show();
-  })
+  if($("#is_search").val()!="yes"){
+      $("#export").hide();
+  }
 })
 
-</script>
+</script> 

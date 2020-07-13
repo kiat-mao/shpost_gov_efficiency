@@ -3,7 +3,7 @@ class Express < ApplicationRecord
   belongs_to :post_unit, class_name: 'Unit', optional: true
   belongs_to :last_unit, class_name: 'Unit', optional: true
   validates_presence_of :express_no, :business_id, :message => '不能为空'
-
+  
   enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns'}
   STATUS_NAME = { waiting: '未妥投', delivered: '妥投', returns: '退回'}
 
@@ -174,7 +174,7 @@ class Express < ApplicationRecord
       businesses = businesses.where(btype: params[:btype])
     end
     btypes = businesses.select(:btype).distinct
-                
+            
     total_amount = expresses.group("businesses.btype").count
     status_amount = expresses.group("businesses.btype", "expresses.status").count
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("businesses.btype").count
@@ -261,7 +261,7 @@ class Express < ApplicationRecord
   def self.get_deliver_unit_result(expresses)
     results = {}
     
-    total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id desc'", last_unit_id: :desc).group(:last_unit).count
+    total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id'", :last_unit_id).group(:last_unit).count
     status_amount = expresses.group(:last_unit_id, :status).count
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
     deliver3 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").group("expresses.last_unit_id").count

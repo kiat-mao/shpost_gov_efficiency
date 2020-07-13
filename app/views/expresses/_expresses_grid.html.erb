@@ -3,51 +3,52 @@
 <%- model_class_u = Unit -%>
 
 <%= grid(@expresss_grid) do |g|
-  
-  g.column name: model_class.human_attribute_name(:express_no), attribute: 'express_no'
+  g.column name: model_class.human_attribute_name(:express_no), attribute: 'express_no' do |express|
+    [express.express_no,{style: 'font-size: 12px;'}]
+  end
 
-  g.column name: model_class_b.human_attribute_name(:industry), attribute: 'industry', assoc: :business do |express|
-    express.business.try :industry
+  g.column name: "二级行业", attribute: 'industry', assoc: :business do |express|
+    [express.business.try(:industry),{style: 'font-size: 12px;'}]
   end
 
   g.column name: model_class_b.human_attribute_name(:btype), attribute: 'btype', assoc: :business do |express|
-    express.business.try :btype
+    [express.business.try(:btype),{style: 'font-size: 12px;'}]
   end
 
   g.column name: model_class_b.human_attribute_name(:code), attribute: 'code', assoc: :business do |express|
-    express.business.try :code
+    [express.business.try(:code),{style: 'font-size: 12px;'}]
   end
 
   g.column name: model_class_b.human_attribute_name(:name), attribute: 'name', assoc: :business do |express|
-    express.business.try :name
+    [express.business.try(:name),{style: 'font-size: 12px;'}]
   end
 
-  g.column name: '收寄单位机构代码', attribute: 'no', assoc: :post_unit do |express|
-    express.post_unit.try :no
+  g.column name: '收寄单位代码', attribute: 'no', assoc: :post_unit do |express|
+    [express.post_unit.try(:no),{style: 'font-size: 12px;'}]
   end
 
   g.column name: '收寄单位名称', attribute: 'name', assoc: :post_unit do |express|
-    express.post_unit.try :name
+    [express.post_unit.try(:name),{style: 'font-size: 12px;'}]
   end
 
-  g.column name: '收寄单位区分公司', attribute: 'name', assoc: :post_unit do |express|
-    express.post_unit.try(:parent_unit).try(:name)
+  g.column name: '收寄区分公司', attribute: 'name', assoc: :post_unit do |express|
+    [express.post_unit.try(:parent_unit).try(:name),{style: 'font-size: 12px;'}]
   end
 
   g.column name: model_class.human_attribute_name(:posting_date), attribute: 'posting_date' do |express|
-    l express.posting_date
+    [(l express.posting_date),{style: 'font-size: 12px;'}]
   end
 
-  g.column name: '最后投递单位所属区分公司', attribute: 'name', assoc: :last_unit do |express|
-    express.last_unit.try(:parent_unit).try(:name)
+  g.column name: '最后投递区分公司', attribute: 'name', assoc: :last_unit do |express|
+    [express.last_unit.try(:parent_unit).try(:name),{style: 'font-size: 12px;'}]
   end
 
-  g.column name: '最后投递单位代号', attribute: 'no', assoc: :last_unit do |express|
-    express.last_unit.try(:no)
+  g.column name: '最后投递单位', attribute: 'no', assoc: :last_unit do |express|
+    [express.last_unit.try(:no),{style: 'font-size: 12px;'}]
   end
 
   g.column name: '最后投递单位名称', attribute: 'name', assoc: :last_unit do |express|
-    express.last_unit.try(:name)
+    [express.last_unit.try(:name),{style: 'font-size: 12px;'}]
   end
 
   # g.column name: model_class.human_attribute_name(:status), attribute: 'status' do |express|
@@ -55,16 +56,18 @@
   # end
   g.column name: model_class.human_attribute_name(:status), attribute: 'status', custom_filter: Express::STATUS_NAME.invert do |express| 
     if express.status.eql?"waiting"
-      [express.status_name, {class: 'red'}]
+      [express.status_name, {style: 'font-size: 12px;color: red;'}]
     else
-      express.status_name
+      [express.status_name,{style: 'font-size: 12px;'}]
     end
   end
 
-  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc'
+  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc' do |express|
+    [express.try(:last_op_desc),{style: 'font-size: 12px;'}]
+  end
 
   g.column name: model_class.human_attribute_name(:last_op_at), attribute: 'last_op_at' do |express|
-    l express.last_op_at
+    [(l express.last_op_at),{style: 'font-size: 12px;'}]
   end
 
 end

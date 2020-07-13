@@ -17,6 +17,7 @@
   </table>
   <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
   <%= hidden_field_tag('posting_date_end', Date.today) %>
+  <%= hidden_field_tag('is_search', @is_search) %>
   <table>
     <tr>
       <td>
@@ -24,7 +25,7 @@
           <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %></td>
         </div>
       <td>
-        <div id="market_monitor_export">
+        <div id="export">
           <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true"), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
@@ -34,7 +35,7 @@
   <br>
   <% if !@results.blank? %>
     <table data-toggle="table" 
-    data-height="400">
+    data-height="200">
       <thead>
         <tr class= 'nowrap'>
           <th><b>行业市场</b></th>
@@ -71,11 +72,9 @@
 <script language="javascript" type="text/javascript"> 
 
 $(document).ready(function(){
-  $("#market_monitor_export").hide();
-
-  $("#market_monitor_search").click(function() { 
-    $("#market_monitor_export").show();
-  })
+  if($("#is_search").val()!="yes"){
+      $("#export").hide();
+  }
 })
 
-</script>
+</script> 

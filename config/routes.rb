@@ -67,6 +67,14 @@ Rails.application.routes.draw do
       post 'deliver_market_monitor'
       get 'deliver_unit_monitor'
       post 'deliver_unit_monitor'
+      get 'court_deliver_market_report'
+      post 'court_deliver_market_report'
+      get 'court_deliver_unit_report'
+      post 'court_deliver_unit_report'
+      get 'court_deliver_market_monitor'
+      post 'court_deliver_market_monitor'
+      get 'court_deliver_unit_monitor'
+      post 'court_deliver_unit_monitor'
     end
   end
 

@@ -1,47 +1,40 @@
 
 <br>
-<font face="微软雅黑" color='#006030' size=6>投递情况监控报表-市场维度</font>   
+<font face="微软雅黑" color='#006030' size=6>法院异地投递情况监控-市场维度</font>   
 
 
 
-<%= form_tag(deliver_market_report_reports_path, name: 'form', method: 'post') do %>
+<%= form_tag(court_deliver_market_monitor_reports_path, name: 'form', method: 'post') do %>
   <table>
     <tr style="line-height: 40px;height: 40px;">
-      <td><%= label_tag(:industry, "二级行业名称:") %></td>
-      <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
       <td><%= label_tag(:btype, "客户类别:") %></td>
-      <td><%= select_tag(:btype, options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+      <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
       <td><%= label_tag(:business, "客户:") %></td>
       <td><%= text_field_tag(:business, params[:business]) %></td>  
     </tr>
-    <tr style="line-height: 40px;height: 40px;">
-      <td><%= label_tag(:posting_date_start, "收寄范围:") %></td>
-      <td><%= text_field_tag(:posting_date_start, params[
-        :posting_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:posting_date_start].blank? ? Date.today-7.day : params[:posting_date_start]) %></td>
-        <td><%= label_tag(:posting_date_end, "-") %></td>
-        <td><%= text_field_tag(:posting_date_end, params[:posting_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:posting_date_end].blank? ? Date.today-2.day : params[:posting_date_end]) %></td>
-
-    </tr>
   </table>
+  <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
+  <%= hidden_field_tag('posting_date_end', Date.today) %>
+  <%= hidden_field_tag('is_search', @is_search) %>
+  <%= hidden_field_tag('industry', '法院') %>
   <table>
     <tr>
       <td>
-        <div id="market_report_search">
+        <div id="market_monitor_search">
           <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %></td>
         </div>
       <td>
         <div id="export">
-          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end]), :class => 'btn btn-primary', method: :post%>
+          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true"), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
     </tr>
   </table>
 <% end -%>      
-<%= hidden_field_tag('is_search', @is_search) %>
   <br>
   <% if !@results.blank? %>
     <table data-toggle="table" 
-    data-height="400">
+    data-height="200">
       <thead>
         <tr class= 'nowrap'>
           <th><b>行业市场</b></th>
