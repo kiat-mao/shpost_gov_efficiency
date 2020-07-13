@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_01_062945) do
+ActiveRecord::Schema.define(version: 2020_07_13_072152) do
 
   create_table "businesses", force: :cascade do |t|
     t.string "code", null: false
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 2020_07_01_062945) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "last_unit_no"
     t.string "post_unit_no"
+    t.string "receiver_province_no"
     t.index ["business_id"], name: "index_expresses_on_business_id"
     t.index ["express_no"], name: "index_expresses_on_express_no"
     t.index ["last_unit_id"], name: "index_expresses_on_last_unit_id"

@@ -102,6 +102,7 @@ class Express < ApplicationRecord
     # express.posting_date = pkp_waybill_base.biz_occur_date
     express.posting_date = pkp_waybill_base.biz_occur_date.to_date
 
+    express.receiver_province_no = pkp_waybill_base.receiver_province_no
     
     express.refresh_trace
 
