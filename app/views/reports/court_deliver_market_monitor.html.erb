@@ -17,6 +17,7 @@
   <%= hidden_field_tag('posting_date_end', Date.today) %>
   <%= hidden_field_tag('is_search', @is_search) %>
   <%= hidden_field_tag('industry', '法院') %>
+  <%= hidden_field_tag('is_court', true) %>
   <table>
     <tr>
       <td>
@@ -25,7 +26,7 @@
         </div>
       <td>
         <div id="export">
-          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true"), :class => 'btn btn-primary', method: :post%>
+          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true", is_court: params[:is_court]), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
     </tr>

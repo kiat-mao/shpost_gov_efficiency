@@ -256,6 +256,12 @@ class Express < ApplicationRecord
       end
     end
 
+    if (!params[:is_court].blank?) && (params[:is_court].eql?"true")
+      expresses = expresses.where.not(receiver_province_no: "310000")
+    else
+      expresses = expresses.where.not("businesses.industry = ? and expresses.receiver_province_no != ?", "法院", "310000") 
+    end
+
     return expresses
   end
 
