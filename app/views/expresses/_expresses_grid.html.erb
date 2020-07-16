@@ -39,6 +39,10 @@
     [(l express.posting_date),{style: 'font-size: 12px;'}]
   end
 
+  g.column name: model_class.human_attribute_name(:receiver_district), attribute: 'receiver_district' do |express|
+    [express.try(:receiver_district),{style: 'font-size: 12px;'}]
+  end
+
   g.column name: '最后投递区分公司', attribute: 'name', assoc: :last_unit do |express|
     [express.last_unit.try(:parent_unit).try(:name),{style: 'font-size: 12px;'}]
   end
