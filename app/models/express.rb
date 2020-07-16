@@ -103,6 +103,8 @@ class Express < ApplicationRecord
     express.posting_date = pkp_waybill_base.biz_occur_date.to_date
 
     express.receiver_province_no = pkp_waybill_base.receiver_province_no
+
+    express.receiver_district = "#{pkp_waybill_base.receiver_province_name},#{pkp_waybill_base.receiver_city_name},#{pkp_waybill_base.receiver_county_name}"
     
     express.refresh_trace
 
