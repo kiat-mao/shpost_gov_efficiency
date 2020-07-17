@@ -7,6 +7,8 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 User.where(username: 'superadmin').first_or_create(username: 'superadmin', password: 'pwd12345', name: 'superadmin', role: 'superadmin')
 
+Unit.where(no: '20000000').first_or_create(name: '市分公司', short_name: '市分公司', level:0)
+
 bs=Unit.where(no: '20040002').first_or_create(name: '宝山区寄递事业部', short_name: '宝山区寄递事业部', level:1)
 cm=Unit.where(no: '20210011').first_or_create(name: '崇明区寄递事业部', short_name: '崇明区寄递事业部', level:1)
 fx=Unit.where(no: '20140015').first_or_create(name: '奉贤区寄递事业部', short_name: '奉贤区寄递事业部', level:1)
