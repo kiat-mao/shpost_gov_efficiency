@@ -305,6 +305,7 @@ zh-CN:
         sign: "标记"
         desc: "备注"
         delivered_days: "妥投天数"
+        receiver_district: "收件人区域"
 
   user_navigation:
     update_self: "个人信息"
