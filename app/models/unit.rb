@@ -14,7 +14,7 @@ class Unit < ApplicationRecord
 
   validates_presence_of :parent_id, :message => '不能为空', unless: :is_parent?
 
-  LEVEL = {1 => 1, 2 => 2}
+  LEVEL = {0 => 0, 1 => 1, 2 => 2}
   # TYPE = {branch: '区分公司', delivery: '寄递事业部', postbuy: '国际邮购'}
   # TYPE_BRANCH = {branch: '区分公司'}
   # DELIVERY = Unit.find_by(unit_type: 'delivery') 
@@ -39,8 +39,6 @@ class Unit < ApplicationRecord
   def set_level
     if ! parent_unit.blank?
       self.level = (parent_unit.level||1) + 1
-    else
-      self.level = 1
     end
   end
   # def delivery?

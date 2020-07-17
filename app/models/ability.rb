@@ -1,79 +1,104 @@
 class Ability
-  include CanCan::Ability
+	include CanCan::Ability
 
-  def initialize(user)
-    if user.superadmin?
-        can :manage, User
-        can :manage, Unit
-        can :manage, UserLog
-        can :manage, Role
-        can :role, :unitadmin
-        can :role, :user
-        cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
-        can :update, User, id: user.id
-        can :manage, UpDownload
-        can :manage, Business
-        can "report", "DeliverMarketReport"
-        can :manage, Express
-        can "report", "DeliverUnitReport"
-        #can :manage, User
-    elsif user.unitadmin?
-        # can :manage, Unit, id: user.unit.id
-        # can :manage, Unit, parent_id: user.unit.id
-        # can :read, Unit
-        # can :user, Unit, id: user.unit.id
+	def initialize(user)
+		if user.superadmin?
+			can :manage, User
+			can :manage, Unit
+			can :manage, UserLog
+			can :manage, Role
+			can :role, :unitadmin
+			can :role, :user
+			cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
+			can :update, User, id: user.id
+			can :manage, UpDownload
+			can :manage, Business
 
-        # can :read, UserLog, user: {unit_id: user.unit_id}
+			can :manage, Express
 
-        # can :read, User, role: 'unitadmin'
-        # can :manage, User, role: 'user'
+			can "report", "DeliverMarketReport"
 
-        # cannot [:create, :destroy, :update], User, role: ['unitadmin', 'superadmin']
-        
-        # can :update, User, id: user.id
+			can "report", "DeliverUnitReport"
+			#can :manage, User
+		elsif user.company_admin?
+			can :manage, Unit
+			cannot :user, Unit, level: 2
+			cannot :manage, Unit, level: 0
+			can [:read, :user], Unit, level: 0
 
-        # can :manage, UpDownload
-        can :manage, Business
-        can "report", "DeliverMarketReport"
-        can :manage, Express
-        can "report", "DeliverUnitReport"
-    else
-        can :update, User, id: user.id
-        can :read, UserLog, user: {id: user.id}
+			can :manage, User#, role: ['unitadmin', 'user']
+			cannot :role, User
+			cannot :manage, User, role: ['superadmin']
 
-        can :read, Unit, id: user.unit_id
-        can [:read, :up_download_export], UpDownload
-        can "report", "DeliverMarketReport"
-        can "report", "DeliverUnitReport"
-    end
+			cannot [:role, :create, :destroy], User, id: user.id
+			# can :update, User, id: user.id
 
-    
+			can :role, :unitadmin
+			# can :role, :user
 
-    # Define abilities for the passed in user here. For example:
-    #
-    #   user ||= User.new # guest user (not logged in)
-    #   if user.admin?
-    #     can :manage, :all
-    #   else
-    #     can :read, :all
-    #   end
-    #
-    # The first argument to `can` is the action you are giving the user 
-    # permission to do.
-    # If you pass :manage it will apply to every action. Other common actions
-    # here are :read, :create, :update and :destroy.
-    #
-    # The second argument is the resource the user can perform the action on. 
-    # If you pass :all it will apply to every resource. Otherwise pass a Ruby
-    # class of the resource.
-    #
-    # The third argument is an optional hash of conditions to further filter the
-    # objects.
-    # For example, here the user can only update published articles.
-    #
-    #   can :update, Article, :published => true
-    #
-    # See the wiki for details:
-    # https://github.com/ryanb/cancan/wiki/Defining-Abilities
-  end
+			can :manage, Business
+
+			can :read, Express
+
+			can "report", "DeliverMarketReport"
+			can "report", "DeliverUnitReport"
+		elsif user.unitadmin?
+			can [:read, :user], Unit, id: user.unit.id
+			can :read, Unit, parent_id: user.unit.id
+
+			can :manage, User, unit_id: user.unit_id
+			cannot :role, User
+			cannot :destroy, User, id: user.id
+			can :role, :user
+
+			can :read, Business
+
+			can :read, Express, post_unit_id: user.unit_id
+			can :read, Express, post_unit: {parent_id: user.unit_id}
+
+			can "report", "DeliverMarketReport"
+			can "report", "DeliverUnitReport"
+		else#user
+			can :read, Unit, id: user.unit_id
+			can :read, Unit, parent_id: user.unit.id
+			
+			can :update, User, id: user.id
+			can :read, Business
+
+			can :read, Express, post_unit_id: user.unit_id
+			can :read, Express, post_unit: {parent_id: user.unit_id}
+
+			can "report", "DeliverMarketReport"
+			can "report", "DeliverUnitReport"
+		end
+
+
+
+# Define abilities for the passed in user here. For example:
+#
+#   user ||= User.new # guest user (not logged in)
+#   if user.admin?
+#     can :manage, :all
+#   else
+#     can :read, :all
+#   end
+#
+# The first argument to `can` is the action you are giving the user 
+# permission to do.
+# If you pass :manage it will apply to every action. Other common actions
+# here are :read, :create, :update and :destroy.
+#
+# The second argument is the resource the user can perform the action on. 
+# If you pass :all it will apply to every resource. Otherwise pass a Ruby
+# class of the resource.
+#
+# The third argument is an optional hash of conditions to further filter the
+# objects.
+# For example, here the user can only update published articles.
+#
+#   can :update, Article, :published => true
+#
+# See the wiki for details:
+# https://github.com/ryanb/cancan/wiki/Defining-Abilities
+	end
 end

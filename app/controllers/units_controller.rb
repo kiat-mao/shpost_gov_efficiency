@@ -33,6 +33,10 @@ class UnitsController < ApplicationController
   # POST /units.json
   def create
     @unit = Unit.new(unit_params)
+    
+    if @unit.parent_unit.blank?
+      @unit.level = 1
+    end
 
     respond_to do |format|
       # @unit.unit_type = 'branch'
@@ -82,10 +86,10 @@ class UnitsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def unit_params
-      params.require(:unit).permit(:no, :name, :desc, :short_name, :level, :parent_id, :unit_type)
+      params.require(:unit).permit(:no, :name, :desc, :short_name, :parent_id)
     end
 
     def unit_params_4_update
-      params.require(:unit).permit(:no, :name, :desc, :short_name, :unit_type)
+      params.require(:unit).permit(:no, :name, :desc, :short_name)
     end
 end

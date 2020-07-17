@@ -41,6 +41,10 @@ class User < ApplicationRecord
     (role.eql? 'user') ? true : false
   end
 
+  def company_admin?
+    ! self.unit.blank? && (self.unit.no.eql? '20000000')
+  end
+
   # def branch?
   #   self.unit.unit_type.eql? "branch"
   # end
