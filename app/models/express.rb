@@ -129,6 +129,7 @@ class Express < ApplicationRecord
 
       if ! mail_trace.last_trace.blank?
         last_unit_no = JSON.parse(mail_trace.last_trace)["opOrgCode"]
+        self.last_unit_name = JSON.parse(mail_trace.last_trace)["opOrgName"]
         self.last_unit_no = last_unit_no
         self.last_unit = Unit.find_by no: last_unit_no
       end

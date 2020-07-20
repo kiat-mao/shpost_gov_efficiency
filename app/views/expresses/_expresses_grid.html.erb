@@ -48,11 +48,11 @@
   end
 
   g.column name: '最后投递单位', attribute: 'no', assoc: :last_unit do |express|
-    [express.last_unit.try(:no),{style: 'font-size: 12px;'}]
+    [express.last_unit.try(:no)||express.last_unit_no,{style: 'font-size: 12px;'}]
   end
 
   g.column name: '最后投递单位名称', attribute: 'name', assoc: :last_unit do |express|
-    [express.last_unit.try(:name),{style: 'font-size: 12px;'}]
+    [express.last_unit.try(:name)||express.last_unit_name,{style: 'font-size: 12px;'}]
   end
 
   # g.column name: model_class.human_attribute_name(:status), attribute: 'status' do |express|
