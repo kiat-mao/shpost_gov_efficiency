@@ -75,6 +75,8 @@ Rails.application.routes.draw do
       post 'court_deliver_market_monitor'
       get 'court_deliver_unit_monitor'
       post 'court_deliver_unit_monitor'
+      get 'business_market_report'
+      post 'business_market_report_export'
     end
   end
 

@@ -91,6 +91,21 @@ class ReportsController < ApplicationController
 		end
 	end
 
+	def business_market_report
+		init_result_business
+	end
+
+	def business_market_report_export
+  	init_result_business
+
+  	if @results.blank?
+      flash[:alert] = "无数据"
+      redirect_to request.referer
+    else
+    	send_data(business_market_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "投递情况监控报表-市场维度_#{Time.now.strftime("%Y%m%d")}.xls")  
+    end
+  end
+
   private
   	def deliver_market_report_xls_content_for(params,results)
 	  	xls_report = StringIO.new  
@@ -157,7 +172,7 @@ class ReportsController < ApplicationController
 
 	  	@results = nil
 	  		  	
-    	expresses = Express.get_filter_expresses(params)
+    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
 
       @results = Express.get_deliver_market_result(expresses, params)
   	end
@@ -167,7 +182,7 @@ class ReportsController < ApplicationController
 
 	  	@results = nil
 	  		  	
-    	expresses = Express.get_filter_expresses(params)
+    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
 
       @results = Express.get_deliver_unit_result(expresses)
   	end
@@ -239,6 +254,75 @@ class ReportsController < ApplicationController
 	    xls_report.string
 
 	  end
+
+	  def init_result_business
+  		authorize! "report", "DeliverMarketReport"
+
+	  	@results = nil
+	  		  	
+    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
+
+      @results = Express.get_business_result(expresses, params)
+  	end
+
+  	def business_market_report_xls_content_for(params,results)
+	  	xls_report = StringIO.new  
+	    book = Spreadsheet::Workbook.new  
+	    sheet1 = book.create_worksheet :name => "统计表"  
+	    
+	    title = Spreadsheet::Format.new :weight => :bold, :size => 12, :border => :thin, :align => :center
+	    filter = Spreadsheet::Format.new :size => 11
+	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
+	    red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
+
+	    sheet1.row(0).default_format = filter
+	    sheet1.row(1).default_format = filter
+	    sheet1[0,0] = "客户类别:#{params["detail_btype"]}"
+	    if !params[:is_monitor].eql?"true"
+	    	sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    end
+
+	    0.upto(9) do |x|
+	      sheet1.column(x).width = 16
+	    end
+
+	    0.upto(9) do |x|
+	      sheet1.row(3).set_format(x, title)
+	    end
+	    sheet1.row(3).concat %w{客户 收寄数 总妥投数 妥投率 三日妥投率 次日妥投率 未妥投总数 未妥投率 退回数 退回率}
+
+	    count_row = 4
+
+	    results.each do |k, v|
+	      sheet1[count_row,0] = (k.eql?"合计") ? k : k.name
+	      sheet1[count_row,1] = v[0]
+	      sheet1[count_row,2] = v[1]
+	      sheet1[count_row,3] = v[2].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,4] = v[3].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,5] = v[4].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,6] = v[5]
+	      sheet1[count_row,7] = v[6].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,8] = v[7]
+	      sheet1[count_row,9] = v[8].to_s(:rounded, precision: 2)+"%"
+	      
+	      0.upto(5) do |i|
+		      sheet1.row(count_row).set_format(i, body)
+		    end
+		    6.upto(7) do |i|
+		      sheet1.row(count_row).set_format(i, red)
+		    end 
+		    8.upto(9) do |i|
+		      sheet1.row(count_row).set_format(i, body)
+		    end  
+	      
+	      count_row += 1
+	    end
+
+	    book.write xls_report  
+	    xls_report.string
+
+	  end
+
 
   	def to_date(time)
 	    # date = Date.civil(time.split(/-|\//)[0].to_i,time.split(/-|\//)[1].to_i,time.split(/-|\//)[2].to_i)
