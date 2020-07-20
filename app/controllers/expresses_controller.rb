@@ -4,7 +4,7 @@ class ExpressesController < ApplicationController
   # GET /expresses
   # GET /expresses.json
   def index
-    @expresses = Express.get_filter_expresses(params)
+    @expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
     @expresss_grid = initialize_grid(@expresses, :per_page => params[:page_size],
       name: 'expresses',
       :enable_export_to_csv => true,
