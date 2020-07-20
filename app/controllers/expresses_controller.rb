@@ -66,6 +66,11 @@ class ExpressesController < ApplicationController
     end
   end
 
+  def get_mail_trace
+    mailtrace = MailTrace.find_by(mail_no: @express.express_no)
+    @traces = mailtrace.blank? ? "" : mailtrace.traces
+  end
+
   
   private
     # Use callbacks to share common setup or constraints between actions.

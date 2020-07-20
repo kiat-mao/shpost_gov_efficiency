@@ -4,6 +4,10 @@ Rails.application.routes.draw do
       get 'deliver_market_detail'
       post 'deliver_market_detail'
     end
+    member do
+      get 'get_mail_trace'
+      post 'get_mail_trace'
+    end
   end
 
   root 'welcome#index'
