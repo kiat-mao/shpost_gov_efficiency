@@ -29,7 +29,6 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     respond_to do |format|
-      @user.role = 'user'
       if @user.save
         format.html { redirect_to @user, notice: I18n.t('controller.create_success_notice', model: '用户') }
         format.json { render action: 'show', status: :created, location: @user }
