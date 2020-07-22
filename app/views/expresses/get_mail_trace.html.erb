@@ -9,11 +9,13 @@
     </tr>
   </thead>
   <tbody>
-  	<tr class= 'nowrap'>
-        <td>
-        	<%= @traces %>
-        </td>
-  	</tr>
+  	<% @traces.each do |x| %>
+	  	<tr>
+	        <td>
+	        	<%= x %>
+	        </td>
+	  	</tr>
+	 <% end %>
   </tbody>
 </table>
   

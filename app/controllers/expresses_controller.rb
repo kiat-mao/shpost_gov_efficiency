@@ -67,8 +67,11 @@ class ExpressesController < ApplicationController
   end
 
   def get_mail_trace
+    @traces = []
     mailtrace = MailTrace.find_by(mail_no: @express.express_no)
-    @traces = mailtrace.blank? ? "" : mailtrace.traces
+    if !mailtrace.blank?
+      @traces = mailtrace.traces.split(/\n/)
+    end
   end
 
   
