@@ -38,7 +38,7 @@ class Ability
 
 			can :manage, Business
 
-			can :read, Express
+			can [:read, :get_mail_trace], Express
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
@@ -53,8 +53,8 @@ class Ability
 
 			can :read, Business
 
-			can :read, Express, post_unit_id: user.unit_id
-			can :read, Express, post_unit: {parent_id: user.unit_id}
+			can [:read, :get_mail_trace], Express, post_unit_id: user.unit_id
+			can [:read, :get_mail_trace], Express, post_unit: {parent_id: user.unit_id}
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
@@ -65,8 +65,8 @@ class Ability
 			can :update, User, id: user.id
 			can :read, Business
 
-			can :read, Express, post_unit_id: user.unit_id
-			can :read, Express, post_unit: {parent_id: user.unit_id}
+			can [:read, :get_mail_trace], Express, post_unit_id: user.unit_id
+			can [:read, :get_mail_trace], Express, post_unit: {parent_id: user.unit_id}
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
