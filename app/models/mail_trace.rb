@@ -5,7 +5,7 @@ class MailTrace < PkpDataRecord
   def traces
     jdpt_traces = self.jdpt_traces
     if !jdpt_traces.blank?
-      trace.sort{|x,y| x['opTime'] <=> y['opTime']}.map{|x| "#{x['opTime']}  #{x['opDesc']} \n"}.join
+      jdpt_traces.sort{|x,y| x['opTime'] <=> y['opTime']}.map{|x| "#{x['opTime']}  #{x['opDesc']} \n"}.join
     else
       ""
     end
