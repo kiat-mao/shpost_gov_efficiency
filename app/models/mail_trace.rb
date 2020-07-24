@@ -5,7 +5,7 @@ class MailTrace < PkpDataRecord
   def traces
     jdpt_traces = self.jdpt_traces
     if !jdpt_traces.blank?
-      jdpt_traces.sort{|x,y| x['opTime'] <=> y['opTime']}.map{|x| "#{x['opTime']}  #{x['opDesc']} \n"}.join
+      jdpt_traces.sort{|x,y| x['opTime'] <=> y['opTime']}.map{|x| "#{x['opTime']}  #{x['opDesc']} \n"}.uniq.join
     else
       ""
     end
@@ -19,6 +19,6 @@ class MailTrace < PkpDataRecord
         trace += JSON.parse(x.traces.gsub("=>", ":"))
       end
     end
-    trace
+    trace.uniq
   end
 end
