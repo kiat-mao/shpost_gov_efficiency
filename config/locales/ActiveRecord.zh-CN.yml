@@ -200,7 +200,7 @@ zh-CN:
       day: "%Y-%m-%d"
     pm: 下午
 
-  title: "上海邮政寄递事业部分销系统"
+  title: "上海邮政寄递质效分析系统"
   welcome: "欢迎登陆"
   
   controller:
