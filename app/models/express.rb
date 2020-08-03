@@ -7,6 +7,9 @@ class Express < ApplicationRecord
   enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns', del: 'del'}
   STATUS_NAME = { waiting: '未妥投', delivered: '妥投', returns: '退回'}
 
+  enum whereis: {in_transit: 'in_transit', delivery_part: 'delivery part'}
+  WHEREIS_NAME = {in_transit: '在途中', delivery_part: '投递端'}
+
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day
     end_date = Date.today
@@ -135,15 +138,29 @@ class Express < ApplicationRecord
       self.last_op_desc = mail_trace.result
 
       if ! mail_trace.last_trace.blank?
-        last_unit_no = JSON.parse(mail_trace.last_trace)["opOrgCode"]
-        self.last_unit_name = JSON.parse(mail_trace.last_trace)["opOrgName"]
-        self.last_unit_no = last_unit_no
-        self.last_unit = Unit.find_by no: last_unit_no
+        last_trace = JSON.parse(mail_trace.last_trace)
+
+        self.last_unit_name = last_trace["opOrgName"]
+        self.last_unit_no = last_trace["opOrgCode"]
+        self.last_unit = Unit.find_by no: last_trace["opOrgCode"]
+
+        self.whereis = self.waiting? ? Express.to_whereis(last_trace["opCode"]) : nil
+      else
+        self.whereis = self.waiting? ? Express.whereis[:in_transit] : nil
       end
 
       self.fill_delivered_days
     else
       self.status ||= Express::statuses[:waiting]
+    end
+  end
+
+  def self.to_whereis(code)
+    delivery_part_code = ['306', '307', '702', '705']
+    if code.in? delivery_part_code
+      whereis[:delivery_part]
+    else
+      whereis[:in_transit]
     end
   end
 

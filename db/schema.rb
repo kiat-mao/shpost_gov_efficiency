@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_20_012522) do
+ActiveRecord::Schema.define(version: 2020_08_03_061210) do
 
   create_table "businesses", force: :cascade do |t|
     t.string "code", null: false
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2020_07_20_012522) do
     t.string "receiver_province_no"
     t.string "receiver_district"
     t.string "last_unit_name"
+    t.string "whereis"
     t.index ["business_id"], name: "index_expresses_on_business_id"
     t.index ["express_no"], name: "index_expresses_on_express_no"
     t.index ["last_unit_id"], name: "index_expresses_on_last_unit_id"
