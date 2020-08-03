@@ -22,6 +22,7 @@
           <th><b>妥投率</b></th>
           <th><b>三日妥投率</b></th>
           <th><b>次日妥投率</b></th>
+          <th><b>五日妥投率</b></th>
           <th><b>未妥投总数</b></th>
           <th><b>未妥投率</b></th>
           <th><b>退回数</b></th>
@@ -37,6 +38,7 @@
         <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
         <td id='waiting'><%= link_to v[5], get_expresses_path(params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id), target: '_blank' %></td>
         <td><font color="red"><%= v[6].to_s(:rounded, precision: 2)+"%" %></font></td>
         <td><u><%= link_to v[7], get_expresses_path(params[:detail_btype], "returns", nil, (k.eql?"合计") ? nil : k.id), target: '_blank' %></u></td>

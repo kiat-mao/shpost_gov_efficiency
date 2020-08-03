@@ -11,6 +11,10 @@
       <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
       <td><%= label_tag(:business, "客户:") %></td>
       <td><%= text_field_tag(:business, params[:business]) %></td>  
+      <td><%= label_tag(:destination, "寄递范围:") %></td>
+      <td><%= select_tag :destination, options_for_select(Report.select_destinations, :selected=>params[:destination]) %></td> 
+      <td><%= label_tag(:lv2_unit, "区分公司:") %></td>
+      <td><%= select_tag(:lv2_unit, options_for_select(Unit.where(level: 1).map{|u| [u.name,u.id]}.insert(0,""), :selected=> params[:lv2_unit]), id: "lv2_unit") %></td>
     </tr>
   </table>
   <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
@@ -26,7 +30,7 @@
         </div>
       <td>
         <div id="export">
-          <%= link_to "报表导出", deliver_unit_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true", is_court: params[:is_court]), :class => 'btn btn-primary', method: :post%>
+          <%= link_to "报表导出", deliver_unit_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true", is_court: params[:is_court], destination: params[:destination], lv2_unit: params[:lv2_unit]), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
     </tr>
@@ -45,6 +49,7 @@
           <th><b>妥投率</b></th>
           <th><b>三日妥投率</b></th>
           <th><b>次日妥投率</b></th>
+          <th><b>五日妥投率</b></th>
           <th><b>未妥投总数</b></th>
           <th><b>未妥投率</b></th>
           <th><b>退回数</b></th>
@@ -62,6 +67,7 @@
           <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
           <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
           <td><%= v[5].to_s(:rounded, precision: 2)+"%" %></td>
+          <td><%= v[10].to_s(:rounded, precision: 2)+"%" %></td>
           <td id='waiting'><%= link_to v[6], get_expresses_path(nil, "waiting", (k.blank? ? "其他" : k), nil), target: '_blank' %></td>
           <td><font color="red"><%= v[7].to_s(:rounded, precision: 2)+"%" %></font></td>
           <td><u><%= link_to v[8], get_expresses_path(nil, "returns", (k.blank? ? "其他" : k), nil), target: '_blank' %></u></td>

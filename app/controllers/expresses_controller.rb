@@ -8,7 +8,8 @@ class ExpressesController < ApplicationController
     @expresss_grid = initialize_grid(@expresses, :per_page => params[:page_size],
       name: 'expresses',
       :enable_export_to_csv => true,
-      :csv_file_name => 'expresses')
+      :csv_file_name => 'expresses',
+      :csv_encoding => 'gb2312')
     export_grid_if_requested
   end
 

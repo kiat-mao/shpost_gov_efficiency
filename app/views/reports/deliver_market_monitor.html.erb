@@ -8,11 +8,13 @@
   <table>
     <tr style="line-height: 40px;height: 40px;">
       <td><%= label_tag(:industry, "二级行业名称:") %></td>
-      <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
+      <td><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
       <td><%= label_tag(:btype, "客户类别:") %></td>
-      <td><%= select_tag(:btype, options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+      <td><%= select_tag(:btype, options_for_select(Business.where.not(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
       <td><%= label_tag(:business, "客户:") %></td>
       <td><%= text_field_tag(:business, params[:business]) %></td>  
+      <td><%= label_tag(:destination, "寄递范围:") %></td>
+      <td><%= select_tag :destination, options_for_select(Report.select_destinations, :selected=>params[:destination]) %></td> 
     </tr>
   </table>
   <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
@@ -26,7 +28,7 @@
         </div>
       <td>
         <div id="export">
-          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true"), :class => 'btn btn-primary', method: :post%>
+          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], is_monitor: "true", destination: params[:destination]), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
     </tr>
@@ -44,6 +46,7 @@
           <th><b>妥投率</b></th>
           <th><b>三日妥投率</b></th>
           <th><b>次日妥投率</b></th>
+          <th><b>五日妥投率</b></th>
           <th><b>未妥投总数</b></th>
           <th><b>未妥投率</b></th>
           <th><b>退回数</b></th>
@@ -53,12 +56,13 @@
       <tbody>
       <% @results.each do |k, v| %>
        <tr class= 'nowrap'>
-        <td><u><%= link_to k, business_market_report_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: k), target: '_blank' %></u></td>
+        <td><u><%= link_to k, business_market_report_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: k, destination: params[:destination]), target: '_blank' %></u></td>
         <td><u><%= link_to v[0], get_expresses_path(k, nil, nil, nil), target: '_blank' %></u></td>
         <td><u><%= link_to v[1], get_expresses_path(k, "delivered", nil, nil), target: '_blank' %></u></td>
         <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
         <td id='waiting'><%= link_to v[5], get_expresses_path(k, "waiting", nil, nil), target: '_blank' %></td>
         <td><font color="red"><%= v[6].to_s(:rounded, precision: 2)+"%" %></font></td>
         <td><u><%= link_to v[7], get_expresses_path(k, "returns", nil, nil), target: '_blank' %></u></td>

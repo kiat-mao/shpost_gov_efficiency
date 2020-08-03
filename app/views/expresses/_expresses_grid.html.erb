@@ -71,7 +71,7 @@
   end
 
   g.column name: model_class.human_attribute_name(:last_op_at), attribute: 'last_op_at' do |express|
-    [(l express.last_op_at),{style: 'font-size: 12px;'}]
+    [(express.last_op_at.blank? ? "" : (l express.last_op_at)),{style: 'font-size: 12px;'}]
   end
 
   g.column in_csv: false do |express|
