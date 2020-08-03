@@ -4,7 +4,7 @@ class Express < ApplicationRecord
   belongs_to :last_unit, class_name: 'Unit', optional: true
   validates_presence_of :express_no, :business_id, :message => '不能为空'
   
-  enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns'}
+  enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns', del: 'del'}
   STATUS_NAME = { waiting: '未妥投', delivered: '妥投', returns: '退回'}
 
   def self.init_expresses_yesterday
@@ -29,9 +29,7 @@ class Express < ApplicationRecord
     puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
     businesses = Business.all
     businesses.each do |business|
-      ActiveRecord::Base.transaction do
-        Express.init_expresses_by_business(business, start_date, end_date)
-      end
+      Express.init_expresses_by_business(business, start_date, end_date)
     end
   end
 
@@ -39,10 +37,7 @@ class Express < ApplicationRecord
     puts("#{Time.now}, refresh_traces, start_date: #{start_date}, end_date: #{end_date}")
     businesses = Business.all
     businesses.each do |business|
-      ActiveRecord::Base.transaction do
-        
-        Express.refresh_traces_by_business(business, start_date, end_date)
-      end
+      Express.refresh_traces_by_business(business, start_date, end_date)
     end
   end
 
@@ -53,10 +48,13 @@ class Express < ApplicationRecord
 
     puts("#{Time.now}, refresh_traces_by_business, #{business.name},  start")
 
+    
     expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).where(status: Express::statuses[:waiting])
-
-    expresses.each do |express|
-      express.refresh_trace!
+    
+    ActiveRecord::Base.transaction do
+      expresses.each do |express|
+        express.refresh_trace!
+      end
     end
 
     puts("#{Time.now}, refresh_traces_by_business, #{business.name}, count: #{expresses.size}, end")
@@ -73,8 +71,10 @@ class Express < ApplicationRecord
     if end_date.to_date - start_date.to_date <= 1
       pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
     end
-    pkp_waybill_bases.each do |pkp_waybill_base|
-      Express.init_express(pkp_waybill_base, business)
+    ActiveRecord::Base.transaction do
+      pkp_waybill_bases.each do |pkp_waybill_base|
+        Express.init_express(pkp_waybill_base, business)
+      end
     end
 
     puts("#{Time.now}, init_expresses_by_business, #{business.name}, count: #{pkp_waybill_bases.size}, end")
@@ -111,12 +111,19 @@ class Express < ApplicationRecord
     #express.sign = nil
     #express.desc = nil
     
-    express.save!
+    if ! express.del?
+      express.save!
+    end
   end
 
   def refresh_trace!
     self.refresh_trace
-    self.save!
+
+    if ! self.del?
+      self.save!
+    else
+      self.destroy!
+    end
   end
 
   def refresh_trace
@@ -146,6 +153,8 @@ class Express < ApplicationRecord
         statuses[:delivered]
       when 'returns'
         statuses[:returns]
+      when 'del'
+        statuses[:del]
       else
         statuses[:waiting]
       end
