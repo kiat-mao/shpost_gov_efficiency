@@ -66,8 +66,11 @@
     end
   end
 
-  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc' do |express|
-    [express.try(:last_op_desc),{style: 'font-size: 12px;'}]
+  g.column name: '轨迹位置', attribute: 'whereis', custom_filter: Express::WHEREIS_NAME.invert do |express| 
+    [express.whereis_name, {style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc' do |express|    [express.try(:last_op_desc),{style: 'font-size: 12px;'}]
   end
 
   g.column name: model_class.human_attribute_name(:last_op_at), attribute: 'last_op_at' do |express|

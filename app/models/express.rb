@@ -197,6 +197,8 @@ class Express < ApplicationRecord
     deliver5_hj = 0
     waiting_hj = 0
     return_hj = 0
+    in_transit_hj = 0
+    delivery_part_hj = 0
     
     if !params[:industry].blank?
       businesses = businesses.where(industry: params[:industry])
@@ -211,6 +213,7 @@ class Express < ApplicationRecord
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("businesses.btype").count
     deliver3 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").group("businesses.btype").count
     deliver5 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 5").group("businesses.btype").count
+    transit_delivery = expresses.where("expresses.status = 'waiting'").group("businesses.btype", "expresses.whereis").count
 
     btypes.each do |x|
       btype = x.btype
@@ -227,12 +230,16 @@ class Express < ApplicationRecord
       deliver5_hj += deliver5[btype].blank? ? 0 : deliver5[btype]
       waiting_am = status_amount[[btype, "waiting"]].blank? ? 0 : status_amount[[btype, "waiting"]]
       waiting_hj += waiting_am
+      in_transit_am = transit_delivery[[btype, "in_transit"]].blank? ? 0 : transit_delivery[[btype, "in_transit"]]
+      in_transit_hj += in_transit_am
+      delivery_part_am = transit_delivery[[btype, "delivery_part"]].blank? ? 0 : transit_delivery[[btype, "delivery_part"]]
+      delivery_part_hj += delivery_part_am
       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
       return_am = status_amount[[btype, "returns"]].blank? ? 0 : status_amount[[btype, "returns"]]
       return_hj += return_am
       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
 
-      results[btype] = [total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per]
+      results[btype] = [total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per, in_transit_am, delivery_part_am]
     end
     deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
     deliver3_per_hj = total_hj>0 ? (deliver3_hj/total_hj.to_f*100).round(2) : 0
@@ -241,7 +248,7 @@ class Express < ApplicationRecord
     waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
     return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
       
-    results["合计"] = [total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver5_per_hj]
+    results["合计"] = [total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver5_per_hj, in_transit_hj, delivery_part_hj]
 
     return results
   end
@@ -326,6 +333,10 @@ class Express < ApplicationRecord
       expresses = expresses.left_outer_joins(:last_unit).where("units.parent_id = ?", params[:lv2_unit])
     end
 
+    if !params[:transit_delivery].blank?
+      expresses = expresses.where(whereis: params[:transit_delivery])
+    end
+
     # byebug
 
     return expresses
@@ -339,6 +350,7 @@ class Express < ApplicationRecord
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
     deliver3 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").group("expresses.last_unit_id").count
     deliver5 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 5").group("expresses.last_unit_id").count
+    transit_delivery = expresses.where("expresses.status = 'waiting'").group("expresses.last_unit_id", "expresses.whereis").count
 
     total_amount.each do |k, v|
 # debugger
@@ -350,11 +362,13 @@ class Express < ApplicationRecord
       deliver2_per = deliver2[last_unit.try(:id)].blank? ? 0 : (deliver2[last_unit.try(:id)]/total_am.to_f*100).round(2)
       deliver5_per = deliver5[last_unit.try(:id)].blank? ? 0 : (deliver5[last_unit.try(:id)]/total_am.to_f*100).round(2)
       waiting_am = status_amount[[last_unit.try(:id), "waiting"]].blank? ? 0 : status_amount[[last_unit.try(:id), "waiting"]]
+      in_transit_am = transit_delivery[[last_unit.try(:id), "in_transit"]].blank? ? 0 : transit_delivery[[last_unit.try(:id), "in_transit"]]
+      delivery_part_am = transit_delivery[[last_unit.try(:id), "delivery_part"]].blank? ? 0 : transit_delivery[[last_unit.try(:id), "delivery_part"]]
       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
       return_am = status_amount[[last_unit.try(:id), "returns"]].blank? ? 0 : status_amount[[last_unit.try(:id), "returns"]]
       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
 
-      results[last_unit] = [k.try(:parent_id), total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per]
+      results[last_unit] = [k.try(:parent_id), total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per, in_transit_am, delivery_part_am]
     end
 
     total_hj = expresses.count
@@ -362,7 +376,9 @@ class Express < ApplicationRecord
     deliver3_hj = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").count
     deliver2_hj = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").count
     deliver5_hj = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 5").count
-    waiting_hj = expresses.where("expresses.status = 'waiting'").count
+    waiting_hj = expresses.where(status: 'waiting').count
+    in_transit_hj = expresses.where(status: 'waiting', whereis: 'in_transit').count
+    delivery_part_hj = expresses.where(status: 'waiting', whereis: 'delivery_part').count
     return_hj = expresses.where("expresses.status = 'returns'").count
     deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
     deliver3_per_hj = deliver3_hj.blank? ? 0 : (deliver3_hj/total_hj.to_f*100).round(2)
@@ -372,7 +388,7 @@ class Express < ApplicationRecord
     return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
 
     if total_hj>0
-      results["合计"] = ["", total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver5_per_hj]
+      results["合计"] = ["", total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver5_per_hj, in_transit_hj, delivery_part_hj]
     end
 
     return results
@@ -387,6 +403,8 @@ class Express < ApplicationRecord
     deliver5_hj = 0
     waiting_hj = 0
     return_hj = 0
+    in_transit_hj = 0
+    delivery_part_hj = 0
     
     businesses = Business.where(btype: params[:detail_btype])   
     total_amount = expresses.group(:business).count
@@ -394,6 +412,7 @@ class Express < ApplicationRecord
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group(:business_id).count
     deliver3 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").group(:business_id).count
     deliver5 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 5").group(:business_id).count
+    transit_delivery = expresses.where("expresses.status = 'waiting'").group("expresses.business_id", "expresses.whereis").count
 
     businesses.each do |x|
       total_am = total_amount[x].blank? ? 0 : total_amount[x]
@@ -409,12 +428,16 @@ class Express < ApplicationRecord
       deliver5_hj += deliver5[x.try(:id)].blank? ? 0 : deliver5[x.try(:id)]
       waiting_am = status_amount[[x.try(:id), "waiting"]].blank? ? 0 : status_amount[[x.try(:id), "waiting"]]
       waiting_hj += waiting_am
+      in_transit_am = transit_delivery[[x.try(:id), "in_transit"]].blank? ? 0 : transit_delivery[[x.try(:id), "in_transit"]]
+      in_transit_hj += in_transit_am
+      delivery_part_am = transit_delivery[[x.try(:id), "delivery_part"]].blank? ? 0 : transit_delivery[[x.try(:id), "delivery_part"]]
+      delivery_part_hj += delivery_part_am
       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
       return_am = status_amount[[x.try(:id), "returns"]].blank? ? 0 : status_amount[[x.try(:id), "returns"]]
       return_hj += return_am
       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
 
-      results[x] = [total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per]
+      results[x] = [total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per, in_transit_am, delivery_part_am]
     end
       
     deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
@@ -424,8 +447,12 @@ class Express < ApplicationRecord
     waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
     return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
       
-    results["合计"] = [total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver5_per_hj]
+    results["合计"] = [total_hj, deliver_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver5_per_hj, in_transit_hj, delivery_part_hj]
  
     return results
+  end
+
+  def whereis_name
+    whereis.blank? ? "" : Express::WHEREIS_NAME["#{whereis}".to_sym]
   end
 end

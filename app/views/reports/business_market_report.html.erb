@@ -24,6 +24,8 @@
           <th><b>次日妥投率</b></th>
           <th><b>五日妥投率</b></th>
           <th><b>未妥投总数</b></th>
+          <th><b>在途中数</b></th>
+          <th><b>投递端数</b></th>
           <th><b>未妥投率</b></th>
           <th><b>退回数</b></th>
           <th><b>退回率</b></th>
@@ -33,15 +35,17 @@
       <% @results.each do |k, v| %>
        <tr class= 'nowrap'>
         <td><%= (k.eql?"合计") ? k : k.name %></td>
-        <td><u><%= link_to v[0], get_expresses_path(params[:detail_btype], nil, nil, (k.eql?"合计") ? nil : k.id), target: '_blank' %></u></td>
-        <td><u><%= link_to v[1], get_expresses_path(params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id), target: '_blank' %></u></td>
+        <td><u><%= link_to v[0], get_expresses_path(params[:detail_btype], nil, nil, (k.eql?"合计") ? nil : k.id, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[1], get_expresses_path(params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil), target: '_blank' %></u></td>
         <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
-        <td id='waiting'><%= link_to v[5], get_expresses_path(params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[5], get_expresses_path(params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, nil), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[10], get_expresses_path(params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, "in_transit"), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[11], get_expresses_path(params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, "delivery_part"), target: '_blank' %></td>
         <td><font color="red"><%= v[6].to_s(:rounded, precision: 2)+"%" %></font></td>
-        <td><u><%= link_to v[7], get_expresses_path(params[:detail_btype], "returns", nil, (k.eql?"合计") ? nil : k.id), target: '_blank' %></u></td>
+        <td><u><%= link_to v[7], get_expresses_path(params[:detail_btype], "returns", nil, (k.eql?"合计") ? nil : k.id, nil), target: '_blank' %></u></td>
         <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
       </tr>
       <% end %>

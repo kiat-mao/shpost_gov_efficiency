@@ -48,6 +48,8 @@
           <th><b>次日妥投率</b></th>
           <th><b>五日妥投率</b></th>
           <th><b>未妥投总数</b></th>
+          <th><b>在途中数</b></th>
+          <th><b>投递端数</b></th>
           <th><b>未妥投率</b></th>
           <th><b>退回数</b></th>
           <th><b>退回率</b></th>
@@ -57,15 +59,17 @@
       <% @results.each do |k, v| %>
        <tr class= 'nowrap'>
         <td><u><%= link_to k, business_market_report_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: k, destination: params[:destination]), target: '_blank' %></u></td>
-        <td><u><%= link_to v[0], get_expresses_path(k, nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[1], get_expresses_path(k, "delivered", nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[0], get_expresses_path(k, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[1], get_expresses_path(k, "delivered", nil, nil, nil), target: '_blank' %></u></td>
         <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
-        <td id='waiting'><%= link_to v[5], get_expresses_path(k, "waiting", nil, nil), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[5], get_expresses_path(k, "waiting", nil, nil, nil), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[10], get_expresses_path(k, "waiting", nil, nil, "in_transit"), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[11], get_expresses_path(k, "waiting", nil, nil, "delivery_part"), target: '_blank' %></td>
         <td><font color="red"><%= v[6].to_s(:rounded, precision: 2)+"%" %></font></td>
-        <td><u><%= link_to v[7], get_expresses_path(k, "returns", nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[7], get_expresses_path(k, "returns", nil, nil, nil), target: '_blank' %></u></td>
         <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
       </tr>
       <% end %>
