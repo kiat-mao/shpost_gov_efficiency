@@ -344,6 +344,7 @@ class Express < ApplicationRecord
 
   def self.get_deliver_unit_result(expresses)
     results = {}
+    results1 = {}
     
     total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id'", :last_unit_id).group(:last_unit).count
     status_amount = expresses.group(:last_unit_id, :status).count
@@ -370,6 +371,11 @@ class Express < ApplicationRecord
 
       results[last_unit] = [k.try(:parent_id), total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per, in_transit_am, delivery_part_am]
     end
+
+    results1[nil] = results[nil]
+    results2 = results.except!(nil)
+    results2 = Hash[results2.sort_by {|key,value| value[0]}]
+    results = results2.merge!results1
 
     total_hj = expresses.count
     deliver_hj =  expresses.where("expresses.status = 'delivered'").count
