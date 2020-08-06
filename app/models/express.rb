@@ -357,6 +357,15 @@ class Express < ApplicationRecord
   def self.get_deliver_unit_result(expresses)
     results = {}
     results1 = {}
+    total_hj = 0
+    deliver_hj = 0
+    deliver3_hj = 0
+    deliver2_hj = 0
+    deliver5_hj = 0
+    waiting_hj = 0
+    return_hj = 0
+    in_transit_hj = 0
+    delivery_part_hj = 0
  
     if !expresses.blank?
       total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id'", :last_unit_id).group(:last_unit).count
@@ -370,43 +379,36 @@ class Express < ApplicationRecord
   # debugger
         last_unit = k
         total_am = v
+        total_hj += total_am
         deliver_am =status_amount[[last_unit.try(:id), "delivered"]].blank? ? 0 : status_amount[[last_unit.try(:id), "delivered"]]
+        deliver_hj += deliver_am
         deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
         deliver3_per = deliver3[last_unit.try(:id)].blank? ? 0 : (deliver3[last_unit.try(:id)]/total_am.to_f*100).round(2)
+        deliver3_hj += deliver3[last_unit.try(:id)].blank? ? 0 : deliver3[last_unit.try(:id)]
         deliver2_per = deliver2[last_unit.try(:id)].blank? ? 0 : (deliver2[last_unit.try(:id)]/total_am.to_f*100).round(2)
+        deliver2_hj += deliver2[last_unit.try(:id)].blank? ? 0 : deliver2[last_unit.try(:id)]
         deliver5_per = deliver5[last_unit.try(:id)].blank? ? 0 : (deliver5[last_unit.try(:id)]/total_am.to_f*100).round(2)
+        deliver5_hj += deliver5[last_unit.try(:id)].blank? ? 0 : deliver5[last_unit.try(:id)]
         waiting_am = status_amount[[last_unit.try(:id), "waiting"]].blank? ? 0 : status_amount[[last_unit.try(:id), "waiting"]]
+        waiting_hj += waiting_am
         in_transit_am = transit_delivery[[last_unit.try(:id), "in_transit"]].blank? ? 0 : transit_delivery[[last_unit.try(:id), "in_transit"]]
+        in_transit_hj += in_transit_am
         delivery_part_am = transit_delivery[[last_unit.try(:id), "delivery_part"]].blank? ? 0 : transit_delivery[[last_unit.try(:id), "delivery_part"]]
+        delivery_part_hj += delivery_part_am
         waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
         return_am = status_amount[[last_unit.try(:id), "returns"]].blank? ? 0 : status_amount[[last_unit.try(:id), "returns"]]
+        return_hj += return_am
         return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
 
         results[last_unit] = [k.try(:parent_id), total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per, in_transit_am, delivery_part_am]
       end
 
-      if !results[nil].blank?
-        results1[nil] = results[nil]
-        results2 = results.except!(nil)
-        results2 = Hash[results2.sort_by {|key,value| value[0]}]
-        results = results2.merge!results1
-      else
-        results = Hash[results.sort_by {|key,value| value[0]}]
-      end
+      results = results.sort{|x,y|  x[0].nil? ? 1 : (y[0].nil? ? -1 : x[1][0]<=>y[1][0]) }.to_h
 
-      total_hj = expresses.count
-      deliver_hj =  expresses.where("expresses.status = 'delivered'").count
-      deliver3_hj = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").count
-      deliver2_hj = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").count
-      deliver5_hj = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 5").count
-      waiting_hj = expresses.where(status: 'waiting').count
-      in_transit_hj = expresses.where(status: 'waiting', whereis: 'in_transit').count
-      delivery_part_hj = expresses.where(status: 'waiting', whereis: 'delivery_part').count
-      return_hj = expresses.where("expresses.status = 'returns'").count
       deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
-      deliver3_per_hj = deliver3_hj.blank? ? 0 : (deliver3_hj/total_hj.to_f*100).round(2)
-      deliver2_per_hj = deliver2_hj.blank? ? 0 : (deliver2_hj/total_hj.to_f*100).round(2)
-      deliver5_per_hj = deliver5_hj.blank? ? 0 : (deliver5_hj/total_hj.to_f*100).round(2)
+      deliver3_per_hj = total_hj>0 ? (deliver3_hj/total_hj.to_f*100).round(2) : 0
+      deliver2_per_hj = total_hj>0 ? (deliver2_hj/total_hj.to_f*100).round(2) : 0
+      deliver5_per_hj = total_hj>0 ? (deliver5_hj/total_hj.to_f*100).round(2) : 0
       waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
       return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
 
