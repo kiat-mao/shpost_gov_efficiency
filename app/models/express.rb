@@ -29,6 +29,11 @@ class Express < ApplicationRecord
   end
   
   def self.init_expresses(start_date, end_date)
+    if start_date.blank? || end_date.blank?
+      return
+    end
+    start_date = start_date.to_date
+    end_date = end_date.to_date
     puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
     businesses = Business.all
     businesses.each do |business|
@@ -37,6 +42,11 @@ class Express < ApplicationRecord
   end
 
   def self.refresh_traces(start_date, end_date)
+    if start_date.blank? || end_date.blank?
+      return
+    end
+    start_date = start_date.to_date
+    end_date = end_date.to_date
     puts("#{Time.now}, refresh_traces, start_date: #{start_date}, end_date: #{end_date}")
     businesses = Business.all
     businesses.each do |business|
@@ -67,11 +77,13 @@ class Express < ApplicationRecord
     if business.blank? || start_date.blank? || end_date.blank?
       return
     end
-
     puts("#{Time.now}  init_expresses_by_business, #{business.name}, start")
 
     pkp_waybill_bases = PkpWaybillBase.where(sender_no: business.code).where("biz_occur_date >= ? and biz_occur_date < ?", start_date, end_date)
-    if end_date.to_date - start_date.to_date <= 1
+    if end_date - start_date <= 1
+      pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
+    else
+      days = (start_date...end_date).to_a.map{|x| x.strftime("%d")}
       pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
     end
     ActiveRecord::Base.transaction do
