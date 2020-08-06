@@ -41,9 +41,9 @@
     <table>
       <tr style="line-height: 40px;height: 40px;">
         <td><%= label_tag(:year, "年:", :style => "padding:0px") %></td>
-        <td><%= select_tag :year, options_for_select(Report.select_years, :selected=>params[:year]) %></td>
+        <td><%= select_tag :year, options_for_select(Report.select_years, :selected=>(params[:year].blank? ? Time.now.year.to_s : params[:year])) %></td>
         <td><%= label_tag(:month, "月:", :style => "padding:0px") %></td>
-        <td><%= select_tag :month, options_for_select(Report.select_months, :selected=>params[:month]) %></td>
+        <td><%= select_tag :month, options_for_select(Report.select_months, :selected=>(params[:month].blank? ? Time.now.month.to_s : params[:month])) %></td>
       </tr>
     </table>
   </div>
