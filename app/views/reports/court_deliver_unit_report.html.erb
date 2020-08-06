@@ -88,6 +88,7 @@
       <tbody>
       <% last_pid = nil %>
       <% @results.each do |k, v| %>
+      
          <tr class= 'nowrap'>
           <td><%= (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : (k.parent_id.blank? ? "" : k.parent_unit.name)) %></td>
           <td><%= k.blank? ? "其他" : ((k.eql?"合计") ? k : k.name) %></td>
