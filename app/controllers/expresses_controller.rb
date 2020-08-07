@@ -9,7 +9,7 @@ class ExpressesController < ApplicationController
       name: 'expresses',
       :enable_export_to_csv => true,
       :csv_file_name => 'expresses',
-      :csv_encoding => 'gb2312')
+      :csv_encoding => 'gbk')
     export_grid_if_requested
   end
 
