@@ -201,7 +201,7 @@ class Express < ApplicationRecord
 
   def self.get_deliver_market_result(expresses, params)
     results = {}
-    businesses = Business.all
+    businesses = nil
     total_hj = 0
     deliver_hj = 0
     deliver3_hj = 0
@@ -211,6 +211,12 @@ class Express < ApplicationRecord
     return_hj = 0
     in_transit_hj = 0
     delivery_part_hj = 0
+
+    if (!params[:is_court].blank?) && (params[:is_court].eql?"true")
+      businesses = Business.where(industry: "法院")
+    else
+      businesses = Business.where.not("businesses.industry = ?", "法院")
+    end
     
     if !params[:industry].blank?
       businesses = businesses.where(industry: params[:industry])
@@ -219,7 +225,7 @@ class Express < ApplicationRecord
       businesses = businesses.where(btype: params[:btype])
     end
     btypes = businesses.select(:btype).distinct
-            
+       
     total_amount = expresses.group("businesses.btype").count
     status_amount = expresses.group("businesses.btype", "expresses.status").count
     deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("businesses.btype").count
