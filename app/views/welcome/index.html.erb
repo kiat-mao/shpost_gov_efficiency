@@ -2,3 +2,32 @@
 <br><br><br><br><br><br><br><br><br>
 <p class="text-center" align="center"><font color="#006030" size=20><%= t(".welcome", default: '欢迎光临') %></font></p>
 </div>
+<%= hidden_field_tag('show_modal', @show) %>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title" id="exampleModalLabel"><%= (I18n.t("update_info_day").include?"translation missing") ? "" : I18n.t("update_info_day")%>系统升级内容</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <table id="infos">
+          	<tr><td>1、 增加：按月查询</td></tr>
+          	<tr><td>2、 增加：全部报表的输入查询条件，增加本省、异地、全国的选择功能；增加投递机构所属区分公司的选择功能。</td></tr>
+          	<tr><td>3、 增加“：未妥投数据”，划分在途（没有到揽投部）和投递端（到达揽投部）2列</td></tr>
+          	<tr><td>4、 优化：法院专递和仲裁专递单列报表</td></tr>
+          	<tr><td>5、 增加：高校录取通知书客户代码62个（周四开始有数据</td></tr>
+          	<tr><td>6、 增加：所有报表增加五日（T+4）妥投率的查询条件。</td></tr>
+          	<tr><td>7、 增加：目前实时监控数据更新，即0800 、0930 、1100、1300、1500、1630、1800、2400 ，其中0800、9030、1630为此次增加</td></tr>
+          	<tr><td>8、 增加：非实时监控报表数据更新次数：即 2400 、1200,  其中1200为此次增加</td></tr>
+          	<tr><td>9、 所有非实时监控数据仍然保持收寄后T+7内未妥投，超期妥投不再纳入妥投率统计</td></tr>
+          	<tr><td>10、优化导出CVS文件OFFICE不兼容情况</td></tr>
+          </table> 
+        </form>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>

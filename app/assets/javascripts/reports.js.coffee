@@ -26,3 +26,5 @@ ready = ->
 	if $("#search_type").val() == 'by_d'
 		$("#by_date").show();
 		$("#by_month").hide();
+
+	
