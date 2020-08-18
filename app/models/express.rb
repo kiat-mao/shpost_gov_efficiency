@@ -10,6 +10,10 @@ class Express < ApplicationRecord
   enum whereis: {in_transit: 'in_transit', delivery_part: 'delivery part'}
   WHEREIS_NAME = {in_transit: '在途中', delivery_part: '投递端'}
 
+  enum base_product_no: {standard_express: '11210', express_package: '11312'}
+
+  scope :other_product, -> {where.not(base_product_no: self.base_product_nos.values).or(Express.where(base_product_no: nil))}
+  
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day
     end_date = Date.today
@@ -121,6 +125,8 @@ class Express < ApplicationRecord
 
     express.receiver_district = "#{pkp_waybill_base.receiver_province_name},#{pkp_waybill_base.receiver_city_name},#{pkp_waybill_base.receiver_county_name}"
     
+    express.base_product_no = pkp_waybill_base.base_product_no
+
     express.refresh_trace
 
     #express.sign = nil
