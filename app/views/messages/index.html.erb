@@ -1,0 +1,38 @@
+<%- model_class = Message -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => [:'helpers.titles.index', '%{model} Manage'], :model => model_class.model_name.human.titleize %></h1>
+  <%= render partial: '/layouts/page_size' %>
+  <div style="float:right">
+    <% if can? :new, Message %>
+      <%= link_to t('.new', :default => t("helpers.links.new")),
+                  new_message_path,
+                  :class => 'btn btn-primary' %>
+    <% end %>
+  </div>
+</div>
+
+<%= grid(@messages_grid) do |g|
+    g.column name: model_class.human_attribute_name(:title), attribute: 'title'
+
+    g.column name: model_class.human_attribute_name(:content), attribute: 'content' do |message|
+      [message.content.try(:truncate, 25), {title: message.content}]
+    end
+
+    g.column name: model_class.human_attribute_name(:start_time), attribute: 'start_time' do |message|
+      l message.start_time
+    end
+
+    g.column name: model_class.human_attribute_name(:end_time), attribute: 'end_time' do |message|
+      l message.end_time
+    end
+
+    g.column name: model_class.human_attribute_name(:roles), attribute: 'roles'
+   
+    g.column do |message|
+      ActiveSupport::SafeBuffer.new << 
+        (link_to t('.edit', :default => t("helpers.links.edit")), edit_message_path(message), :class => 'btn btn-xs btn-primary' if can? :update, message) << ' ' <<
+        (link_to t('.destroy', :default => t("helpers.links.destroy")), message_path(message), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default => '确定删除?')) }, :class => 'btn btn-xs btn-danger' if can? :destroy, message) << ' ' <<
+        (link_to '详细内容', details_message_path(message), :class => 'btn btn-xs btn-primary' if can? :read, message)
+    end
+  end 
+%>

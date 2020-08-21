@@ -71,6 +71,13 @@ zh-CN:
           name: "投递监控(投递)"
           link: "/reports/court_deliver_unit_monitor"
           need_count: false
+    message:
+      name: "消息管理"
+      submenu:
+        message:
+          name: "消息管理"
+          link: "/messages"
+          need_count: false
     # up_downloads:
     #   name: "模板管理"
     #   needrole:

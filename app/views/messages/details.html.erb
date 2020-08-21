@@ -1,0 +1,22 @@
+<%- model_class = Message -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:title) %>:</strong></dt>
+  <dd><%= @message.title %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:content) %>:</strong></dt>
+  <dd><%= simple_format @message.content %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:start_time) %>:</strong></dt>
+  <dd><%= l @message.try :start_time %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:end_time) %>:</strong></dt>
+  <dd><%= l @message.try :end_time %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:roles) %>:</strong></dt>
+  <dd><%= @message.try :roles %></dd>
+</dl>
+<% if can? :index, Message %>
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              messages_path, :class => 'btn btn-default'  %>
+<% end %>
+

@@ -1,0 +1,57 @@
+<%= form_for @message, :html => { :class => 'form-horizontal' } do |f| %>
+  <% @message.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+  <% end %>
+  <div class="control-group">
+    <%= f.label :title, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :title, :class => 'text_field', :id => 'title' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :content, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_area :content, :class => 'text_field', :id => 'content', cols: 80, rows: 15 %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :start_time, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field  :start_time, :class => 'datepicker', 'data-date-format' => 'yyyy-mm-dd' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :end_time, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field  :end_time, :class => 'datepicker', 'data-date-format' => 'yyyy-mm-dd' %>
+    </div>
+  </div>
+  <div>
+    <table id="roles" class="table table-striped">  
+      <thead>
+        <tr>
+          <th><%= check_box_tag 'roles_checked', 'roles_checked', false %>可看角色(全选)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <% User::ROLE.except(:superadmin).each do |k,v| %>  
+            <td width="25%">
+              <%= check_box("checkbox_role", k, checked: @message.try(:roles).blank? ? false : (@message.roles.include?k.to_s)) %><%= v %>
+            </td>        
+          <% end %>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+ 
+  <div class="form-actions">
+    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <% if can? :index, Message%>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                messages_path, :class => 'btn' %>
+    <% end %>
+  </div>
+<% end %>

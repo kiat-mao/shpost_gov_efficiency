@@ -3,6 +3,9 @@ class ReportsController < ApplicationController
 	def deliver_market_report
 		@is_search = nil
 		@search_time = "by_d"
+		@is_court = false
+		@is_market = true
+		@is_monitor = false
 
 		unless request.get?
 			init_result
@@ -29,6 +32,9 @@ class ReportsController < ApplicationController
   def deliver_unit_report
   	@is_search = nil
   	@search_time = "by_d"
+  	@is_court = false
+  	@is_market = false
+  	@is_monitor = false
 
 		unless request.get?
 			init_result_unit
@@ -51,6 +57,10 @@ class ReportsController < ApplicationController
 
   def deliver_market_monitor
   	@is_search = nil
+  	@is_court = false
+  	@is_market = true
+  	@is_monitor = true
+
   	unless request.get?
 			init_result
 			@is_search = "yes"
@@ -59,6 +69,10 @@ class ReportsController < ApplicationController
 
 	def deliver_unit_monitor
 		@is_search = nil
+		@is_court = false
+		@is_market = false
+		@is_monitor = true
+
 		unless request.get?
 			init_result_unit
 			@is_search = "yes"
@@ -68,6 +82,9 @@ class ReportsController < ApplicationController
 	def court_deliver_market_report
 		@is_search = nil
 		@search_time = "by_d"
+		@is_court = true
+		@is_market = true
+		@is_monitor = false
 
 		unless request.get?
 			init_result
@@ -79,6 +96,9 @@ class ReportsController < ApplicationController
 	def court_deliver_unit_report
   	@is_search = nil
   	@search_time = "by_d"
+  	@is_court = true
+  	@is_market = false
+  	@is_monitor = false
 
 		unless request.get?
 			init_result_unit
@@ -89,6 +109,10 @@ class ReportsController < ApplicationController
 
 	def court_deliver_market_monitor
   	@is_search = nil
+  	@is_court = true
+  	@is_market = true
+  	@is_monitor = true
+
   	unless request.get?
 			init_result
 			@is_search = "yes"
@@ -97,6 +121,10 @@ class ReportsController < ApplicationController
 
 	def court_deliver_unit_monitor
 		@is_search = nil
+		@is_court = true
+		@is_market = false
+		@is_monitor = true
+
 		unless request.get?
 			init_result_unit
 			@is_search = "yes"
@@ -128,14 +156,24 @@ class ReportsController < ApplicationController
 	    filter = Spreadsheet::Format.new :size => 11
 	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
 	    red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
+	    date_range = ""
 
 	    sheet1.row(0).default_format = filter
 	    sheet1.row(1).default_format = filter
 	    sheet1[0,0] = "二级行业名称:#{params["industry"]}"
-	    sheet1[0,4] = "客户类别:#{params["btype"]}"
-	    sheet1[0,8] = "客户:#{params["business"]}"
+	    sheet1[0,2] = "客户类别:#{params["btype"]}"
+	    sheet1[0,4] = "客户:#{params["business"]}"
+	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
+	    sheet1[0,8] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
 	    if !params[:is_monitor].eql?"true"
-	    	sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
+	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
+        	end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month.strftime("%Y-%m-%d")
+	    		date_range = "收寄范围：#{start_date} - #{end_date}"
+	    	else
+	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    	end
+	    	sheet1[1,0] = date_range
 	    end
 
 	    0.upto(12) do |x|
@@ -212,13 +250,26 @@ class ReportsController < ApplicationController
 	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
 	    red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
 
+	    lv2_unit = params["lv2_unit"].blank? ? "" : Unit.find(params["lv2_unit"].to_i).name
+	    date_range = ""
+
 	    sheet1.row(0).default_format = filter
 	    sheet1.row(1).default_format = filter
 	    sheet1[0,0] = "二级行业名称:#{params["industry"]}"
-	    sheet1[0,4] = "客户类别:#{params["btype"]}"
-	    sheet1[0,8] = "客户:#{params["business"]}"
+	    sheet1[0,2] = "客户类别:#{params["btype"]}"
+	    sheet1[0,4] = "客户:#{params["business"]}"
+	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
+	    sheet1[0,8] = "区分公司:#{lv2_unit}"
+	    sheet1[0,10] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
 	    if !params[:is_monitor].eql?"true"
-	    	sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
+	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
+        	end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month.strftime("%Y-%m-%d")
+	    		date_range = "收寄范围：#{start_date} - #{end_date}"
+	    	else
+	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    	end
+	    	sheet1[1,0] = date_range
 	    end
 
 	    0.upto(1) do |x|
@@ -281,7 +332,7 @@ class ReportsController < ApplicationController
     	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
 
       @results = Express.get_business_result(expresses, params)
-  	end
+    end
 
   	def business_market_report_xls_content_for(params,results)
 	  	xls_report = StringIO.new  
@@ -292,12 +343,23 @@ class ReportsController < ApplicationController
 	    filter = Spreadsheet::Format.new :size => 11
 	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
 	    red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
+	    date_range = ""
 
 	    sheet1.row(0).default_format = filter
 	    sheet1.row(1).default_format = filter
 	    sheet1[0,0] = "客户类别:#{params["detail_btype"]}"
+	    sheet1[0,2] = "客户:#{params["business"]}"
+	    sheet1[0,4] = "寄递范围:#{params["destination"]}"
+	    sheet1[0,6] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
 	    if !params[:is_monitor].eql?"true"
-	    	sheet1[1,0] = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
+	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
+        	end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month.strftime("%Y-%m-%d")
+	    		date_range = "收寄范围：#{start_date} - #{end_date}"
+	    	else
+	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    	end
+	    	sheet1[1,0] = date_range
 	    end
 
 	    0.upto(12) do |x|

@@ -19,6 +19,7 @@ class Ability
 			can "report", "DeliverMarketReport"
 
 			can "report", "DeliverUnitReport"
+			can :manage, Message
 			#can :manage, User
 		elsif user.company_admin?
 			can :manage, Unit
@@ -42,6 +43,7 @@ class Ability
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
+			can :read, Message
 		elsif user.unitadmin?
 			can [:read, :user], Unit, id: user.unit.id
 			can :read, Unit, parent_id: user.unit.id
@@ -58,6 +60,7 @@ class Ability
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
+			can :read, Message
 		else#user
 			can :read, Unit, id: user.unit_id
 			can :read, Unit, parent_id: user.unit.id
@@ -70,6 +73,7 @@ class Ability
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
+			can :read, Message
 		end
 
 

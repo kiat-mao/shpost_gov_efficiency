@@ -84,6 +84,19 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :messages do 
+    member do
+      get 'details'
+    end
+  end
+
+  resources :user_messages do
+    collection do 
+      post 'set_is_read'
+    end
+  end
+  
+
   # match "/reports/deliver_market_report" => "reports#deliver_market_report", via: [:get, :post]
   
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

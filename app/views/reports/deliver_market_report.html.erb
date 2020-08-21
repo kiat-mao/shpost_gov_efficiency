@@ -2,103 +2,49 @@
 <br>
 <font face="微软雅黑" color='#006030' size=6>投递情况监控报表-市场维度</font>   
 
+<%= render :partial => 'form' %>
 
-
-<%= form_tag(deliver_market_report_reports_path, name: 'form', method: 'post') do %>
-  <table>
-    <tr style="line-height: 40px;height: 40px;">
-      <td><%= label_tag(:industry, "二级行业名称:") %></td>
-      <td><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
-      <td><%= label_tag(:btype, "客户类别:") %></td>
-      <td><%= select_tag(:btype, options_for_select(Business.where.not(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
-      <td><%= label_tag(:business, "客户:") %></td>
-      <td><%= text_field_tag(:business, params[:business]) %></td>  
-      <td><%= label_tag(:destination, "寄递范围:") %></td>
-      <td><%= select_tag :destination, options_for_select(Report.select_destinations, :selected=>params[:destination]) %></td>  
-    </tr>
-  </table>
-
-  <%= radio_button_tag(:search_time, 'by_m', (@search_time.eql?"by_m")) %><b>按月查询</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <%= radio_button_tag(:search_time, 'by_d', (@search_time.eql?"by_d")) %><b>按日期查询</b>
-
-  <div id="by_date">
-    <table>
-      <tr style="line-height: 40px;height: 40px;">
-        <td><%= label_tag(:posting_date_start, "收寄范围:") %></td>
-        <td><%= text_field_tag(:posting_date_start, params[
-          :posting_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:posting_date_start].blank? ? Date.today-7.day : params[:posting_date_start]) %></td>
-        <td><%= label_tag(:posting_date_end, "-") %></td>
-        <td><%= text_field_tag(:posting_date_end, params[:posting_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:posting_date_end].blank? ? Date.today-2.day : params[:posting_date_end]) %></td>
-      </tr>
-    </table>
-  </div>
-  <div id="by_month">
-    <table>
-      <tr style="line-height: 40px;height: 40px;">
-        <td><%= label_tag(:year, "年:", :style => "padding:0px") %></td>
-        <td><%= select_tag :year, options_for_select(Report.select_years, :selected=>(params[:year].blank? ? Time.now.year.to_s : params[:year])) %></td>
-        <td><%= label_tag(:month, "月:", :style => "padding:0px") %></td>
-        <td><%= select_tag :month, options_for_select(Report.select_months, :selected=>(params[:month].blank? ? Time.now.month.to_s : params[:month])) %></td>
-      </tr>
-    </table>
-  </div>
-  <table>
-    <tr>
-      <td>
-        <div id="market_report_search">
-          <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %></td>
-        </div>
-      <td>
-        <div id="export">
-          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], destination: params[:destination], search_time: params[:search_time], year: params[:year], month: params[:month]), :class => 'btn btn-primary', method: :post%>
-        </div>
-      </td>
-    </tr>
-  </table>
-<% end -%>    
-<%= hidden_field_tag('is_search', @is_search) %>
-<%= hidden_field_tag('search_type', @search_time) %>
   
-  <br>
-  <% if !@results.blank? %>
-    <table data-toggle="table" 
-    data-height="700">
-      <thead>
-        <tr class= 'nowrap'>
-          <th><b>行业市场</b></th>
-          <th><b>收寄数</b></th>
-          <th><b>总妥投数</b></th>
-          <th><b>妥投率</b></th>
-          <th><b>三日妥投率</b></th>
-          <th><b>次日妥投率</b></th>
-          <th><b>五日妥投率</b></th>
-          <th><b>未妥投总数</b></th>
-          <th><b>在途中数</b></th>
-          <th><b>投递端数</b></th>
-          <th><b>未妥投率</b></th>
-          <th><b>退回数</b></th>
-          <th><b>退回率</b></th>
-        </tr>
-      </thead>
-      <tbody>
-      <% @results.each do |k, v| %>
-       <tr class= 'nowrap'>
-        <td><u><%= link_to k, business_market_report_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: k, destination: params[:destination], search_time: params[:search_time], year: params[:year], month: params[:month]), target: '_blank' %></u></td>
-        <td><u><%= link_to v[0], get_expresses_path(k, nil, nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[1], get_expresses_path(k, "delivered", nil, nil, nil), target: '_blank' %></u></td>
-        <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
-        <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
-        <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
-        <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
-        <td id='waiting'><%= link_to v[5], get_expresses_path(k, "waiting", nil, nil, nil), target: '_blank' %></td>
-        <td id='waiting'><%= link_to v[10], get_expresses_path(k, "waiting", nil, nil, "in_transit"), target: '_blank' %></td>
-        <td id='waiting'><%= link_to v[11], get_expresses_path(k, "waiting", nil, nil, "delivery_part"), target: '_blank' %></td>
-        <td><font color="red"><%= v[6].to_s(:rounded, precision: 2)+"%" %></font></td>
-        <td><u><%= link_to v[7], get_expresses_path(k, "returns", nil, nil, nil), target: '_blank' %></u></td>
-        <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
+<br>
+<% if !@results.blank? %>
+  <table data-toggle="table" 
+  data-height="700">
+    <thead>
+      <tr class= 'nowrap'>
+        <th><b>行业市场</b></th>
+        <th><b>收寄数</b></th>
+        <th><b>总妥投数</b></th>
+        <th><b>妥投率</b></th>
+        <th><b>三日妥投率</b></th>
+        <th><b>次日妥投率</b></th>
+        <th><b>五日妥投率</b></th>
+        <th><b>未妥投总数</b></th>
+        <th><b>在途中数</b></th>
+        <th><b>投递端数</b></th>
+        <th><b>未妥投率</b></th>
+        <th><b>退回数</b></th>
+        <th><b>退回率</b></th>
       </tr>
-      <% end %>
-      </tbody>
-    </table>
-  <% end %>
+    </thead>
+    <tbody>
+    <% @results.each do |k, v| %>
+     <tr class= 'nowrap'>
+      <td><u><%= link_to k, business_market_report_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: k, destination: params[:destination], search_time: params[:search_time], year: params[:year], month: params[:month], product: params[:product]), target: '_blank' %></u></td>
+      <td><u><%= link_to v[0], get_expresses_path(k, nil, nil, nil, nil), target: '_blank' %></u></td>
+      <td><u><%= link_to v[1], get_expresses_path(k, "delivered", nil, nil, nil), target: '_blank' %></u></td>
+      <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
+      <td id='waiting'><%= link_to v[5], get_expresses_path(k, "waiting", nil, nil, nil), target: '_blank' %></td>
+      <td id='waiting'><%= link_to v[10], get_expresses_path(k, "waiting", nil, nil, "in_transit"), target: '_blank' %></td>
+      <td id='waiting'><%= link_to v[11], get_expresses_path(k, "waiting", nil, nil, "delivery_part"), target: '_blank' %></td>
+      <td><font color="red"><%= v[6].to_s(:rounded, precision: 2)+"%" %></font></td>
+      <td><u><%= link_to v[7], get_expresses_path(k, "returns", nil, nil, nil), target: '_blank' %></u></td>
+      <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
+    </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
 

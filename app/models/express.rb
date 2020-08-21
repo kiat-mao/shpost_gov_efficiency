@@ -13,6 +13,7 @@ class Express < ApplicationRecord
   enum base_product_no: {standard_express: '11210', express_package: '11312'}
 
   scope :other_product, -> {where.not(base_product_no: self.base_product_nos.values).or(Express.where(base_product_no: nil))}
+  BASE_PRODUCT_NAME = {standard_express: '标快', express_package: '快包', other_product: }
   
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day
@@ -337,7 +338,7 @@ class Express < ApplicationRecord
     # else
     #   expresses = expresses.where.not("businesses.industry = ? and expresses.receiver_province_no != ?", "法院", "310000") 
     # end
-    if params[:is_court].blank?
+    if !params[:is_court].blank? && (params[:is_court].eql?"false")
       expresses = expresses.where.not("businesses.industry = ?", "法院")
     end
 
@@ -359,6 +360,16 @@ class Express < ApplicationRecord
 
     if !params[:transit_delivery].blank?
       expresses = expresses.where(whereis: params[:transit_delivery])
+    end
+
+    if !params[:product].blank?
+      if params[:product].eql?"other_product"
+        expresses = expresses.other_product
+      elsif params[:product].eql?"standard_express"
+        expresses = expresses.where(base_product_no: Express::base_product_nos[:standard_express])
+      elsif params[:product].eql?"express_package"
+        expresses = expresses.where(base_product_no: Express::base_product_nos[:express_package])
+      end
     end
 
     # byebug

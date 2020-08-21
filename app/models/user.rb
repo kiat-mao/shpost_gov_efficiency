@@ -4,7 +4,7 @@ class User < ApplicationRecord
   belongs_to :unit, optional: true
   has_many :user_logs
   has_many :roles, dependent: :destroy
-
+  
   devise :database_authenticatable, #:registerable,
          :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
 

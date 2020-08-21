@@ -12,6 +12,7 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+ 
 
   def self.user_logs_filter *args
     after_action args.first.select{|k,v| k == :only || k == :expert} do |controller|
@@ -92,6 +93,8 @@ class ApplicationController < ActionController::Base
   def configure_charsets
     headers["Content-Type"]="text/html;charset=utf-8"
   end
+
+  
 
   protected
 

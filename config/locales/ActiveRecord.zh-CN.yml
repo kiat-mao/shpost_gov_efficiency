@@ -236,6 +236,9 @@ zh-CN:
       express:
         one: 邮件
         other: 邮件
+      message:
+        one: 消息
+        other: 消息管理
     attributes:
       user:
         email: "电子邮件"
@@ -306,6 +309,12 @@ zh-CN:
         desc: "备注"
         delivered_days: "妥投天数"
         receiver_district: "收件人区域"
+      message:
+        title: "标题"
+        content: "内容"
+        start_time: "开始日期"
+        end_time: "结束日期"
+        roles: "可看角色"
 
   user_navigation:
     update_self: "个人信息"
@@ -319,4 +328,4 @@ zh-CN:
     check: "确认"
     close: "关闭"
 
-  update_info_day: "20200810"
+  
