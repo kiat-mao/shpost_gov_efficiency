@@ -13,7 +13,7 @@ class Express < ApplicationRecord
   enum base_product_no: {standard_express: '11210', express_package: '11312'}
 
   scope :other_product, -> {where.not(base_product_no: self.base_product_nos.values).or(Express.where(base_product_no: nil))}
-  BASE_PRODUCT_NAME = {standard_express: '标快', express_package: '快包', other_product: }
+  BASE_PRODUCT_NAME = {standard_express: '标快', express_package: '快包', other_product: '其他'}
   
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day

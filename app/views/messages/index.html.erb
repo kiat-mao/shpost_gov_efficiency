@@ -26,7 +26,9 @@
       l message.end_time
     end
 
-    g.column name: model_class.human_attribute_name(:roles), attribute: 'roles'
+    g.column name: model_class.human_attribute_name(:roles), attribute: 'roles' do |message|
+      message.roles_name
+    end
    
     g.column do |message|
       ActiveSupport::SafeBuffer.new << 

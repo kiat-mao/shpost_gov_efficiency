@@ -13,7 +13,7 @@
   <dt><strong><%= model_class.human_attribute_name(:end_time) %>:</strong></dt>
   <dd><%= l @message.try :end_time %></dd>
   <dt><strong><%= model_class.human_attribute_name(:roles) %>:</strong></dt>
-  <dd><%= @message.try :roles %></dd>
+  <dd><%= @message.roles.blank? ? "" : @message.roles_name  %></dd>
 </dl>
 <% if can? :index, Message %>
 <%= link_to t('.back', :default => t("helpers.links.back")),
