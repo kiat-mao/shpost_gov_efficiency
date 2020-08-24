@@ -2,6 +2,10 @@ class Express < ApplicationRecord
   belongs_to :business
   belongs_to :post_unit, class_name: 'Unit', optional: true
   belongs_to :last_unit, class_name: 'Unit', optional: true
+
+  belongs_to :pre_express, class_name: 'Express'
+  belongs_to :receipt_express, class_name: 'Express'
+
   validates_presence_of :express_no, :business_id, :message => '不能为空'
   
   enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns', del: 'del'}
@@ -11,9 +15,15 @@ class Express < ApplicationRecord
   WHEREIS_NAME = {in_transit: '在途中', delivery_part: '投递端'}
 
   enum base_product_no: {standard_express: '11210', express_package: '11312'}
+  BASE_PRODUCT_NAME = {standard_express: '标快', express_package: '快包', other_product: '其他'}
+
+  enum receipt_flag: {forward: 'forward', receipt: 'receipt'}
+  RECEIPT_FLAG = {forward: '正向邮件', receipt: '正向邮件'}
+  
+  enum receipt_status: {receipt_receive: 'receive', not_receipt_receive: nil}
+  RECEIPT_STATUS = {receipt_receive: '已收寄', not_receipt_receive: '未收寄'}
 
   scope :other_product, -> {where.not(base_product_no: self.base_product_nos.values).or(Express.where(base_product_no: nil))}
-  BASE_PRODUCT_NAME = {standard_express: '标快', express_package: '快包', other_product: '其他'}
   
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day

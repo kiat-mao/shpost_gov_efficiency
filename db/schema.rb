@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_18_071626) do
+ActiveRecord::Schema.define(version: 2020_08_24_053307) do
 
   create_table "businesses", force: :cascade do |t|
     t.string "code", null: false
@@ -43,11 +43,27 @@ ActiveRecord::Schema.define(version: 2020_08_18_071626) do
     t.string "last_unit_name"
     t.string "whereis"
     t.string "base_product_no"
+    t.string "receipt_flag"
+    t.string "receipt_status"
+    t.string "pre_waybill_no"
+    t.integer "pre_express_id"
+    t.string "receipt_waybill_no"
+    t.integer "receipt_express_id"
     t.index ["business_id"], name: "index_expresses_on_business_id"
     t.index ["express_no"], name: "index_expresses_on_express_no"
     t.index ["last_unit_id"], name: "index_expresses_on_last_unit_id"
     t.index ["posting_date"], name: "index_expresses_on_posting_date"
     t.index ["status"], name: "index_expresses_on_status"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.string "roles"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "roles", force: :cascade do |t|
@@ -91,6 +107,14 @@ ActiveRecord::Schema.define(version: 2020_08_18_071626) do
     t.string "desc"
     t.integer "parent_id"
     t.string "parent_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "user_messages", force: :cascade do |t|
+    t.integer "message_id"
+    t.integer "user_id"
+    t.boolean "is_read", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
