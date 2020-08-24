@@ -3,8 +3,8 @@ class Express < ApplicationRecord
   belongs_to :post_unit, class_name: 'Unit', optional: true
   belongs_to :last_unit, class_name: 'Unit', optional: true
 
-  belongs_to :pre_express, class_name: 'Express'
-  belongs_to :receipt_express, class_name: 'Express'
+  belongs_to :pre_express, class_name: 'Express', optional: true
+  belongs_to :receipt_express, class_name: 'Express', optional: true
 
   validates_presence_of :express_no, :business_id, :message => '不能为空'
   
@@ -18,7 +18,7 @@ class Express < ApplicationRecord
   BASE_PRODUCT_NAME = {standard_express: '标快', express_package: '快包', other_product: '其他'}
 
   enum receipt_flag: {forward: 'forward', receipt: 'receipt'}
-  RECEIPT_FLAG = {forward: '正向邮件', receipt: '正向邮件'}
+  RECEIPT_FLAG = {forward: '正向邮件', receipt: '反向邮件'}
   
   enum receipt_status: {receipt_receive: 'receive', not_receipt_receive: nil}
   RECEIPT_STATUS = {receipt_receive: '已收寄', not_receipt_receive: '未收寄'}
@@ -66,6 +66,8 @@ class Express < ApplicationRecord
     businesses = Business.all
     businesses.each do |business|
       Express.refresh_traces_by_business(business, start_date, end_date)
+
+      Express.init_receipts_by_business(business, start_date, end_date)
     end
   end
 
@@ -77,7 +79,7 @@ class Express < ApplicationRecord
     puts("#{Time.now}, refresh_traces_by_business, #{business.name},  start")
 
     
-    expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).where(status: Express::statuses[:waiting])
+    expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).waiting
     
     ActiveRecord::Base.transaction do
       expresses.each do |express|
@@ -138,6 +140,25 @@ class Express < ApplicationRecord
     
     express.base_product_no = pkp_waybill_base.base_product_no
 
+
+    if ! pkp_waybill_base.receipt_flag.blank?
+      if pkp_waybill_base.receipt_flag.eql?('6')
+        express.receipt_flag = Express.receipt_flags[:forward]
+        express.receipt_waybill_no = pkp_waybill_base.receipt_waybill_no
+      elsif pkp_waybill_base.receipt_flag.eql?('8')
+        express.receipt_flag = Express.receipt_flags[:receipt]
+        express.pre_waybill_no = pkp_waybill_base.pre_waybill_no
+
+        pre_express = Express.find_by(express_no: express.pre_waybill_no)
+        express.pre_express = pre_express
+        
+        pre_express.receipt_express = express
+        # pre_express.receipt_status = Express.receipt_statuses[:receipt_receive]
+
+        pre_express.receipt_receive!
+      end
+    end
+
     express.refresh_trace
 
     #express.sign = nil
@@ -181,6 +202,32 @@ class Express < ApplicationRecord
       self.fill_delivered_days
     else
       self.status ||= Express::statuses[:waiting]
+    end
+  end
+
+  def self.init_receipts_by_business(business, start_date, end_date)
+    if business.blank? || start_date.blank? || end_date.blank?
+      return
+    end
+
+    puts("#{Time.now}, init_receipts_by_business, #{business.name},  start")
+
+    
+    expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).forward.delivered.not_receipt_receive
+    
+    ActiveRecord::Base.transaction do
+      expresses.each do |express|
+        express.init_receipt(express.receipt_waybill_no, business)
+      end
+    end
+
+    puts("#{Time.now}, init_receipts_by_business, #{business.name}, count: #{expresses.size}, end")
+  end
+
+  def init_receipt(receipt_waybill_no, business)
+    pkp_waybill_base = PkpWaybillBase.where(waybill_no: receipt_waybill_no).last
+    if ! pkp_waybill_base.blank?
+      Express.init_express(pkp_waybill_base, business)
     end
   end
 
