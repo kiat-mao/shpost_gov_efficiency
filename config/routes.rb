@@ -81,6 +81,9 @@ Rails.application.routes.draw do
       post 'court_deliver_unit_monitor'
       get 'business_market_report'
       post 'business_market_report_export'
+      get 'receipt_report'
+      post 'receipt_report'
+      post 'receipt_report_export'
     end
   end
 

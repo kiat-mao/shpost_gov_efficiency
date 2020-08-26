@@ -146,6 +146,31 @@ class ReportsController < ApplicationController
     end
   end
 
+  def receipt_report
+  	@is_search = nil
+  	@search_time = "by_d"
+  	@is_court = nil
+  	@is_market = nil
+  	@is_monitor = false
+
+		unless request.get?
+			init_result_receipt
+			@is_search = "yes"
+			@search_time = params[:search_time].blank? ? "by_d" : params[:search_time]
+		end
+  end
+
+  def receipt_report_export
+  	init_result_receipt
+
+  	if @results.blank?
+      flash[:alert] = "无数据"
+      redirect_to request.referer
+    else
+    	send_data(receipt_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "返单用户监控报表_#{Time.now.strftime("%Y%m%d")}.xls")  
+    end
+  end
+
   private
   	def deliver_market_report_xls_content_for(params,results)
 	  	xls_report = StringIO.new  
@@ -398,6 +423,79 @@ class ReportsController < ApplicationController
 		      sheet1.row(count_row).set_format(i, body)
 		    end  
 	      
+	      count_row += 1
+	    end
+
+	    book.write xls_report  
+	    xls_report.string
+
+	  end
+
+	  def init_result_receipt
+	  	@results = nil
+	  		  	
+    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
+
+      @results = Express.get_receipt_result(expresses, params)
+    end
+
+    def receipt_report_xls_content_for(params,results)
+	  	xls_report = StringIO.new  
+	    book = Spreadsheet::Workbook.new  
+	    sheet1 = book.create_worksheet :name => "统计表"  
+	    
+	    title = Spreadsheet::Format.new :weight => :bold, :size => 12, :border => :thin, :align => :center
+	    filter = Spreadsheet::Format.new :size => 11
+	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
+	    red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
+	    date_range = ""
+
+	    sheet1.row(0).default_format = filter
+	    sheet1.row(1).default_format = filter
+	    sheet1[0,0] = "二级行业名称:#{params["industry"]}"
+	    sheet1[0,2] = "客户类别:#{params["btype"]}"
+	    sheet1[0,4] = "客户:#{params["business"]}"
+	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
+	    sheet1[0,8] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    if !params[:is_monitor].eql?"true"
+	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
+	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
+        	end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month.strftime("%Y-%m-%d")
+	    		date_range = "收寄范围：#{start_date} - #{end_date}"
+	    	else
+	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+	    	end
+	    	sheet1[1,0] = date_range
+	    end
+
+	    0.upto(10) do |x|
+	      sheet1.column(x).width = 16
+	    end
+
+	    0.upto(10) do |x|
+	      sheet1.row(3).set_format(x, title)
+	    end
+	    sheet1.row(3).concat %w{客户名称 正向邮件总收寄数 正向邮件妥投数 正向邮件未妥投数 正向邮件妥投返单邮件收寄数 正向邮件妥投返单邮件未收寄数 返单邮件返回数(妥投数) 返单邮件未返回数(未妥投) 正向邮件退回数 正向邮件未妥投返单邮件已收寄数 返单邮件返单率%}
+
+	    count_row = 4
+
+	    results.each do |k, v|
+	      sheet1[count_row,0] = (k.eql?"合计") ? k : k.name
+	      sheet1[count_row,1] = v[0]
+	      sheet1[count_row,2] = v[1]
+	      sheet1[count_row,3] = v[2]
+	      sheet1[count_row,4] = v[3]
+	      sheet1[count_row,5] = v[4]
+	      sheet1[count_row,6] = v[5]
+	      sheet1[count_row,7] = v[6]
+	      sheet1[count_row,8] = v[7]
+	      sheet1[count_row,9] = v[8]
+	      sheet1[count_row,10] = v[9].to_s(:rounded, precision: 2)+"%"
+	      
+	      0.upto(10) do |i|
+		      sheet1.row(count_row).set_format(i, body)
+		    end
+		    	      
 	      count_row += 1
 	    end
 

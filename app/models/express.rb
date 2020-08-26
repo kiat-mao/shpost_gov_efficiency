@@ -296,7 +296,7 @@ class Express < ApplicationRecord
     start_date = nil
     end_date = nil
     expresses = Express.left_outer_joins(:business)
-    
+   
     if !params[:industry].blank?
       expresses = expresses.where("businesses.industry = ?", params[:industry])
     end
@@ -332,7 +332,11 @@ class Express < ApplicationRecord
     end
 
     if !params[:status].blank?
-      expresses = expresses.where("expresses.status = ?", params[:status])
+      if params[:status].eql?"not_delivered"
+        expresses = expresses.where.not(status: "delivered")
+      else
+        expresses = expresses.where("expresses.status = ?", params[:status])
+      end
     end
 
     if !params[:last_unit_id].blank? && !(params[:last_unit_id].eql?"合计")
@@ -380,6 +384,14 @@ class Express < ApplicationRecord
       elsif params[:product].eql?"express_package"
         expresses = expresses.where(base_product_no: Express::base_product_nos[:express_package])
       end
+    end
+
+    if !params[:receipt_flag].blank?
+      expresses = expresses.where(receipt_flag: params[:receipt_flag])
+    end
+
+    if !params[:receipt_status].blank?
+      expresses = expresses.where(receipt_status: params[:receipt_status])
     end
 
     # byebug
@@ -511,5 +523,90 @@ class Express < ApplicationRecord
 
   def whereis_name
     whereis.blank? ? "" : Express::WHEREIS_NAME["#{whereis}".to_sym]
+  end
+
+  def self.get_receipt_result(expresses, params)
+    results = {}
+    f_total_am_hj = 0
+    fd_am_hj = 0
+    fw_am_hj = 0
+    fdrr_am_hj = 0
+    fdrn_am_hj = 0
+    rd_am_hj = 0
+    rw_am_hj = 0
+    fr_am_hj = 0
+    fndrr_am_hj = 0
+    rd_per_hj = 0
+
+    total_amount = expresses.where(receipt_flag:"forward").or(expresses.where(receipt_flag:"receipt")).group(:business).count
+    exp = expresses.where(receipt_flag:"forward").or(expresses.where(receipt_flag:"receipt")).group(:business_id, :receipt_flag, :status, :receipt_status).count
+
+    total_amount.each do |x, y|
+      # 正向邮件总收寄数
+      f_total_am = 0
+      # 正向邮件妥投数
+      fd_am = 0
+      # 正向邮件未妥投数
+      fw_am = 0
+      # 正向邮件妥投返单邮件收寄数
+      fdrr_am = 0
+      # 正向邮件妥投返单邮件未收寄数
+      fdrn_am = 0
+      # 返单邮件返回数(妥投数)
+      rd_am = 0
+      # 返单邮件未返回数（未妥投）
+      rw_am = 0
+      # 正向邮件退回数
+      fr_am = 0
+      # 正向邮件未妥投返单邮件已收寄数
+      fndrr_am = 0
+      # 返单邮件返单率%
+      rd_per = 0
+
+      exp.each do |k, v|
+        if (k[0] == x.id) && (k[1].eql?"forward")
+          f_total_am += v
+        end
+        if (k[0] == x.id) && (k[1].eql?"forward") && (k[2].eql?"delivered")
+          fd_am += v
+        end
+        if (k[0] == x.id) && (k[1].eql?"forward") && (k[2].eql?"waiting")
+          fw_am += v
+        end
+        if (k[0] == x.id) && (k[1].eql?"receipt") && (k[2].eql?"delivered")
+          rd_am += v
+        end
+        if (k[0] == x.id) && (k[1].eql?"receipt") && (k[2].eql?"waiting")
+          rw_am += v
+        end
+        if (k[0] == x.id) && (k[1].eql?"forward") && (k[2].eql?"returns")
+          fr_am += v
+        end
+        
+        if (k[0] == x.id) && (k[1].eql?"forward") && (!k[2].eql?"delivered") && (k[3].eql?"receive")
+          fndrr_am += v
+        end
+      end
+      fdrr_am = exp[[x.id, "forward", "delivered", "receive"]].blank? ? 0 : exp[[x.id, "forward", "delivered", "receive"]]
+      fdrn_am = exp[[x.id, "forward", "delivered", nil]].blank? ? 0 : exp[[x.id, "forward", "delivered", nil]]
+      rd_per = f_total_am>0 ? (rd_am/f_total_am.to_f*100).round(2) : 0
+
+      f_total_am_hj += f_total_am
+      fd_am_hj += fd_am
+      fw_am_hj += fw_am
+      fdrr_am_hj += fdrr_am
+      fdrn_am_hj += fdrn_am
+      rd_am_hj += rd_am
+      rw_am_hj += rw_am
+      fr_am_hj += fr_am
+      fndrr_am_hj += fndrr_am
+      
+      results[x] = [f_total_am, fd_am, fw_am, fdrr_am, fdrn_am, rd_am, rw_am, fr_am, fndrr_am, rd_per]
+    end
+    rd_per_hj = f_total_am_hj>0 ? (rd_am_hj/f_total_am_hj.to_f*100).round(2) : 0
+
+    results["合计"] = [f_total_am_hj, fd_am_hj, fw_am_hj, fdrr_am_hj, fdrn_am_hj, rd_am_hj, rw_am_hj, fr_am_hj, fndrr_am_hj, rd_per_hj]
+
+    return results
   end
 end

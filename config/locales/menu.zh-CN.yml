@@ -49,6 +49,13 @@ zh-CN:
           name: "投递监控报表(投递)"
           link: "/reports/court_deliver_unit_report"
           need_count: false
+    receipt_report:
+      name: "返单报表管理"
+      submenu:
+        receipt_report:
+          name: "返单用户报表"
+          link: "/reports/receipt_report"
+          need_count: false
     monitor:
       name: "实时监控"
       submenu:

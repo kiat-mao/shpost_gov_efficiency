@@ -1,21 +1,28 @@
 <%= form_tag(get_report_path(@is_court, @is_market, @is_monitor), name: 'form', method: 'post') do %>
   <table>
     <tr style="line-height: 40px;height: 40px;">
-      <% if !@is_court %>
-        <td><%= label_tag(:industry, "二级行业名称:") %></td>
-        <td><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
-        <td><%= label_tag(:btype, "客户类别:") %></td>
-        <td><%= select_tag(:btype, options_for_select(Business.where.not(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+      <% if !@is_court.nil? %>
+        <% if !@is_court %>
+          <td><%= label_tag(:industry, "二级行业名称:") %></td>
+          <td><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
+          <td><%= label_tag(:btype, "客户类别:") %></td>
+          <td><%= select_tag(:btype, options_for_select(Business.where.not(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+        <% else %>
+          <%= hidden_field_tag('industry', '法院') %>
+          <td><%= label_tag(:btype, "客户类别:") %></td>
+          <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+        <% end %>   
       <% else %>
-        <%= hidden_field_tag('industry', '法院') %>
+        <td><%= label_tag(:industry, "二级行业名称:") %></td>
+        <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
         <td><%= label_tag(:btype, "客户类别:") %></td>
-        <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
-      <% end %>     
+        <td><%= select_tag(:btype, options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+      <% end %>  
       <td><%= label_tag(:business, "客户:") %></td>
       <td><%= text_field_tag(:business, params[:business]) %></td>  
       <td><%= label_tag(:destination, "寄递范围:") %></td>
       <td><%= select_tag :destination, options_for_select(Report.select_destinations, :selected=>params[:destination]) %></td> 
-      <% if !@is_market %>
+      <% if !@is_market.nil? && !@is_market %>
         <td><%= label_tag(:lv2_unit, "区分公司:") %></td>
         <td><%= select_tag(:lv2_unit, options_for_select(Unit.where(level: 1).map{|u| [u.name,u.id]}.insert(0,""), :selected=> params[:lv2_unit]), id: "lv2_unit") %></td>
       <% end %>
