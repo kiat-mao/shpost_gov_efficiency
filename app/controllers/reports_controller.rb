@@ -492,9 +492,11 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,9] = v[8]
 	      sheet1[count_row,10] = v[9].to_s(:rounded, precision: 2)+"%"
 	      
-	      0.upto(10) do |i|
+	      0.upto(8) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end
+		    sheet1.row(count_row).set_format(9, red)
+		    sheet1.row(count_row).set_format(10, body)
 		    	      
 	      count_row += 1
 	    end

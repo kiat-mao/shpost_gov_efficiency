@@ -20,8 +20,8 @@ class Express < ApplicationRecord
   enum receipt_flag: {forward: 'forward', receipt: 'receipt'}
   RECEIPT_FLAG = {forward: '正向邮件', receipt: '反向邮件'}
   
-  enum receipt_status: {receipt_receive: 'receive', not_receipt_receive: nil}
-  RECEIPT_STATUS = {receipt_receive: '已收寄', not_receipt_receive: '未收寄'}
+  enum receipt_status: {receipt_receive: 'receipt_receive', no_receipt_receive: nil}
+  RECEIPT_STATUS = {receipt_receive: '已收寄', no_receipt_receive: '未收寄'}
 
   scope :other_product, -> {where.not(base_product_no: self.base_product_nos.values).or(Express.where(base_product_no: nil))}
   
@@ -213,7 +213,7 @@ class Express < ApplicationRecord
     puts("#{Time.now}, init_receipts_by_business, #{business.name},  start")
 
     
-    expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).forward.delivered.not_receipt_receive
+    expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).forward.delivered.no_receipt_receive
     
     ActiveRecord::Base.transaction do
       expresses.each do |express|
@@ -427,9 +427,9 @@ class Express < ApplicationRecord
       if params[:product].eql?"other_product"
         expresses = expresses.other_product
       elsif params[:product].eql?"standard_express"
-        expresses = expresses.where(base_product_no: Express::base_product_nos[:standard_express])
+        expresses = expresses.standard_express
       elsif params[:product].eql?"express_package"
-        expresses = expresses.where(base_product_no: Express::base_product_nos[:express_package])
+        expresses = expresses.express_package
       end
     end
 
@@ -585,8 +585,8 @@ class Express < ApplicationRecord
     fndrr_am_hj = 0
     rd_per_hj = 0
 
-    total_amount = expresses.where(receipt_flag:"forward").or(expresses.where(receipt_flag:"receipt")).group(:business).count
-    exp = expresses.where(receipt_flag:"forward").or(expresses.where(receipt_flag:"receipt")).group(:business_id, :receipt_flag, :status, :receipt_status).count
+    total_amount = expresses.where(receipt_flag:["forward", "receipt"]).group(:business).count
+    exp = expresses.where(receipt_flag:["forward", "receipt"]).group(:business_id, :receipt_flag, :status, :receipt_status).count
 
     total_amount.each do |x, y|
       # 正向邮件总收寄数
@@ -630,11 +630,11 @@ class Express < ApplicationRecord
           fr_am += v
         end
         
-        if (k[0] == x.id) && (k[1].eql?"forward") && (!k[2].eql?"delivered") && (k[3].eql?"receive")
+        if (k[0] == x.id) && (k[1].eql?"forward") && (!k[2].eql?"delivered") && (k[3].eql?"receipt_receive")
           fndrr_am += v
         end
       end
-      fdrr_am = exp[[x.id, "forward", "delivered", "receive"]].blank? ? 0 : exp[[x.id, "forward", "delivered", "receive"]]
+      fdrr_am = exp[[x.id, "forward", "delivered", "receipt_receive"]].blank? ? 0 : exp[[x.id, "forward", "delivered", "receipt_receive"]]
       fdrn_am = exp[[x.id, "forward", "delivered", nil]].blank? ? 0 : exp[[x.id, "forward", "delivered", nil]]
       rd_per = f_total_am>0 ? (rd_am/f_total_am.to_f*100).round(2) : 0
 
@@ -655,5 +655,13 @@ class Express < ApplicationRecord
     results["合计"] = [f_total_am_hj, fd_am_hj, fw_am_hj, fdrr_am_hj, fdrn_am_hj, rd_am_hj, rw_am_hj, fr_am_hj, fndrr_am_hj, rd_per_hj]
 
     return results
+  end
+
+  def receipt_flag_name
+    receipt_flag.blank? ? "" : Express::RECEIPT_FLAG["#{receipt_flag}".to_sym]
+  end
+
+  def receipt_status_name
+    Express::RECEIPT_STATUS["#{Express.receipt_statuses.invert[receipt_status]}".to_sym]
   end
 end

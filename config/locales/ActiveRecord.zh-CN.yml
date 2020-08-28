@@ -309,6 +309,10 @@ zh-CN:
         desc: "备注"
         delivered_days: "妥投天数"
         receiver_district: "收件人区域"
+        receipt_flag: "正向/反向"
+        receipt_status: "返单状态"
+        pre_waybill_no: "正向单号"
+        receipt_waybill_no: "反向单号"
       message:
         title: "标题"
         content: "内容"

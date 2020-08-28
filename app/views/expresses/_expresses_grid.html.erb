@@ -77,6 +77,22 @@
     [(express.last_op_at.blank? ? "" : (l express.last_op_at)),{style: 'font-size: 12px;'}]
   end
 
+  g.column name: model_class.human_attribute_name(:receipt_flag), attribute: 'receipt_flag' do |express|
+    [(express.receipt_flag_name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:receipt_status), attribute: 'receipt_status' do |express|
+    [(express.receipt_status_name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:pre_waybill_no), attribute: 'pre_waybill_no' do |express|
+    [(express.pre_waybill_no),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:receipt_waybill_no), attribute: 'receipt_waybill_no' do |express|
+    [(express.receipt_waybill_no),{style: 'font-size: 12px;'}]
+  end
+
   g.column in_csv: false do |express|
     ActiveSupport::SafeBuffer.new << 
       (link_to '邮件全过程信息', get_mail_trace_express_path(express), :class => 'btn btn-xs btn-primary', target: '_blank' if can? :read, express) 
