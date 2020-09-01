@@ -22,11 +22,17 @@ zh-CN:
             role: :User
     business:
       name: "商户管理"
+      needrole:
+        can: :read
+        role: :Business
       submenu:
         business:
           name: "商户管理"
           link: "/businesses"
           need_count: false
+          needrole:
+            can: :read
+            role: :Business
     report:
       name: "报表管理"
       submenu:
@@ -80,11 +86,17 @@ zh-CN:
           need_count: false
     message:
       name: "消息管理"
+      needrole:
+        can: :read
+        role: :Message
       submenu:
         message:
           name: "消息管理"
           link: "/messages"
           need_count: false
+          needrole:
+            can: :read
+            role: :Message
     # up_downloads:
     #   name: "模板管理"
     #   needrole:
