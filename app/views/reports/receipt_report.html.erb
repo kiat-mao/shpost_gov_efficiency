@@ -35,7 +35,7 @@
         <td><u><%= link_to v[6], get_expresses_path(nil, "waiting", nil, (k.eql?"合计") ? nil : k.id, nil, "receipt", nil), target: '_blank' %></u></td>
         <td><u><%= link_to v[7], get_expresses_path(nil, "returns", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil), target: '_blank' %></u></td>
         <td id='waiting'><%= link_to v[8], get_expresses_path(nil, "not_delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receive"), target: '_blank' %></td>
-        <td><u><%= v[9].to_s(:rounded, precision: 2)+"%" %></u></td>
+        <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
       </tr>
     <% end %>
     </tbody>
