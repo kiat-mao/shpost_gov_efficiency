@@ -29,12 +29,12 @@
         <td><u><%= link_to v[0], get_expresses_path(nil, nil, nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil), target: '_blank' %></u></td>
         <td><u><%= link_to v[1], get_expresses_path(nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil), target: '_blank' %></u></td>
         <td><u><%= link_to v[2], get_expresses_path(nil, "waiting", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[3], get_expresses_path(nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receive"), target: '_blank' %></u></td>
-        <td><u><%= link_to v[4], get_expresses_path(nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[3], get_expresses_path(nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_receive"), target: '_blank' %></u></td>
+        <td><u><%= link_to v[4], get_expresses_path(nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "no_receipt_receive"), target: '_blank' %></u></td>
         <td><u><%= link_to v[5], get_expresses_path(nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "receipt", nil), target: '_blank' %></u></td>
         <td><u><%= link_to v[6], get_expresses_path(nil, "waiting", nil, (k.eql?"合计") ? nil : k.id, nil, "receipt", nil), target: '_blank' %></u></td>
         <td><u><%= link_to v[7], get_expresses_path(nil, "returns", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil), target: '_blank' %></u></td>
-        <td id='waiting'><%= link_to v[8], get_expresses_path(nil, "not_delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receive"), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[8], get_expresses_path(nil, "not_delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_receive"), target: '_blank' %></td>
         <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
       </tr>
     <% end %>

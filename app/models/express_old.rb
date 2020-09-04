@@ -14,22 +14,16 @@ class Express < ApplicationRecord
   enum whereis: {in_transit: 'in_transit', delivery_part: 'delivery part'}
   WHEREIS_NAME = {in_transit: '在途中', delivery_part: '投递端'}
 
-  #enum base_product_no: {standard_express: '11210', express_package: '11312'}
+  enum base_product_no: {standard_express: '11210', express_package: '11312'}
   BASE_PRODUCT_NAME = {standard_express: '标快', express_package: '快包', other_product: '其他'}
-  BASE_PRODUCT_NOS =  {standard_express: '11210', express_package: '11312'}
-  BASE_PRODUCT_SELECT = {'11210' => '标快', '11312' => '快包', other_product: '其他'}
 
-  enum receipt_flag: {forward: 'forward', receipt: 'receipt', no_receipt_flag: nil}
-  RECEIPT_FLAG = {forward: '正向邮件', receipt: '反向邮件', no_receipt_flag: '普通邮件'}
-  RECEIPT_FLAG_SELECT = {forward: '正向邮件', receipt: '反向邮件', null: '普通邮件'}
-
+  enum receipt_flag: {forward: 'forward', receipt: 'receipt'}
+  RECEIPT_FLAG = {forward: '正向邮件', receipt: '反向邮件'}
+  
   enum receipt_status: {receipt_receive: 'receipt_receive', no_receipt_receive: nil}
   RECEIPT_STATUS = {receipt_receive: '已收寄', no_receipt_receive: '未收寄'}
-  RECEIPT_STATUS_SELECT = {receipt_receive: '已收寄', null: '未收寄'}
-  scope :standard_express, -> {where(base_product_no: '11210')}
-  scope :express_package, -> {where(base_product_no: '11312')}
-  scope :other_product, -> {where.not(base_product_no: Express::BASE_PRODUCT_NOS.values).or(Express.where(base_product_no: nil))}
 
+  scope :other_product, -> {where.not(base_product_no: self.base_product_nos.values).or(Express.where(base_product_no: nil))}
   
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day
@@ -107,7 +101,7 @@ class Express < ApplicationRecord
       pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
     else
       days = (start_date...end_date).to_a.map{|x| x.strftime("%d")}
-      pkp_waybill_bases = pkp_waybill_bases.where(created_day: days)
+      pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
     end
     ActiveRecord::Base.transaction do
       pkp_waybill_bases.each do |pkp_waybill_base|
@@ -429,18 +423,12 @@ class Express < ApplicationRecord
       expresses = expresses.where(whereis: params[:transit_delivery])
     end
 
-    if !params[:product].blank? || (!params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:base_product_no].blank? && !params[:expresses][:f][:base_product_no][0].blank?)
-      if !params[:product].blank?
-        product = params[:product]
-      else
-        product = params[:expresses][:f][:base_product_no][0]
-      end
-      if product.eql?"other_product"
+    if !params[:product].blank?
+      if params[:product].eql?"other_product"
         expresses = expresses.other_product
-        params[:expresses][:f][:base_product_no] = nil
-      elsif product.eql?"standard_express"
+      elsif params[:product].eql?"standard_express"
         expresses = expresses.standard_express
-      elsif product.eql?"express_package"
+      elsif params[:product].eql?"express_package"
         expresses = expresses.express_package
       end
     end
@@ -450,11 +438,7 @@ class Express < ApplicationRecord
     end
 
     if !params[:receipt_status].blank?
-      if params[:receipt_status].eql?"no_receipt_receive"
-        expresses = expresses.no_receipt_receive
-      elsif params[:receipt_status].eql?"receipt_receive"
-        expresses = expresses.receipt_receive
-      end
+      expresses = expresses.where(receipt_status: params[:receipt_status])
     end
 
     # byebug
@@ -674,20 +658,10 @@ class Express < ApplicationRecord
   end
 
   def receipt_flag_name
-    Express::RECEIPT_FLAG["#{Express.receipt_flags.invert[receipt_flag]}".to_sym]
+    receipt_flag.blank? ? "" : Express::RECEIPT_FLAG["#{receipt_flag}".to_sym]
   end
 
   def receipt_status_name
-    (!receipt_flag.blank? && (receipt_flag.eql?"forward")) ? Express::RECEIPT_STATUS["#{Express.receipt_statuses.invert[receipt_status]}".to_sym] : ""
-  end
-
-  def base_product_no_name
-    if !base_product_no.blank? && ((base_product_no.eql?BASE_PRODUCT_NOS["standard_express".to_sym]) || (base_product_no.eql?BASE_PRODUCT_NOS["express_package".to_sym]))
-      Express::BASE_PRODUCT_NAME["#{BASE_PRODUCT_NOS.invert[base_product_no]}".to_sym]
-    else
-      Express::BASE_PRODUCT_NAME["other_product".to_sym]
-    end
+    Express::RECEIPT_STATUS["#{Express.receipt_statuses.invert[receipt_status]}".to_sym]
   end
 end
-
-

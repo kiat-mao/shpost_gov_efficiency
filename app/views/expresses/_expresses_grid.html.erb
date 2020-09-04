@@ -70,18 +70,23 @@
     [express.whereis_name, {style: 'font-size: 12px;'}]
   end
 
-  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc' do |express|    [express.try(:last_op_desc),{style: 'font-size: 12px;'}]
+  g.column name: '产品类型', attribute: 'base_product_no', custom_filter: Express::BASE_PRODUCT_SELECT.invert do |express| 
+    [express.base_product_no_name, {style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc' do |express|    
+    [express.last_op_desc.try(:truncate, 35), {title: express.last_op_desc}]
   end
 
   g.column name: model_class.human_attribute_name(:last_op_at), attribute: 'last_op_at' do |express|
     [(express.last_op_at.blank? ? "" : (l express.last_op_at)),{style: 'font-size: 12px;'}]
   end
 
-  g.column name: model_class.human_attribute_name(:receipt_flag), attribute: 'receipt_flag' do |express|
+  g.column name: model_class.human_attribute_name(:receipt_flag), attribute: 'receipt_flag', custom_filter: Express::RECEIPT_FLAG_SELECT.invert do |express| 
     [(express.receipt_flag_name),{style: 'font-size: 12px;'}]
   end
 
-  g.column name: model_class.human_attribute_name(:receipt_status), attribute: 'receipt_status' do |express|
+  g.column name: model_class.human_attribute_name(:receipt_status), attribute: 'receipt_status', custom_filter: Express::RECEIPT_STATUS_SELECT.invert do |express| 
     [(express.receipt_status_name),{style: 'font-size: 12px;'}]
   end
 
