@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :areas
   resources :expresses do
     collection do
       get 'deliver_market_detail'
