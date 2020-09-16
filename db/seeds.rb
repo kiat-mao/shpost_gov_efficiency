@@ -1211,7 +1211,7 @@ Area.where(code: '232704').first_or_create(name: '呼中区', is_prov: FALSE,is_
 Area.where(code: '232721').first_or_create(name: '呼玛县', is_prov: FALSE,is_city:FALSE,is_dist:TRUE)
 Area.where(code: '232722').first_or_create(name: '塔河县', is_prov: FALSE,is_city:FALSE,is_dist:TRUE)
 Area.where(code: '232723').first_or_create(name: '漠河县', is_prov: FALSE,is_city:FALSE,is_dist:TRUE)
-Area.where(code: '310000').first_or_create(name: '上海市', is_prov: TRUE,is_city:FALSE,is_dist:FALSE)
+Area.where(code: '310000').first_or_create(name: '上海市', is_prov: TRUE,is_city:TRUE,is_dist:FALSE)
 Area.where(code: '310101').first_or_create(name: '黄浦区', is_prov: FALSE,is_city:FALSE,is_dist:TRUE)
 Area.where(code: '310104').first_or_create(name: '徐汇区', is_prov: FALSE,is_city:FALSE,is_dist:TRUE)
 Area.where(code: '310105').first_or_create(name: '长宁区', is_prov: FALSE,is_city:FALSE,is_dist:TRUE)

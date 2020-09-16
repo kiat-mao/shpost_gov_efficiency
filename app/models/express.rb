@@ -26,8 +26,11 @@ class Express < ApplicationRecord
   enum receipt_status: {receipt_receive: 'receipt_receive', no_receipt_receive: nil}
   RECEIPT_STATUS = {receipt_receive: '已收寄', no_receipt_receive: '未收寄'}
   RECEIPT_STATUS_SELECT = {receipt_receive: '已收寄', null: '未收寄'}
+
   scope :standard_express, -> {where(base_product_no: '11210')}
+
   scope :express_package, -> {where(base_product_no: '11312')}
+
   scope :other_product, -> {where.not(base_product_no: Express::BASE_PRODUCT_NOS.values).or(Express.where(base_product_no: nil))}
 
   
@@ -138,15 +141,19 @@ class Express < ApplicationRecord
     end
 
     # express.posting_date = pkp_waybill_base.biz_occur_date
-    express.posting_date = pkp_waybill_base.biz_occur_date.to_date
+    express.posting_date = pkp_waybill_base.biz_occur_date.to_time
+    express.posting_hour = pkp_waybill_base.biz_occur_date.hour
 
     express.receiver_province_no = pkp_waybill_base.receiver_province_no
-
+    express.receiver_city_no = pkp_waybill_base.receiver_city_no
+    express.receiver_county_no = pkp_waybill_base.receiver_county_no
+    express.receiver_district_no = pkp_waybill_base.receiver_district_no
+    
     express.receiver_district = "#{pkp_waybill_base.receiver_province_name},#{pkp_waybill_base.receiver_city_name},#{pkp_waybill_base.receiver_county_name}"
     
     express.base_product_no = pkp_waybill_base.base_product_no
 
-
+    # receipt
     if ! pkp_waybill_base.receipt_flag.blank?
       if pkp_waybill_base.receipt_flag.eql?('6')
         express.receipt_flag = Express.receipt_flags[:forward]
