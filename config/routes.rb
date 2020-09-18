@@ -85,6 +85,10 @@ Rails.application.routes.draw do
       get 'receipt_report'
       post 'receipt_report'
       post 'receipt_report_export'
+      get 'deliver_province_report'
+      post 'deliver_province_report'
+      post 'deliver_prov_city_report_export'
+      get 'deliver_city_report'
     end
   end
 

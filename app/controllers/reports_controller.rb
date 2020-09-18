@@ -171,6 +171,36 @@ class ReportsController < ApplicationController
     end
   end
 
+  def deliver_province_report
+  	@is_search = nil
+  	@search_time = "by_d"
+  	@is_court = nil
+  	@is_market = nil
+  	@is_monitor = false
+  	@is_province = true
+
+		unless request.get?
+			init_result_province_city
+			@is_search = "yes"
+			@search_time = params[:search_time].blank? ? "by_d" : params[:search_time]
+		end
+  end
+
+  def deliver_city_report
+		init_result_province_city
+	end
+
+	def deliver_prov_city_report_export
+		init_result_province_city
+
+  	if @results.blank?
+      flash[:alert] = "无数据"
+      redirect_to request.referer
+    else
+    	send_data(province_city_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "投递情况监控报表(省市维度)_#{Time.now.strftime("%Y%m%d")}.xls")  
+    end
+  end
+
   private
   	def deliver_market_report_xls_content_for(params,results)
 	  	xls_report = StringIO.new  
@@ -506,7 +536,92 @@ class ReportsController < ApplicationController
 
 	  end
 
+	  def init_result_province_city
+	  	@results = nil
+	  		  	
+    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
 
+      @results = Express.get_province_city_result(expresses, params)
+    end
+
+    def province_city_report_xls_content_for(params,results)
+	  	xls_report = StringIO.new  
+	    book = Spreadsheet::Workbook.new  
+	    sheet1 = book.create_worksheet :name => "统计表"  
+	    
+	    title = Spreadsheet::Format.new :weight => :bold, :size => 12, :border => :thin, :align => :center
+	    filter = Spreadsheet::Format.new :size => 11
+	    body = Spreadsheet::Format.new :size => 11, :border => :thin, :align => :center
+	    red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
+	    date_range = ""
+
+	    0.upto(2) do |x|
+	    	sheet1.row(x).default_format = filter
+	    end
+
+	    sheet1[0,0] = "二级行业名称:#{params["industry"]}"
+	    sheet1[0,2] = "客户类别:#{params["btype"]}"
+	    sheet1[0,4] = "客户:#{params["business"]}"
+	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
+	    sheet1[0,8] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[1,0] = "集散中心:#{params["distributive_center_no"]}"
+	    sheet1[1,2] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
+	    if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
+    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
+      	end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month.strftime("%Y-%m-%d")
+    		date_range = "收寄范围：#{start_date} - #{end_date}"
+    	else
+    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
+    	end
+    	sheet1[2,0] = date_range
+	    
+	    0.upto(14) do |x|
+	      sheet1.column(x).width = 16
+	    end
+
+	    0.upto(14) do |x|
+	      sheet1.row(4).set_format(x, title)
+	    end
+	    sheet1.row(4).concat %w{收寄省 收寄数 总妥投数 妥投率 平均妥投天数 次日妥投率 次日妥投总数 三日妥投率 三日妥投总数 五日妥投率 五日妥投总数 未妥投总数 未妥投率 退回数 退回率%}
+
+	    count_row = 5
+
+	    results.each do |k, v|
+	      sheet1[count_row,0] = k[1]
+	      sheet1[count_row,1] = v[0]
+	      sheet1[count_row,2] = v[1]
+	      sheet1[count_row,3] = v[2].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,4] = v[3].to_s(:rounded, precision: 2)
+	      sheet1[count_row,5] = v[4].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,6] = v[5]
+	      sheet1[count_row,7] = v[6].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,8] = v[7]
+	      sheet1[count_row,9] = v[8].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,10] = v[9]
+	      sheet1[count_row,11] = v[10]
+	      sheet1[count_row,12] = v[11].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,13] = v[12]
+	      sheet1[count_row,14] = v[13].to_s(:rounded, precision: 2)+"%"
+	      
+	      0.upto(10) do |i|
+		      sheet1.row(count_row).set_format(i, body)
+		    end
+		    11.upto(12) do |i|
+		    	sheet1.row(count_row).set_format(i, red)
+		    end
+		    13.upto(14) do |i|
+		    	sheet1.row(count_row).set_format(i, body)
+		    end
+		    	      
+	      count_row += 1
+	    end
+
+	    book.write xls_report  
+	    xls_report.string
+
+	  end
+
+    
   	def to_date(time)
 	    # date = Date.civil(time.split(/-|\//)[0].to_i,time.split(/-|\//)[1].to_i,time.split(/-|\//)[2].to_i)
 	    time.to_time
