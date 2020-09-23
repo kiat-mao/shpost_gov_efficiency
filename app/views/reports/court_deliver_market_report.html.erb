@@ -1,8 +1,22 @@
 
 <br>
 <font face="微软雅黑" color='#006030' size=6>法院投递情况监控报表-市场维度</font>   
-
+<%= form_tag(court_deliver_market_report_reports_path, name: 'form', method: 'post') do %>
 <%= render :partial => 'form' %>
+<table>
+    <tr>
+      <td>
+        <div id="market_monitor_search">
+          <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %></td>
+        </div>
+      <td>
+        <div id="export">
+          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], destination: params[:destination], search_time: params[:search_time], year: params[:year], month: params[:month], is_court: params[:is_court], is_monitor: params[:is_monitor], product: params[:product]), :class => 'btn btn-primary', method: :post%>
+        </div>
+      </td>
+    </tr>
+  </table>
+<% end -%>   
 
 <br>
 <% if !@results.blank? %>

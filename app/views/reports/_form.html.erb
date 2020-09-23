@@ -1,4 +1,4 @@
-<%= form_tag(get_report_path(@is_court, @is_market, @is_monitor, @is_province), name: 'form', method: 'post') do %>
+
   <table>
     <tr style="line-height: 40px;height: 40px;">
       <% if !@is_court.nil? %>
@@ -78,17 +78,4 @@
   <%= hidden_field_tag('search_type', @search_time) %>
   <%= hidden_field_tag('is_monitor', @is_monitor) %>
   <%= hidden_field_tag('is_province', @is_province) %>
-  <table>
-    <tr>
-      <td>
-        <div id="market_monitor_search">
-          <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %></td>
-        </div>
-      <td>
-        <div id="export">
-          <%= link_to "报表导出", get_export_path(@is_market, @is_province), :class => 'btn btn-primary', method: :post%>
-        </div>
-      </td>
-    </tr>
-  </table>
-<% end -%>    
+ 
