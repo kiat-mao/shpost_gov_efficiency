@@ -276,9 +276,10 @@ class Express < ApplicationRecord
     self.delivered_days = nil
   end
 
-  def self.get_deliver_market_result(expresses, params)
+  def self.get_deliver_market_result(expresses, params, current_user)
     results = {}
     businesses = nil
+    btypes = nil
     total_hj = 0
     deliver_hj = 0
     deliver3_hj = 0
@@ -289,19 +290,24 @@ class Express < ApplicationRecord
     in_transit_hj = 0
     delivery_part_hj = 0
 
-    if (!params[:is_court].blank?) && (params[:is_court].eql?"true")
-      businesses = Business.where(industry: "法院")
+    if current_user.superadmin? || current_user.company_admin?
+      if (!params[:is_court].blank?) && (params[:is_court].eql?"true")
+        businesses = Business.where(industry: "法院")
+      else
+        businesses = Business.where.not("businesses.industry = ?", "法院")
+      end
+      
+      if !params[:industry].blank?
+        businesses = businesses.where(industry: params[:industry])
+      end
+
+      if !params[:btype].blank?
+        businesses = businesses.where(btype: params[:btype])
+      end
+      btypes = businesses.select(:btype).distinct
     else
-      businesses = Business.where.not("businesses.industry = ?", "法院")
+      btypes = expresses.select("businesses.btype").distinct
     end
-    
-    if !params[:industry].blank?
-      businesses = businesses.where(industry: params[:industry])
-    end
-    if !params[:btype].blank?
-      businesses = businesses.where(btype: params[:btype])
-    end
-    btypes = businesses.select(:btype).distinct
        
     total_amount = expresses.group("businesses.btype").count
     status_amount = expresses.group("businesses.btype", "expresses.status").count

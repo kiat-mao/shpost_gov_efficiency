@@ -282,7 +282,7 @@ class ReportsController < ApplicationController
 	  		  	
     	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
 
-      @results = Express.get_deliver_market_result(expresses, params)
+      @results = Express.get_deliver_market_result(expresses, params, current_user)
   	end
 
   	def init_result_unit
