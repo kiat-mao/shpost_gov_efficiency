@@ -44,6 +44,10 @@ zh-CN:
           name: "投递监控报表(投递)"
           link: "/reports/deliver_unit_report"
           need_count: false
+        deliver_province_report:
+          name: "投递监控报表(省市)"
+          link: "/reports/deliver_province_report"
+          need_count: false
     court_report:
       name: "法院报表管理"
       submenu:
@@ -61,13 +65,6 @@ zh-CN:
         receipt_report:
           name: "返单用户报表"
           link: "/reports/receipt_report"
-          need_count: false
-    deliver_province_report:
-      name: "投递监控报表(省市)"
-      submenu:
-        deliver_province_report:
-          name: "投递监控报表(省市)"
-          link: "/reports/deliver_province_report"
           need_count: false
     monitor:
       name: "实时监控"

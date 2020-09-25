@@ -31,28 +31,44 @@
     [express.post_unit.try(:name),{style: 'font-size: 12px;'}]
   end
 
-  g.column name: '收寄区分公司', attribute: 'name', assoc: :post_unit do |express|
-    [express.post_unit.try(:parent_unit).try(:name),{style: 'font-size: 12px;'}]
+  g.column name: '收寄区分公司', attribute: 'name', assoc: :post_parent_unit, table_alias: 'post_parent_units_expresses' do |express|
+    [express.post_parent_unit.try(:name),{style: 'font-size: 12px;'}]
   end
 
   g.column name: model_class.human_attribute_name(:posting_date), attribute: 'posting_date' do |express|
     [(l express.posting_date),{style: 'font-size: 12px;'}]
   end
 
+  g.column name: '集散中心', attribute: 'distributive_center_no', custom_filter: Express::DISTRIBUTIVE_CENTER_NAME.invert do |express|
+    [express.distributive_center_name,{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: '收寄省', attribute: 'name', assoc: :receiver_province do |express|
+    [express.receiver_province.try(:name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: '收寄市', assoc: :receiver_city, attribute: 'name', table_alias: 'receiver_cities_expresses' do |express|
+    [express.receiver_city.try(:name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: '收寄区', attribute: 'name', assoc: :receiver_county, table_alias: "receiver_counties_expresses"  do |express|
+    [express.receiver_county.try(:name),{style: 'font-size: 12px;'}]
+  end
+
   g.column name: model_class.human_attribute_name(:receiver_district), attribute: 'receiver_district' do |express|
     [express.try(:receiver_district),{style: 'font-size: 12px;'}]
   end
 
-  g.column name: '最后投递区分公司', attribute: 'name', assoc: :last_unit do |express|
-    [express.last_unit.try(:parent_unit).try(:name),{style: 'font-size: 12px;'}]
-  end
-
-  g.column name: '最后投递单位', attribute: 'no', assoc: :last_unit do |express|
+  g.column name: '最后投递单位', attribute: 'no', assoc: :last_unit, table_alias: 'last_units_expresses' do |express|
     [express.last_unit.try(:no)||express.last_unit_no,{style: 'font-size: 12px;'}]
   end
 
-  g.column name: '最后投递单位名称', attribute: 'name', assoc: :last_unit do |express|
+  g.column name: '最后投递单位名称', attribute: 'name', assoc: :last_unit, table_alias: 'last_units_expresses' do |express|
     [express.last_unit.try(:name)||express.last_unit_name,{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: '最后投递区分公司', attribute: 'name', assoc: :last_parent_unit, table_alias: 'last_parent_units_expresses' do |express|
+    [express.last_parent_unit.try(:name),{style: 'font-size: 12px;'}]
   end
 
   # g.column name: model_class.human_attribute_name(:status), attribute: 'status' do |express|
