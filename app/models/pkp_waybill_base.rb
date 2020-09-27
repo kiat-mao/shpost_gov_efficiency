@@ -1,5 +1,5 @@
 class PkpWaybillBase < PkpDataRecord
-  
+  has_one :pkp_waybill_biz, foreign_key: 'waybill_no', primary_key: 'waybill_no'#, optional: true
 
   #  # 4 common
   # def self.get_pkp_waybill_bases_yesterday(name)
