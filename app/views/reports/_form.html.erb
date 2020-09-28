@@ -34,7 +34,7 @@
     <table>
       <tr style="line-height: 40px;height: 40px;">
         <td><%= label_tag(:distributive_center_no, "集散中心:") %></td>
-        <td><%= select_tag :distributive_center_no, options_for_select(["","南京集散"], :selected=>params[:distributive_center_no]) %></td> 
+        <td><%= select_tag :distributive_center_no, options_for_select(Express::DISTRIBUTIVE_CENTER_NAME.invert.to_a.insert(0,""), :selected=>params[:distributive_center_no]) %></td> 
         <td><%= label_tag(:posting_hour_start, "按收寄时间点:") %></td>
         <td><%= select_tag :posting_hour_start, options_for_select(Report.select_posting_hours, :selected=>params[:posting_hour_start].blank? ? "0" : params[:posting_hour_start]) %></td> 
         <td><%= label_tag(:posting_hour_end, "-") %></td>
