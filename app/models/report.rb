@@ -140,11 +140,9 @@ class Report
         expresses = expresses.receipt_receive
       end
     end
-
+      
     if !params[:distributive_center_no].blank?
-      if params[:distributive_center_no].eql?"南京集散"
-        expresses = expresses.where(distributive_center_no: "nj")
-      end         
+      expresses = expresses.where(distributive_center_no: params[:distributive_center_no])
     end
 
     if !params[:posting_hour_start].blank? && !params[:posting_hour_end].blank?
