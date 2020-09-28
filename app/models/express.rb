@@ -34,7 +34,7 @@ class Express < ApplicationRecord
   RECEIPT_STATUS = {receipt_receive: '已收寄', no_receipt_receive: '未收寄'}
   RECEIPT_STATUS_SELECT = {receipt_receive: '已收寄', null: '未收寄'}
 
-  DISTRIBUTIVE_CENTER_NAME = { nj: '南京集散'}
+  DISTRIBUTIVE_CENTER_NAME = { 21112100: '南京集航'}
 
   scope :standard_express, -> {where(base_product_no: '11210')}
 
@@ -161,6 +161,10 @@ class Express < ApplicationRecord
     express.receiver_district = "#{pkp_waybill_base.receiver_province_name},#{pkp_waybill_base.receiver_city_name},#{pkp_waybill_base.receiver_county_name}"
     
     express.base_product_no = pkp_waybill_base.base_product_no
+
+    #distributive_center_no
+    #NJ = 21112100
+    express.distributive_center_no = pkp_waybill_base.pkp_waybill_biz.distributive_center_no
 
     # receipt
     if ! pkp_waybill_base.receipt_flag.blank?
