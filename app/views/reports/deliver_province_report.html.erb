@@ -45,9 +45,9 @@
     <% @results.each do |k, v| %>
      <tr class= 'nowrap'>
       <% if !k[0].blank? %>
-        <td><u><%= link_to k[1], deliver_city_report_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], destination: params[:destination], search_time: params[:search_time], year: params[:year], month: params[:month], product: params[:product], distributive_center_no: params[:distributive_center_no], posting_hour_start: params[:posting_hour_start], posting_hour_end: params[:posting_hour_end], receiver_province_no: k[0]), target: '_blank' %></u></td>
+        <td><u><%= link_to k[1].blank? ? "其他" : k[1], deliver_city_report_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], destination: params[:destination], search_time: params[:search_time], year: params[:year], month: params[:month], product: params[:product], distributive_center_no: params[:distributive_center_no], posting_hour_start: params[:posting_hour_start], posting_hour_end: params[:posting_hour_end], receiver_province_no: k[0]), target: '_blank' %></u></td>
       <% else %>
-        <td><%= k[1] %></td>
+        <td><%= k[1].blank? ? "其他" : k[1] %></td>
       <% end %>
       <td><u><%= link_to v[0], get_expresses_path(nil, nil, nil, nil, nil, nil, nil,nil, k[0], nil), target: '_blank' %></u></td>
       <td><u><%= link_to v[1], get_expresses_path(nil, "delivered", nil, nil, nil, nil, nil, nil, k[0], nil), target: '_blank' %></u></td>

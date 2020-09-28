@@ -470,7 +470,7 @@ class Report
       deliver5 = expresses.delivered.where("expresses.delivered_days < 5").group(:receiver_province_no, "areas.name").count
       deliver_avg = expresses.delivered.group(:receiver_province_no, "areas.name").average(:delivered_days)
     else
-      expresses = expresses.joins("left join areas on areas.code=expresses.receiver_city_no").where.not("areas.is_prov=true and areas.is_city=false")
+      expresses = expresses.joins("left join areas on areas.code=expresses.receiver_city_no").where.not("areas.is_prov=? and areas.is_city=?", true, false)
       total_amount = expresses.group(:receiver_city_no, "areas.name").count
       status_amount = expresses.group(:receiver_city_no, "areas.name", :status).count
       deliver2 = expresses.delivered.where("expresses.delivered_days < 2").group(:receiver_city_no, "areas.name").count
