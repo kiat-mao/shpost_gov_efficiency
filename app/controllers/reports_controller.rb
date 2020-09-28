@@ -587,7 +587,7 @@ class ReportsController < ApplicationController
 	    count_row = 5
 
 	    results.each do |k, v|
-	      sheet1[count_row,0] = k[1].blank? ? "其他" : k[1]
+	      sheet1[count_row,0] = k[1].blank? ? k[0] : k[1]
 	      sheet1[count_row,1] = v[0]
 	      sheet1[count_row,2] = v[1]
 	      sheet1[count_row,3] = v[2].to_s(:rounded, precision: 2)+"%"

@@ -36,7 +36,7 @@
     <tbody>
     <% @results.each do |k, v| %>
      <tr class= 'nowrap'>
-      <td><%= k[1].blank? ? "其他" : k[1] %></td>
+      <td><%= k[1].blank? ? k[0] : k[1] %></td>
       <td><u><%= link_to v[0], get_expresses_path(nil, nil, nil, nil, nil, nil, nil,nil, params[:receiver_province_no], k[0]), target: '_blank' %></u></td>
       <td><u><%= link_to v[1], get_expresses_path(nil, "delivered", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0]), target: '_blank' %></u></td>
       <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
