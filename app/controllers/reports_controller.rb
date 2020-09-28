@@ -280,9 +280,9 @@ class ReportsController < ApplicationController
 
 	  	@results = nil
 	  		  	
-    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
+    	expresses = Report.get_filter_expresses(params).accessible_by(current_ability)
 
-      @results = Express.get_deliver_market_result(expresses, params, current_user)
+      @results = Report.get_deliver_market_result(expresses, params, current_user)
   	end
 
   	def init_result_unit
@@ -290,9 +290,9 @@ class ReportsController < ApplicationController
 
 	  	@results = nil
 	  		  	
-    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
+    	expresses = Report.get_filter_expresses(params).accessible_by(current_ability)
 
-      @results = Express.get_deliver_unit_result(expresses)
+      @results = Report.get_deliver_unit_result(expresses)
   	end
 
   	def deliver_unit_report_xls_content_for(params,results)
@@ -384,9 +384,9 @@ class ReportsController < ApplicationController
 
 	  	@results = nil
 	  		  	
-    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
+    	expresses = Report.get_filter_expresses(params).accessible_by(current_ability)
 
-      @results = Express.get_business_result(expresses, params)
+      @results = Report.get_business_result(expresses, params)
     end
 
   	def business_market_report_xls_content_for(params,results)
@@ -464,9 +464,9 @@ class ReportsController < ApplicationController
 	  def init_result_receipt
 	  	@results = nil
 	  		  	
-    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
+    	expresses = Report.get_filter_expresses(params).accessible_by(current_ability)
 
-      @results = Express.get_receipt_result(expresses, params)
+      @results = Report.get_receipt_result(expresses, params)
     end
 
     def receipt_report_xls_content_for(params,results)
@@ -539,9 +539,9 @@ class ReportsController < ApplicationController
 	  def init_result_province_city
 	  	@results = nil
 	  		  	
-    	expresses = Express.get_filter_expresses(params).accessible_by(current_ability)
+    	expresses = Report.get_filter_expresses(params).accessible_by(current_ability)
 
-      @results = Express.get_province_city_result(expresses, params)
+      @results = Report.get_province_city_result(expresses, params)
     end
 
     def province_city_report_xls_content_for(params,results)
