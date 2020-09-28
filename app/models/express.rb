@@ -3,8 +3,15 @@ class Express < ApplicationRecord
   belongs_to :post_unit, class_name: 'Unit', optional: true
   belongs_to :last_unit, class_name: 'Unit', optional: true
 
+  has_one :post_parent_unit, class_name: 'Unit', through: :post_unit, source: 'parent_unit'
+  has_one :last_parent_unit, class_name: 'Unit', through: :last_unit, source: 'parent_unit'
+
   belongs_to :pre_express, class_name: 'Express', optional: true
   belongs_to :receipt_express, class_name: 'Express', optional: true
+
+  belongs_to :receiver_province, class_name: 'Area', :primary_key => 'code', :foreign_key => 'receiver_province_no', optional: true
+  belongs_to :receiver_city, class_name: 'Area', :primary_key => 'code', :foreign_key => 'receiver_city_no', optional: true
+  belongs_to :receiver_county, class_name: 'Area', :primary_key => 'code', :foreign_key => 'receiver_county_no', optional: true
 
   validates_presence_of :express_no, :business_id, :message => '不能为空'
   
@@ -26,6 +33,8 @@ class Express < ApplicationRecord
   enum receipt_status: {receipt_receive: 'receipt_receive', no_receipt_receive: nil}
   RECEIPT_STATUS = {receipt_receive: '已收寄', no_receipt_receive: '未收寄'}
   RECEIPT_STATUS_SELECT = {receipt_receive: '已收寄', null: '未收寄'}
+
+  DISTRIBUTIVE_CENTER_NAME = { nj: '南京集散'}
 
   scope :standard_express, -> {where(base_product_no: '11210')}
 
@@ -152,10 +161,6 @@ class Express < ApplicationRecord
     express.receiver_district = "#{pkp_waybill_base.receiver_province_name},#{pkp_waybill_base.receiver_city_name},#{pkp_waybill_base.receiver_county_name}"
     
     express.base_product_no = pkp_waybill_base.base_product_no
-
-    #distributive_center_no
-    #NJ = 21112100
-    express.distributive_center_no = pkp_waybill_base.pkp_waybill_biz.distributive_center_no
 
     # receipt
     if ! pkp_waybill_base.receipt_flag.blank?
@@ -478,7 +483,7 @@ class Express < ApplicationRecord
 
     if !params[:distributive_center_no].blank?
       if params[:distributive_center_no].eql?"南京集散"
-        expresses = expresses.where(distributive_center_no: "21112100")
+        expresses = expresses.where(distributive_center_no: "nj")
       end         
     end
 
@@ -796,6 +801,10 @@ class Express < ApplicationRecord
     end
 # byebug
     return results
+  end
+
+  def distributive_center_name
+    distributive_center_no.blank? ? "" : Express::DISTRIBUTIVE_CENTER_NAME["#{distributive_center_no}".to_sym]
   end
 
 end
