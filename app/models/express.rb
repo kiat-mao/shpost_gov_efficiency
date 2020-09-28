@@ -34,7 +34,7 @@ class Express < ApplicationRecord
   RECEIPT_STATUS = {receipt_receive: '已收寄', no_receipt_receive: '未收寄'}
   RECEIPT_STATUS_SELECT = {receipt_receive: '已收寄', null: '未收寄'}
 
-  DISTRIBUTIVE_CENTER_NAME = { 21112100: '南京集航'}
+  DISTRIBUTIVE_CENTER_NAME = { '21112100': '南京集航'}
 
   scope :standard_express, -> {where(base_product_no: '11210')}
 
