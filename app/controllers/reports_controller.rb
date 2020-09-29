@@ -219,7 +219,7 @@ class ReportsController < ApplicationController
 	    sheet1[0,2] = "客户类别:#{params["btype"]}"
 	    sheet1[0,4] = "客户:#{params["business"]}"
 	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,8] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,8] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -315,7 +315,7 @@ class ReportsController < ApplicationController
 	    sheet1[0,4] = "客户:#{params["business"]}"
 	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,8] = "区分公司:#{lv2_unit}"
-	    sheet1[0,10] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,10] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -405,7 +405,7 @@ class ReportsController < ApplicationController
 	    sheet1[0,0] = "客户类别:#{params["detail_btype"]}"
 	    sheet1[0,2] = "客户:#{params["business"]}"
 	    sheet1[0,4] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,6] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,6] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -486,7 +486,7 @@ class ReportsController < ApplicationController
 	    sheet1[0,2] = "客户类别:#{params["btype"]}"
 	    sheet1[0,4] = "客户:#{params["business"]}"
 	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,8] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,8] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -563,7 +563,7 @@ class ReportsController < ApplicationController
 	    sheet1[0,2] = "客户类别:#{params["btype"]}"
 	    sheet1[0,4] = "客户:#{params["business"]}"
 	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,8] = "产品类型:#{Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,8] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
 	    sheet1[1,0] = "集散中心:#{params["distributive_center_no"]}"
 	    sheet1[1,2] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
 	    if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -587,7 +587,7 @@ class ReportsController < ApplicationController
 	    count_row = 5
 
 	    results.each do |k, v|
-	      sheet1[count_row,0] = k[1].blank? ? k[0] : k[1]
+	      sheet1[count_row,0] = k[0].blank? ? "其他" : ((k[0].eql?"合计") ? "合计" : (k[1].blank? ? k[0] : k[1]))
 	      sheet1[count_row,1] = v[0]
 	      sheet1[count_row,2] = v[1]
 	      sheet1[count_row,3] = v[2].to_s(:rounded, precision: 2)+"%"

@@ -149,12 +149,20 @@ class Report
       expresses = expresses.where("posting_hour >= ? and posting_hour < ?", params[:posting_hour_start].to_i, params[:posting_hour_end].to_i)
     end
 
-    if !params[:receiver_province_no].blank?
-      expresses = expresses.where(receiver_province_no: params[:receiver_province_no])
+    if !params[:receiver_province_no].blank? && !(params[:receiver_province_no].eql?"合计")
+      if params[:receiver_province_no].eql?"nil"
+        expresses = expresses.where(receiver_province_no: nil)
+      else
+        expresses = expresses.where(receiver_province_no: params[:receiver_province_no])
+      end
     end
 
-    if !params[:receiver_city_no].blank?
-      expresses = expresses.where(receiver_city_no: params[:receiver_city_no])
+    if !params[:receiver_city_no].blank?&& !(params[:receiver_city_no].eql?"合计")
+      if params[:receiver_province_no].eql?"nil"
+        expresses = expresses.where(receiver_province_no: nil)
+      else
+        expresses = expresses.where(receiver_city_no: params[:receiver_city_no])
+      end
     end
 
     if !params[:delivered_days].blank?
@@ -460,9 +468,10 @@ class Report
     deliver5_hj = 0    #五日妥投总数
     waiting_hj = 0     #未妥投总数
     return_hj = 0      #退回数
-    
+
+    # 省
     if params[:receiver_province_no].blank?   
-      expresses = expresses.joins("left join areas on areas.code=expresses.receiver_province_no")
+      expresses = expresses.left_outer_joins(:receiver_province)
       total_amount = expresses.group(:receiver_province_no, "areas.name").count
       status_amount = expresses.group(:receiver_province_no, "areas.name", :status).count
       deliver2 = expresses.delivered.where("expresses.delivered_days < 2").group(:receiver_province_no, "areas.name").count
@@ -470,7 +479,9 @@ class Report
       deliver5 = expresses.delivered.where("expresses.delivered_days < 5").group(:receiver_province_no, "areas.name").count
       deliver_avg = expresses.delivered.group(:receiver_province_no, "areas.name").average(:delivered_days)
     else
-      expresses = expresses.joins("left join areas on areas.code=expresses.receiver_city_no").where.not("areas.is_prov=? and areas.is_city=?", true, false)
+      # 市
+      # expresses = expresses.left_outer_joins(:receiver_province).where.not("areas.is_prov=? and areas.is_city=?", true, false)
+      expresses = expresses.left_outer_joins(:receiver_city)
       total_amount = expresses.group(:receiver_city_no, "areas.name").count
       status_amount = expresses.group(:receiver_city_no, "areas.name", :status).count
       deliver2 = expresses.delivered.where("expresses.delivered_days < 2").group(:receiver_city_no, "areas.name").count
@@ -504,6 +515,9 @@ class Report
 
       results[k] = [total_am, deliver_am, deliver_per, deliver_days_avg, deliver2_per, deliver2_am, deliver3_per, deliver3_am, deliver5_per, deliver5_am, waiting_am, waiting_per, return_am, return_per]
     end
+
+    results = results.sort{|x,y|  x[0][0].nil? ? 1 : (y[0][0].nil? ? -1 : x[0][0]<=>y[0][0]) }.to_h
+
     deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
     deliver2_per_hj = total_hj>0 ? (deliver2_hj/total_hj.to_f*100).round(2) : 0
     deliver3_per_hj = total_hj>0 ? (deliver3_hj/total_hj.to_f*100).round(2) : 0
@@ -513,7 +527,7 @@ class Report
     deliver_days_avg_hj = expresses.delivered.average(:delivered_days).blank? ? 0 : expresses.delivered.average(:delivered_days)
       
     if total_hj>0
-      results[["","合计"]] = [total_hj, deliver_hj, deliver_per_hj, deliver_days_avg_hj, deliver2_per_hj, deliver2_hj, deliver3_per_hj, deliver3_hj, deliver5_per_hj, deliver5_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj]
+      results[["合计","合计"]] = [total_hj, deliver_hj, deliver_per_hj, deliver_days_avg_hj, deliver2_per_hj, deliver2_hj, deliver3_per_hj, deliver3_hj, deliver5_per_hj, deliver5_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj]
     end
 # byebug
     return results

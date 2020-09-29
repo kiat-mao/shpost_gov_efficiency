@@ -11,7 +11,7 @@
         </div>
       <td>
         <div id="export">
-          <%= link_to "报表导出", deliver_market_report_export_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], destination: params[:destination], search_time: params[:search_time], year: params[:year], month: params[:month], is_court: params[:is_court], is_monitor: params[:is_monitor], product: params[:product]), :class => 'btn btn-primary', method: :post%>
+          <%= link_to "报表导出", get_expresses_path("/reports/deliver_market_report_export", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
     </tr>
@@ -45,19 +45,19 @@
       <% if k.eql?"合计" %>
         <td><%= k %></td>
       <% else %>
-        <td><u><%= link_to k, business_market_report_reports_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: k, destination: params[:destination], search_time: params[:search_time], year: params[:year], month: params[:month], product: params[:product]), target: '_blank' %></u></td>
+        <td><u><%= link_to k, get_expresses_path("/reports/business_market_report", k, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
       <% end %>
-      <td><u><%= link_to v[0], get_expresses_path(k, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
-      <td><u><%= link_to v[1], get_expresses_path(k, "delivered", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+      <td><u><%= link_to v[0], get_expresses_path("/expresses", k, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+      <td><u><%= link_to v[1], get_expresses_path("/expresses", k, "delivered", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
       <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
       <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
       <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
       <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
-      <td id='waiting'><%= link_to v[5], get_expresses_path(k, "waiting", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
-      <td id='waiting'><%= link_to v[10], get_expresses_path(k, "waiting", nil, nil, "in_transit", nil, nil, nil, nil, nil), target: '_blank' %></td>
-      <td id='waiting'><%= link_to v[11], get_expresses_path(k, "waiting", nil, nil, "delivery_part", nil, nil, nil, nil, nil), target: '_blank' %></td>
+      <td id='waiting'><%= link_to v[5], get_expresses_path("/expresses", k, "waiting", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
+      <td id='waiting'><%= link_to v[10], get_expresses_path("/expresses", k, "waiting", nil, nil, "in_transit", nil, nil, nil, nil, nil), target: '_blank' %></td>
+      <td id='waiting'><%= link_to v[11], get_expresses_path("/expresses", k, "waiting", nil, nil, "delivery_part", nil, nil, nil, nil, nil), target: '_blank' %></td>
       <td><font color="red"><%= v[6].to_s(:rounded, precision: 2)+"%" %></font></td>
-      <td><u><%= link_to v[7], get_expresses_path(k, "returns", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+      <td><u><%= link_to v[7], get_expresses_path("/expresses", k, "returns", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
       <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
     </tr>
     <% end %>
