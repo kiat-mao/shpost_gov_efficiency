@@ -47,11 +47,11 @@ class Report
     if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
       if !params[:year].blank? && !params[:month].blank?
         start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month
-        end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month
+        end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month+1.day
       end
     else
       start_date = params[:posting_date_start] if !params[:posting_date_start].blank?
-      end_date = params[:posting_date_end] if !params[:posting_date_end].blank?
+      end_date = params[:posting_date_end].to_date+1.day if !params[:posting_date_end].blank?
     end
 
     if !start_date.blank?
