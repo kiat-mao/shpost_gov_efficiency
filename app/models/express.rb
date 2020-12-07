@@ -30,9 +30,9 @@ class Express < ApplicationRecord
   RECEIPT_FLAG = {forward: '正向邮件', receipt: '反向邮件', no_receipt_flag: '普通邮件'}
   RECEIPT_FLAG_SELECT = {forward: '正向邮件', receipt: '反向邮件', null: '普通邮件'}
 
-  enum receipt_status: {receipt_receive: 'receipt_receive', no_receipt_receive: nil}
-  RECEIPT_STATUS = {receipt_receive: '已收寄', no_receipt_receive: '未收寄'}
-  RECEIPT_STATUS_SELECT = {receipt_receive: '已收寄', null: '未收寄'}
+  enum receipt_status: {receipt_receive: 'receipt_receive', no_receipt_receive: nil, receipt_delivered: 'receipt_delivered'}
+  RECEIPT_STATUS = {receipt_receive: '已收寄', no_receipt_receive: '未收寄', receipt_delivered: '已妥投'}
+  RECEIPT_STATUS_SELECT = {receipt_receive: '已收寄', null: '未收寄', receipt_delivered: '已妥投'}
 
   DISTRIBUTIVE_CENTER_NAME = { '21112100': '南京集航'}
 
@@ -226,6 +226,10 @@ class Express < ApplicationRecord
       end
 
       self.fill_delivered_days
+
+      if self.receipt? && self.delivered?
+        self.pre_express.try(:receipt_delivered!)
+      end
     else
       self.status ||= Express::statuses[:waiting]
     end
