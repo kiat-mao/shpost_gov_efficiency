@@ -1,6 +1,6 @@
 
 <br>
-<font face="微软雅黑" color='#006030' size=6>法院投递情况监控-市场维度</font>   
+<font face="微软雅黑" color='#006030' size=6>法院投递情况实时监控-市场维度</font>   
 <%= form_tag(court_deliver_market_monitor_reports_path, name: 'form', method: 'post') do %>
 <%= render :partial => 'form' %>
 
@@ -24,13 +24,13 @@
 data-height="700">
   <thead>
     <tr class= 'nowrap'>
-      <th><b>行业市场</b></th>
+      <th><b>客户类别</b></th>
       <th><b>收寄数</b></th>
       <th><b>总妥投数</b></th>
       <th><b>妥投率</b></th>
-      <th><b>三日妥投率</b></th>
+      <!-- <th><b>三日妥投率</b></th>
       <th><b>次日妥投率</b></th>
-      <th><b>五日妥投率</b></th>
+      <th><b>五日妥投率</b></th> -->
       <th><b>未妥投总数</b></th>
       <th><b>在途中数</b></th>
       <th><b>投递端数</b></th>
@@ -51,9 +51,9 @@ data-height="700">
     <td><u><%= link_to v[0], get_expresses_path("/expresses", k, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
     <td><u><%= link_to v[1], get_expresses_path("/expresses", k, "delivered", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
     <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
-    <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
+    <!-- <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
     <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
-    <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
+    <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td> -->
     <td id='waiting'><%= link_to v[5], get_expresses_path("/expresses", k, "waiting", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
     <td id='waiting'><%= link_to v[10], get_expresses_path("/expresses", k, "waiting", nil, nil, "in_transit", nil, nil, nil, nil, nil), target: '_blank' %></td>
     <td id='waiting'><%= link_to v[11], get_expresses_path("/expresses", k, "waiting", nil, nil, "delivery_part", nil, nil, nil, nil, nil), target: '_blank' %></td>

@@ -231,14 +231,14 @@ zh-CN:
         one: 上传下载模板
         other: 上传下载模板
       business:
-        one: 商户管理
-        other: 商户管理
+        one: 商户
+        other: 商户
       express:
         one: 邮件
         other: 邮件
       message:
         one: 消息
-        other: 消息管理
+        other: 消息
     attributes:
       user:
         email: "电子邮件"

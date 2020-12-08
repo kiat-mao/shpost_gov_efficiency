@@ -72,6 +72,8 @@
     <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
     <%= hidden_field_tag('posting_date_end', Date.today) %>
   <% end %>
+  <font color="red" size=2>注："客户"输入框可输入客户代号或客户名称进行模糊查询</font>
+      
 
   <%= hidden_field_tag('is_search', @is_search) %> 
   <%= hidden_field_tag('is_court', @is_court) %>

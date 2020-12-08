@@ -138,6 +138,10 @@ class Report
         expresses = expresses.no_receipt_receive
       elsif params[:receipt_status].eql?"receipt_receive"
         expresses = expresses.receipt_receive
+      elsif params[:receipt_status].eql?"receipt_delivered"
+        expresses = expresses.receipt_delivered  
+      elsif params[:receipt_status].eql?"receipt_receive_or_delivered"
+        expresses = expresses.where.not(receipt_status: nil)         
       end
     end
       
@@ -265,7 +269,7 @@ class Report
     in_transit_hj = 0
     delivery_part_hj = 0
  
-    if !expresses.blank?
+    if expresses.count>0
       total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id'", :last_unit_id).group(:last_unit).count
       status_amount = expresses.group(:last_unit_id, :status).count
       deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
@@ -301,7 +305,7 @@ class Report
         results[last_unit] = [k.try(:parent_id), total_am, deliver_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per, in_transit_am, delivery_part_am]
       end
 
-      results = results.sort{|x,y|  x[0].nil? ? 1 : (y[0].nil? ? -1 : x[1][0]<=>y[1][0]) }.to_h
+      results = results.sort{|x,y|  (x[0].nil? || x[1][0].nil?) ? 1 : ((y[0].nil? || y[1][0].nil?)? -1 : x[1][0]<=>y[1][0]) }.to_h
 
       deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
       deliver3_per_hj = total_hj>0 ? (deliver3_hj/total_hj.to_f*100).round(2) : 0
@@ -387,9 +391,9 @@ class Report
     fndrr_am_hj = 0
     rd_per_hj = 0
 
-    total_amount = expresses.where(receipt_flag:["forward", "receipt"]).group(:business).count
-    exp = expresses.where(receipt_flag:["forward", "receipt"]).group(:business_id, :receipt_flag, :status, :receipt_status).count
-
+    total_amount = expresses.where(receipt_flag:"forward").group(:business).count
+    exp = expresses.where(receipt_flag:["forward"]).group(:business_id, :status, :receipt_status).count
+    
     total_amount.each do |x, y|
       # 正向邮件总收寄数
       f_total_am = 0
@@ -413,31 +417,40 @@ class Report
       rd_per = 0
 
       exp.each do |k, v|
-        if (k[0] == x.id) && (k[1].eql?"forward")
+        if (k[0] == x.id)
           f_total_am += v
         end
-        if (k[0] == x.id) && (k[1].eql?"forward") && (k[2].eql?"delivered")
+
+        if (k[0] == x.id) && (k[1].eql?"delivered")
           fd_am += v
         end
-        if (k[0] == x.id) && (k[1].eql?"forward") && (k[2].eql?"waiting")
+
+        if (k[0] == x.id) && (k[1].eql?"waiting")
           fw_am += v
         end
-        if (k[0] == x.id) && (k[1].eql?"receipt") && (k[2].eql?"delivered")
-          rd_am += v
-        end
-        if (k[0] == x.id) && (k[1].eql?"receipt") && (k[2].eql?"waiting")
-          rw_am += v
-        end
-        if (k[0] == x.id) && (k[1].eql?"forward") && (k[2].eql?"returns")
+    
+        if (k[0] == x.id) && (k[1].eql?"returns")
           fr_am += v
         end
         
-        if (k[0] == x.id) && (k[1].eql?"forward") && (!k[2].eql?"delivered") && (k[3].eql?"receipt_receive")
+        if (k[0] == x.id) && (!k[1].eql?"delivered") && (!k[2].nil?)
           fndrr_am += v
         end
+
+        if (k[0] == x.id) && (k[1].eql?"delivered") && (!k[2].nil?)
+          fdrr_am += v
+        end
+
+        if (k[0] == x.id) && (k[2].eql?"receipt_delivered")
+          rd_am += v
+        end
+
+        if (k[0] == x.id) && (k[2].eql?"receipt_receive")
+          rw_am += v
+        end
       end
-      fdrr_am = exp[[x.id, "forward", "delivered", "receipt_receive"]].blank? ? 0 : exp[[x.id, "forward", "delivered", "receipt_receive"]]
-      fdrn_am = exp[[x.id, "forward", "delivered", nil]].blank? ? 0 : exp[[x.id, "forward", "delivered", nil]]
+
+      fdrn_am = exp[[x.id, "delivered", nil]].blank? ? 0 : exp[[x.id, "delivered", nil]]
       rd_per = f_total_am>0 ? (rd_am/f_total_am.to_f*100).round(2) : 0
 
       f_total_am_hj += f_total_am

@@ -14,6 +14,9 @@ class Unit < ApplicationRecord
 
   validates_presence_of :parent_id, :message => '不能为空', unless: :is_parent?
 
+  validates_length_of :no, :is => 8, :message => "请输入8位数字机构代码"
+  validates_numericality_of :no, :only_integer => true, :message => "请输入8位数字机构代码"
+
   LEVEL = {0 => 0, 1 => 1, 2 => 2}
   # TYPE = {branch: '区分公司', delivery: '寄递事业部', postbuy: '国际邮购'}
   # TYPE_BRANCH = {branch: '区分公司'}

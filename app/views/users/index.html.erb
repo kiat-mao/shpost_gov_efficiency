@@ -21,8 +21,14 @@
       [user.email.try(:truncate, 10), {title: user.email}]
     end
 
-    g.column name: model_class.human_attribute_name(:unit_id), attribute: 'unit_id' , allow_multiple_selection: false, custom_filter: Unit.accessible_by(current_ability).map{|u| [u.name,u.id]} do |user|
-      [user.unit.try(:name).try(:truncate, 18), {title: user.unit.try(:name)}]
+    if current_user.company_admin? || current_user.superadmin?
+      g.column name: model_class.human_attribute_name(:unit_id), attribute: 'unit_id' , allow_multiple_selection: false, custom_filter: User.joins(:unit).select("units.id, units.name").distinct.map{|u| [u.name,u.id]} do |user|
+        [user.unit.try(:name).try(:truncate, 18), {title: user.unit.try(:name)}]
+      end
+    else
+      g.column name: model_class.human_attribute_name(:unit_id), attribute: 'unit_id' , allow_multiple_selection: false, custom_filter: User.joins(:unit).where("units.id=? or units.parent_id=?", current_user.unit_id, current_user.unit_id).select("units.id, units.name").distinct.map{|u| [u.name,u.id]} do |user|
+        [user.unit.try(:name).try(:truncate, 18), {title: user.unit.try(:name)}]
+      end
     end
 
     g.column name: model_class.human_attribute_name(:role), attribute: 'role' , allow_multiple_selection: false, custom_filter: User::ROLE.delete_if{|k| k.eql? :superadmin}.invert do |user| 
