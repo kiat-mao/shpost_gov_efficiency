@@ -49,6 +49,18 @@ class Express < ApplicationRecord
     Express.init_expresses(start_date, end_date)
   end
 
+  def self.refresh_traces_last_15days
+    start_date = Date.today - 15.day
+    end_date = Date.today - 1.day
+    Express.refresh_traces(start_date, end_date)
+  end
+
+  def self.refresh_traces_last_month
+    start_date = Date.today.last_month
+    end_date = Date.today - 15.day
+    Express.refresh_traces(start_date, end_date)
+  end
+
   def self.refresh_traces_last_week
     start_date = Date.today - 7.day
     end_date = Date.today - 1.day

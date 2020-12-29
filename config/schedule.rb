@@ -19,8 +19,12 @@ every :day, at: ['8:00am', '9:30am', '11:00am', '01:00pm', '03:00pm', '04:30pm',
   runner "Express.refresh_traces_yesterday"
 end
 
-every :day, at: '01:05am, 00:05pm' do
-  runner "Express.refresh_traces_last_week"
+every :day, at: ['01:05am', '12:05pm'] do
+  runner "Express.refresh_traces_last_15days"
+end
+
+every '0 3 1 * *' do
+  runner "Express.refresh_traces_last_month"
 end
 #
 # every 2.hours do
