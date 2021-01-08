@@ -1,5 +1,7 @@
 class PkpWaybillBase < PkpDataRecord
   has_one :pkp_waybill_biz, foreign_key: 'waybill_no', primary_key: 'waybill_no'#, optional: true
+  has_one :post_unit, class_name: 'Unit', foreign_key: 'no', primary_key: 'post_org_no'
+  has_one :mail_trace, foreign_key: 'mail_no', primary_key: 'waybill_no'
 
   #  # 4 common
   # def self.get_pkp_waybill_bases_yesterday(name)

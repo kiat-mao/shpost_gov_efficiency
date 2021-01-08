@@ -126,7 +126,7 @@ class Express < ApplicationRecord
     end
     puts("#{Time.now}  init_expresses_by_business, #{business.name}, start")
 
-    pkp_waybill_bases = PkpWaybillBase.where(sender_no: business.code).where("biz_occur_date >= ? and biz_occur_date < ?", start_date, end_date)
+    pkp_waybill_bases = PkpWaybillBase.includes(:pkp_waybill_biz, :post_unit, :mail_trace).where(sender_no: business.code).where("biz_occur_date >= ? and biz_occur_date < ?", start_date, end_date)
     if end_date - start_date <= 1
       pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
     else
