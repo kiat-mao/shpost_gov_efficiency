@@ -1,6 +1,6 @@
 
 <br>
-<font face="微软雅黑" color='#006030' size=6>法院投递情况监控-投递维度</font>   
+<font face="微软雅黑" color='#006030' size=6>法院投递情况实时监控-投递维度</font>   
 <%= form_tag(court_deliver_unit_monitor_reports_path, name: 'form', method: 'post') do %>
 <%= render :partial => 'form' %>
 <table>
@@ -29,9 +29,9 @@
         <th><b>总邮件数</b></th>
         <th><b>总妥投数</b></th>
         <th><b>妥投率</b></th>
-        <th><b>三日妥投率</b></th>
+        <!-- <th><b>三日妥投率</b></th>
         <th><b>次日妥投率</b></th>
-        <th><b>五日妥投率</b></th>
+        <th><b>五日妥投率</b></th> -->
         <th><b>未妥投总数</b></th>
         <th><b>在途中数</b></th>
         <th><b>投递端数</b></th>
@@ -49,9 +49,9 @@
         <td><u><%= link_to v[1], get_expresses_path("/expresses", nil, nil, (k.blank? ? "其他" : ((k.eql?"合计") ? k : k.id)), nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
         <td><u><%= link_to v[2], get_expresses_path("/expresses", nil, "delivered", (k.blank? ? "其他" : ((k.eql?"合计") ? k : k.id)), nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
         <td><%= v[3].to_s(:rounded, precision: 2)+"%" %></td>
-        <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[5].to_s(:rounded, precision: 2)+"%" %></td>
-        <td><%= v[10].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[10].to_s(:rounded, precision: 2)+"%" %></td> -->
         <td id='waiting'><%= link_to v[6], get_expresses_path("/expresses", nil, "waiting", (k.blank? ? "其他" : ((k.eql?"合计") ? k : k.id)), nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
         <td id='waiting'><%= link_to v[11], get_expresses_path("/expresses", nil, "waiting", (k.blank? ? "其他" : ((k.eql?"合计") ? k : k.id)), nil, "in_transit", nil, nil, nil, nil, nil), target: '_blank' %></td>
         <td id='waiting'><%= link_to v[12], get_expresses_path("/expresses", nil, "waiting", (k.blank? ? "其他" : ((k.eql?"合计") ? k : k.id)), nil, "delivery_part", nil, nil, nil, nil, nil), target: '_blank' %></td>

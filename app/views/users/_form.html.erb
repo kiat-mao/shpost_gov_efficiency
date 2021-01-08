@@ -5,7 +5,7 @@
   <% if (can? :role, @user) || @user.new_record? %>
     <div class="control-group">
       <%= f.label :username, :class => 'control-label' %>
-      <font color="red">(必填)</font>
+      <font color="red">(必填,请输入8位工号)</font>
       <div class="controls">
         <%= f.text_field :username, :class => 'text_field', :id => 'username' %>
       </div>
