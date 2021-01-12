@@ -5,6 +5,7 @@ class Express < ApplicationRecord
 
   has_one :post_parent_unit, class_name: 'Unit', through: :post_unit, source: 'parent_unit'
   has_one :last_parent_unit, class_name: 'Unit', through: :last_unit, source: 'parent_unit'
+  has_one :mail_trace, foreign_key: 'mail_no', primary_key: 'express_no'
 
   belongs_to :pre_express, class_name: 'Express', optional: true
   belongs_to :receipt_express, class_name: 'Express', optional: true
@@ -109,7 +110,7 @@ class Express < ApplicationRecord
     puts("#{Time.now}, refresh_traces_by_business, #{business.name},  start")
 
     
-    expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).waiting
+    expresses = Express.includes(:mail_trace).where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).waiting
     
     ActiveRecord::Base.transaction do
       expresses.each do |express|
@@ -197,7 +198,7 @@ class Express < ApplicationRecord
       end
     end
 
-    express.refresh_trace
+    express.refresh_trace pkp_waybill_base.mail_trace
 
     #express.sign = nil
     #express.desc = nil
@@ -207,8 +208,8 @@ class Express < ApplicationRecord
     end
   end
 
-  def refresh_trace!
-    self.refresh_trace
+  def refresh_trace! mail_trace = nil
+    self.refresh_trace mail_trace
 
     if ! self.del?
       self.save!
@@ -217,8 +218,9 @@ class Express < ApplicationRecord
     end
   end
 
-  def refresh_trace
-    mail_trace = MailTrace.find_by mail_no: self.express_no
+  def refresh_trace mail_trace = nil
+    mail_trace ||= self.mail_trace
+    mail_trace ||= MailTrace.find_by mail_no: self.express_no
 
     if ! mail_trace.blank?
       self.status = Express.to_status(mail_trace.status) || Express::statuses[:waiting]
