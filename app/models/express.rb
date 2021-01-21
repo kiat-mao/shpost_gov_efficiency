@@ -1,5 +1,5 @@
 class Express < ApplicationRecord
-  belongs_to :business
+  belongs_to :business, optional: true
   belongs_to :post_unit, class_name: 'Unit', optional: true
   belongs_to :last_unit, class_name: 'Unit', optional: true
 
@@ -113,7 +113,7 @@ class Express < ApplicationRecord
     expresses = Express.includes(:mail_trace).where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).waiting
     
     ActiveRecord::Base.transaction do
-      expresses.each do |express|
+      expresses.find_each(batch_size: 2000) do |express|
         express.refresh_trace!
       end
     end
@@ -135,7 +135,7 @@ class Express < ApplicationRecord
       pkp_waybill_bases = pkp_waybill_bases.where(created_day: days)
     end
     ActiveRecord::Base.transaction do
-      pkp_waybill_bases.each do |pkp_waybill_base|
+      pkp_waybill_bases.find_each(batch_size: 2000) do |pkp_waybill_base|
         Express.init_express(pkp_waybill_base, business)
       end
     end
@@ -260,7 +260,7 @@ class Express < ApplicationRecord
     expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).forward.delivered.no_receipt_receive
     
     ActiveRecord::Base.transaction do
-      expresses.each do |express|
+      expresses.find_each(batch_size: 2000)  do |express|
         express.init_receipt(express.receipt_waybill_no, business)
       end
     end
