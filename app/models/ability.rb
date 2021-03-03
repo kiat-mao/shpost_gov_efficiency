@@ -1,6 +1,9 @@
 class Ability
 	include CanCan::Ability
 
+	CanCan.accessible_by_strategy = :left_join
+
+
 	def initialize(user)
 		if user.superadmin?
 			can :manage, User
