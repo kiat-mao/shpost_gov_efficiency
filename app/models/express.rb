@@ -22,6 +22,9 @@ class Express < ApplicationRecord
   enum whereis: {in_transit: 'in_transit', delivery_part: 'delivery part'}
   WHEREIS_NAME = {in_transit: '在途中', delivery_part: '投递端'}
 
+  enum delivered_status: {own: 'onw', other: 'other', unit: 'unit'}
+  DELIVERED_STATUS = {own: '本人收', other: '他人收', unit: '单位/快递柜'}
+
   #enum base_product_no: {standard_express: '11210', express_package: '11312'}
   BASE_PRODUCT_NAME = {standard_express: '标快', express_package: '快包', other_product: '其他'}
   BASE_PRODUCT_NOS =  {standard_express: '11210', express_package: '11312'}
@@ -224,6 +227,12 @@ class Express < ApplicationRecord
 
     if ! mail_trace.blank?
       self.status = Express.to_status(mail_trace.status) || Express::statuses[:waiting]
+      if self.delivered? && self.delivered_status.blank?
+        begin
+          self.delivered_status = mail_trace.status
+        rescue
+        end
+      end
       self.last_op_at = mail_trace.operated_at
       self.last_op_desc = mail_trace.result
 

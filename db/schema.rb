@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_24_053307) do
+ActiveRecord::Schema.define(version: 2021_03_03_010330) do
+
+  create_table "areas", force: :cascade do |t|
+    t.string "code"
+    t.string "name"
+    t.boolean "is_prov"
+    t.boolean "is_city"
+    t.boolean "is_dist"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "businesses", force: :cascade do |t|
     t.string "code", null: false
@@ -49,6 +59,12 @@ ActiveRecord::Schema.define(version: 2020_08_24_053307) do
     t.integer "pre_express_id"
     t.string "receipt_waybill_no"
     t.integer "receipt_express_id"
+    t.string "receiver_city_no"
+    t.string "receiver_county_no"
+    t.string "receiver_district_no"
+    t.integer "posting_hour"
+    t.string "distributive_center_no"
+    t.string "delivered_status"
     t.index ["business_id"], name: "index_expresses_on_business_id"
     t.index ["express_no"], name: "index_expresses_on_express_no"
     t.index ["last_unit_id"], name: "index_expresses_on_last_unit_id"

@@ -1,6 +1,6 @@
 class Report 
 	def self.select_destinations
-  	["全国","本省","异地"]
+  	["全部", "全国", "本省", "异地", "国际"]
 	end
 
 	def self.select_years
@@ -96,10 +96,14 @@ class Report
     end
 
     if !params[:destination].blank?
-      if params[:destination].eql?"本省"
+      if params[:destination].eql?"全国"
+        expresses = expresses.where.not(receiver_province_no: nil)
+      elsif params[:destination].eql?"本省"
         expresses = expresses.where(receiver_province_no: "310000")
       elsif params[:destination].eql?"异地"
         expresses = expresses.where.not(receiver_province_no: "310000")
+      elsif params[:destination].eql?"国际"
+        expresses = expresses.where(receiver_province_no: "nil")
       end         
     end
 
