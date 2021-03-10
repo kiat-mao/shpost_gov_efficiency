@@ -4,6 +4,9 @@ class ExpressesController < ApplicationController
   # GET /expresses
   # GET /expresses.json
   def index
+    if (params[:industry].is_a?String) && (params[:industry].include?",")
+      params[:industry] = params[:industry].split(",")
+    end
     @expresses = Report.get_filter_expresses(params).accessible_by(current_ability)
     @expresss_grid = initialize_grid(@expresses, :per_page => params[:page_size],
       name: 'expresses',

@@ -22,7 +22,7 @@ class Express < ApplicationRecord
   enum whereis: {in_transit: 'in_transit', delivery_part: 'delivery part'}
   WHEREIS_NAME = {in_transit: '在途中', delivery_part: '投递端'}
 
-  enum delivered_status: {own: 'onw', other: 'other', unit: 'unit'}
+  enum delivered_status: {own: 'own', other: 'other', unit: 'unit'}
   DELIVERED_STATUS = {own: '本人收', other: '他人收', unit: '单位/快递柜'}
 
   #enum base_product_no: {standard_express: '11210', express_package: '11312'}

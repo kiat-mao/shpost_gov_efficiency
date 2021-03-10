@@ -5,7 +5,7 @@
   <table>
     <tr>
       <td>
-        <%= link_to "报表导出", get_expresses_path("/reports/deliver_prov_city_report_export", nil, nil, nil, nil, nil, nil, nil, nil, params[:receiver_province_no], nil), :class => 'btn btn-primary', method: :post%>
+        <%= link_to "报表导出", get_expresses_path("/reports/deliver_prov_city_report_export", nil, nil, nil, nil, nil, nil, nil, nil, params[:receiver_province_no], nil, nil), :class => 'btn btn-primary', method: :post%>
       </td>
     </tr>
   </table>
@@ -19,6 +19,9 @@
         <th><b>收件市</b></th>
         <th><b>收寄数</b></th>
         <th><b>总妥投数</b></th>
+        <th><b>本人收数</b></th>
+        <th><b>他人收数</b></th>
+        <th><b>单位/快递柜收数</b></th>
         <th><b>妥投率</b></th>
         <th><b>平均妥投天数</b></th>
         <th><b>次日妥投率</b></th>
@@ -41,20 +44,23 @@
       <% else %>
         <td><%= k[0].blank? ? "其他" : "合计" %></td>
       <% end %>
-      <td><u><%= link_to v[0], get_expresses_path("/expresses", nil, nil, nil, nil, nil, nil, nil,nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0]), target: '_blank' %></u></td>
-      <td><u><%= link_to v[1], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0]), target: '_blank' %></u></td>
-      <td><%= v[2].to_s(:rounded, precision: 2)+"%" %></td>
-      <td><%= v[3].to_s(:rounded, precision: 2) %></td>
-      <td><%= v[4].to_s(:rounded, precision: 2)+"%" %></td>
-      <td><u><%= link_to v[5], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "2", params[:receiver_province_no], k[0].blank? ? "nil" : k[0]), target: '_blank' %></u></td>
-      <td><%= v[6].to_s(:rounded, precision: 2)+"%" %></td>
-      <td><u><%= link_to v[7], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "3", params[:receiver_province_no], k[0].blank? ? "nil" : k[0]), target: '_blank' %></u></td>
-      <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
-      <td><u><%= link_to v[9], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "5", params[:receiver_province_no], k[0].blank? ? "nil" : k[0]), target: '_blank' %></u></td>
-      <td id='waiting'><%= link_to v[10], get_expresses_path("/expresses", nil, "waiting", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0]), target: '_blank' %></td>
-      <td><font color="red"><%= v[11].to_s(:rounded, precision: 2)+"%" %></font></td>
-      <td><u><%= link_to v[12], get_expresses_path("/expresses", nil, "returns", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0]), target: '_blank' %></u></td>
-      <td><%= v[13].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><u><%= link_to v[0], get_expresses_path("/expresses", nil, nil, nil, nil, nil, nil, nil,nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></u></td>
+      <td><u><%= link_to v[1], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></u></td>
+      <td><u><%= link_to v[2], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0], "own"), target: '_blank' %></u></td>
+      <td><u><%= link_to v[3], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0], "other"), target: '_blank' %></u></td>
+      <td><u><%= link_to v[4], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0], "unit"), target: '_blank' %></u></td>
+      <td><%= v[5].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><%= v[6].to_s(:rounded, precision: 2) %></td>
+      <td><%= v[7].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><u><%= link_to v[8], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "2", params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></u></td>
+      <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><u><%= link_to v[10], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "3", params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></u></td>
+      <td><%= v[11].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><u><%= link_to v[12], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "5", params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></u></td>
+      <td id='waiting'><%= link_to v[13], get_expresses_path("/expresses", nil, "waiting", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></td>
+      <td><font color="red"><%= v[14].to_s(:rounded, precision: 2)+"%" %></font></td>
+      <td><u><%= link_to v[15], get_expresses_path("/expresses", nil, "returns", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></u></td>
+      <td><%= v[16].to_s(:rounded, precision: 2)+"%" %></td>
     </tr>
     <% end %>
     </tbody>

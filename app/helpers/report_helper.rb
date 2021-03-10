@@ -1,12 +1,18 @@
 module ReportHelper
-	# 根路径, 行业市场, 状态, 网点(投递维度),客户名称(返单),是否在途,是否正向(返单),返单状态,妥投天数,收寄省,收寄市
-	def get_expresses_path(addr, detail_btype, status, last_unit_id, detail_business, transit_delivery, receipt_flag, receipt_status, delivered_days, receiver_province_no, receiver_city_no)
+	# 根路径, 行业市场, 状态, 网点(投递维度),客户名称(返单),是否在途,是否正向(返单),返单状态,妥投天数,收寄省,收寄市,妥投状态
+	def get_expresses_path(addr, detail_btype, status, last_unit_id, detail_business, transit_delivery, receipt_flag, receipt_status, delivered_days, receiver_province_no, receiver_city_no, delivered_status)
 	  # addr = "/expresses"
 	  sep="?"
 
-		if !params[:industry].blank?
-			addr += sep+"industry=#{params[:industry]}"
-			sep = "&"
+		if !params[:industry].blank? && !params[:industry][0].blank?
+			if params[:industry].is_a?String
+				addr += sep+"industry=#{params[:industry]}"
+				sep = "&"
+			else
+				industry = params[:industry].compact.join(",")
+				addr += sep+"industry=#{industry}"
+				sep = "&"
+			end
 		end
 
 		if !params[:btype].blank?
@@ -133,6 +139,23 @@ module ReportHelper
 			addr += sep+"is_monitor=#{params[:is_monitor]}"
 			sep = "&"
 		end
+
+		if !delivered_status.blank?
+			addr += sep+"delivered_status=#{delivered_status}"
+			sep = "&"
+		end
+
+		if !params[:delivered_date_start].blank?
+			addr += sep+"delivered_date_start=#{params[:delivered_date_start]}"
+			sep = "&"
+		end
+
+		if !params[:delivered_date_end].blank?
+			addr += sep+"delivered_date_end=#{params[:delivered_date_end]}"
+			sep = "&"
+		end
+
+		
 # byebug
 		addr
 		# expresses_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: detail_btype, status: status, last_unit_id: last_unit_id, is_court: params[:is_court], detail_business: detail_business, destination: params[:destination], lv2_unit: params[:lv2_unit], search_time: params[:search_time], year: params[:year], month: params[:month], transit_delivery: transit_delivery, product: params[:product], receipt_flag: receipt_flag, receipt_status: receipt_status, distributive_center_no: params[:distributive_center_no], posting_hour_start: params[:posting_hour_start], posting_hour_end: params[:posting_hour_end], delivered_days: delivered_days, receiver_province_no: receiver_province_no, receiver_city_no: receiver_city_no)

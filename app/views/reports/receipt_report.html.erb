@@ -10,7 +10,7 @@
         </div>
       <td>
         <div id="export">
-          <%= link_to "报表导出", get_expresses_path("/reports/receipt_report_export", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary', method: :post%>
+          <%= link_to "报表导出", get_expresses_path("/reports/receipt_report_export", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
     </tr>
@@ -40,15 +40,15 @@
     <% @results.each do |k, v| %>
       <tr class= 'nowrap'>
         <td><%= (k.eql?"合计") ? k : k.name %></td>
-        <td><u><%= link_to v[0], get_expresses_path("/expresses", nil, nil, nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil, nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[1], get_expresses_path("/expresses", nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil, nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[2], get_expresses_path("/expresses", nil, "waiting", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil, nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[3], get_expresses_path("/expresses", nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_receive_or_delivered", nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[4], get_expresses_path("/expresses", nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "no_receipt_receive", nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[5], get_expresses_path("/expresses", nil, nil, nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_delivered", nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[6], get_expresses_path("/expresses", nil, nil, nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_receive", nil, nil, nil), target: '_blank' %></u></td>
-        <td><u><%= link_to v[7], get_expresses_path("/expresses", nil, "returns", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil, nil, nil, nil), target: '_blank' %></u></td>
-        <td id='waiting'><%= link_to v[8], get_expresses_path("/expresses", nil, "not_delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_receive_or_delivered", nil, nil, nil), target: '_blank' %></td>
+        <td><u><%= link_to v[0], get_expresses_path("/expresses", nil, nil, nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[1], get_expresses_path("/expresses", nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[2], get_expresses_path("/expresses", nil, "waiting", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[3], get_expresses_path("/expresses", nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_receive_or_delivered", nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[4], get_expresses_path("/expresses", nil, "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "no_receipt_receive", nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[5], get_expresses_path("/expresses", nil, nil, nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_delivered", nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[6], get_expresses_path("/expresses", nil, nil, nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_receive", nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[7], get_expresses_path("/expresses", nil, "returns", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td id='waiting'><%= link_to v[8], get_expresses_path("/expresses", nil, "not_delivered", nil, (k.eql?"合计") ? nil : k.id, nil, "forward", "receipt_receive_or_delivered", nil, nil, nil, nil), target: '_blank' %></td>
         <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
       </tr>
     <% end %>

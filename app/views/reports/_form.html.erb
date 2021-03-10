@@ -1,25 +1,6 @@
 
   <table>
-    <tr style="line-height: 40px;height: 40px;">
-      <% if !@is_court.nil? %>
-        <% if !@is_court %>
-          <td><%= label_tag(:industry, "二级行业名称:") %></td>
-          <td><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
-          <td><%= label_tag(:btype, "客户类别:") %></td>
-          <td><%= select_tag(:btype, options_for_select(Business.where.not(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
-        <% else %>
-          <%= hidden_field_tag('industry', '法院') %>
-          <td><%= label_tag(:btype, "客户类别:") %></td>
-          <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
-        <% end %>   
-      <% else %>
-        <td><%= label_tag(:industry, "二级行业名称:") %></td>
-        <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry") %></td>
-        <td><%= label_tag(:btype, "客户类别:") %></td>
-        <td><%= select_tag(:btype, options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
-      <% end %>  
-      <td><%= label_tag(:business, "客户:") %></td>
-      <td><%= text_field_tag(:business, params[:business]) %></td>  
+    <tr style="line-height: 40px;height: 40px;"> 
       <td><%= label_tag(:destination, "寄递范围:") %></td>
       <td><%= select_tag :destination, options_for_select(Report.select_destinations, :selected=>params[:destination]) %></td> 
       <% if !@is_market.nil? && !@is_market %>
@@ -28,6 +9,25 @@
       <% end %>
       <td><%= label_tag(:product, "产品类型:") %></td>
       <td><%= select_tag :product, options_for_select(Express::BASE_PRODUCT_NAME.invert.to_a.insert(0,""), :selected=>params[:product]) %></td> 
+      <td><%= label_tag(:business, "客户:") %></td>
+      <td><%= text_field_tag(:business, params[:business]) %></td>  
+      <% if !@is_court.nil? %>
+        <% if !@is_court %>
+          <td><%= label_tag(:btype, "客户类别:") %></td>
+          <td><%= select_tag(:btype, options_for_select(Business.where.not(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+          <td><%= label_tag(:industry, "二级行业名称:") %></td>
+          <td><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry", class: "custom-dropdown form-control", multiple: true) %></td>     
+        <% else %>
+          <td><%= label_tag(:btype, "客户类别:") %></td>
+          <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+          <%= hidden_field_tag('industry', '法院') %>
+        <% end %>   
+      <% else %>
+        <td><%= label_tag(:btype, "客户类别:") %></td>
+        <td><%= select_tag(:btype, options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
+        <td><%= label_tag(:industry, "二级行业名称:") %></td>
+        <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry", class: "custom-dropdown form-control", multiple: true) %></td>
+      <% end %> 
     </tr>
   </table>
   <% if !@is_province.blank? && @is_province %>
@@ -68,6 +68,15 @@
         </tr>
       </table>
     </div>
+    <table>
+      <tr style="line-height: 40px;height: 40px;">
+        <td><%= label_tag(:delivered_date_start, "妥投日期:") %></td>
+        <td><%= text_field_tag(:delivered_date_start, params[
+          :delivered_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:delivered_date_start]) %></td>
+        <td><%= label_tag(:delivered_date_end, "-") %></td>
+        <td><%= text_field_tag(:delivered_date_end, params[:delivered_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:delivered_date_end]) %></td>
+      </tr>
+    </table>
   <% else %>
     <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
     <%= hidden_field_tag('posting_date_end', Date.today) %>

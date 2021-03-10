@@ -7,5 +7,8 @@ ready = ->
       $("#roles input[type=checkbox]").prop("checked",true);
     else
       $("#roles input[type=checkbox]").prop("checked",false);
+
+
+	
     
 	  
