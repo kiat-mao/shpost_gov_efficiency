@@ -310,7 +310,7 @@ DEPENDENCIES
   bootstrap-table-rails (~> 1.13, >= 1.13.4)
   bootstrap3-datetimepicker-rails (~> 4.17.47)
   byebug
-  cancancan (~> 3.2)
+  cancancan (~> 3.2, >= 3.2.1)
   capybara (>= 2.15)
   devise (~> 4.7, >= 4.7.1)
   font-awesome-sass (~> 5.13.0)

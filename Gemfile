@@ -57,7 +57,8 @@ gem 'wice_grid', '~> 4.1', github: 'kreintjes/wice_grid', branch: 'fix/all'
 # For WiceGrid
 gem 'font-awesome-sass', '~> 5.13.0'
 
-gem 'cancancan', '~> 3.2'
+gem 'cancancan', '~> 3.2', '>= 3.2.1'
+#gem 'cancancan', '~> 3.1'
 
 gem 'devise', '~> 4.7', '>= 4.7.1'
 
