@@ -57,7 +57,7 @@ gem 'wice_grid', '~> 4.1', github: 'kreintjes/wice_grid', branch: 'fix/all'
 # For WiceGrid
 gem 'font-awesome-sass', '~> 5.13.0'
 
-gem 'cancancan', '~> 3.1'
+gem 'cancancan', '~> 3.2'
 
 gem 'devise', '~> 4.7', '>= 4.7.1'
 
@@ -87,9 +87,9 @@ gem 'spreadsheet', '~> 1.2', '>= 1.2.6'
 gem 'bootstrap-table-rails', '~> 1.13', '>= 1.13.4'
 
 ########Oracle##############
-gem 'ruby-oci8'
+# gem 'ruby-oci8'
 
-gem 'activerecord-oracle_enhanced-adapter'
+# gem 'activerecord-oracle_enhanced-adapter'
 ############################
 
 gem 'whenever'
