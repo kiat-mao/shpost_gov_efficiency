@@ -69,6 +69,6 @@ class BusinessesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def business_params
-      params.require(:business).permit(:code, :name, :btype, :industry, :time_limit)
+      params.require(:business).permit(:code, :name, :btype, :industry, :time_limit, :is_init_expresses_midday)
     end
 end

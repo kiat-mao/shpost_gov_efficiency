@@ -92,6 +92,16 @@ class Express < ApplicationRecord
     end
   end
 
+  def self.init_expresses_midday
+    start_date = Date.today
+    end_date = start_date + 1.day
+    puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
+    businesses = Business.where(is_init_expresses_midday: true)
+    businesses.each do |business|
+      Express.init_expresses_by_business(business, start_date, end_date)
+    end
+  end
+
   def self.refresh_traces(start_date, end_date)
     if start_date.blank? || end_date.blank?
       return

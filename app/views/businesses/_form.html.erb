@@ -34,6 +34,13 @@
       <%= f.text_field :time_limit, :class => 'text_field', :id => 'time_limit' %>
     </div>
   </div>
+  <div class="control-group">
+    <%= f.label :is_init_expresses_midday, :class => 'control-label' %>
+    <font color="red">(若无特殊需求请选否)</font>
+    <div class="controls">
+      <%= f.select(:is_init_expresses_midday, {"是":true, "否":false}) %>
+    </div>
+  </div>
 
 
  
