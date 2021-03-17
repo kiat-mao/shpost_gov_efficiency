@@ -46,6 +46,8 @@ class Express < ApplicationRecord
 
   scope :other_product, -> {where.not(base_product_no: Express::BASE_PRODUCT_NOS.values).or(Express.where(base_product_no: nil))}
 
+  scope :bf_free_tax, -> {where(biz_product_no: '112104300300991')}
+
   
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day
@@ -177,6 +179,7 @@ class Express < ApplicationRecord
     express.receiver_district = "#{pkp_waybill_base.receiver_province_name},#{pkp_waybill_base.receiver_city_name},#{pkp_waybill_base.receiver_county_name}"
     
     express.base_product_no = pkp_waybill_base.base_product_no
+    express.biz_product_no = pkp_waybill_base.biz_product_no
 
     #distributive_center_no
     #NJ = 21112100
