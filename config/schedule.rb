@@ -23,9 +23,10 @@ every :day, at: ['01:05am', '12:05pm'] do
   runner "Express.refresh_traces_last_15days"
 end
 
-every '0 3 1 * *' do
-  runner "Express.refresh_traces_last_month"
+every :day, at: '03:00am' do
+  runner "Express.refresh_traces_25days_ago"
 end
+
 #
 # every 2.hours do
 #   command "/usr/bin/some_great_command"
