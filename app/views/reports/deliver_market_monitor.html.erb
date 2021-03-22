@@ -1,6 +1,6 @@
 
 <br>
-<font face="微软雅黑" color='#006030' size=6>投递情况实时监控-市场维度</font>   
+<font face="微软雅黑" color='#006030' size=6><%= (@day.eql?"today") ? "当日递" : "次日递" %>投递情况实时监控-市场维度</font>   
 <%= form_tag(deliver_market_monitor_reports_path, name: 'form', method: 'post') do %>
 <%= render :partial => 'form' %>
 <table>

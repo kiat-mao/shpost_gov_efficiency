@@ -70,10 +70,10 @@ class UsersController < ApplicationController
     @operation = "reset_pwd"
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to request.referer, notice: "密码重置成功" }
+        format.html { redirect_to users_url, notice: "密码重置成功" }
         format.js { head :no_content }
       else
-        format.html { render action: 'reset_pwd' }
+        format.html { render action: 'to_reset_pwd' }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end

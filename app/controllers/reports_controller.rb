@@ -61,6 +61,7 @@ class ReportsController < ApplicationController
   	@is_court = false
   	@is_market = true
   	@is_monitor = true
+  	@day = params[:day]
 
   	unless request.get?
 			init_result
@@ -73,6 +74,7 @@ class ReportsController < ApplicationController
 		@is_court = false
 		@is_market = false
 		@is_monitor = true
+		@day = params[:day]
 
 		unless request.get?
 			init_result_unit
