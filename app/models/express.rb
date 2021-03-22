@@ -77,7 +77,7 @@ class Express < ApplicationRecord
 
   def self.refresh_traces_yesterday
     start_date = Date.today - 1.day
-    end_date = Date.today
+    end_date = Date.today + 1.day
     Express.refresh_traces(start_date, end_date)
   end
   
