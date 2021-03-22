@@ -9,6 +9,8 @@
       <% end %>
       <td><%= label_tag(:product, "产品类型:") %></td>
       <td><%= select_tag :product, options_for_select(Express::BASE_PRODUCT_NAME.invert.to_a.insert(0,""), :selected=>params[:product]) %></td> 
+      <td><%= label_tag(:bf_free_tax, "是否保税仓邮件:") %></td>
+      <td><%= select_tag :bf_free_tax, options_for_select([["是", :true], ["否", :false]].insert(0,""), :selected=>params[:bf_free_tax]) %></td>
       <td><%= label_tag(:business, "客户:") %></td>
       <td><%= text_field_tag(:business, params[:business]) %></td>  
       <% if !@is_court.nil? %>
@@ -28,6 +30,7 @@
         <td><%= label_tag(:industry, "二级行业名称:") %></td>
         <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry", class: "custom-dropdown form-control", multiple: true) %></td>
       <% end %> 
+       
     </tr>
   </table>
   <% if !@is_province.blank? && @is_province %>
@@ -81,7 +84,9 @@
     <%= hidden_field_tag('posting_date_start', Date.today-1.day) %>
     <%= hidden_field_tag('posting_date_end', Date.today) %>
   <% end %>
-  <font color="red" size=2>注："客户"输入框可输入客户代号或客户名称进行模糊查询</font>
+  <font color="red" size=2>注：
+    <br>1."客户"输入框可输入客户代号或客户名称进行模糊查询
+    <br>2."二级行业名称"按ctrl键可进行多选</font>
       
 
   <%= hidden_field_tag('is_search', @is_search) %> 

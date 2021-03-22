@@ -155,6 +155,11 @@ module ReportHelper
 			sep = "&"
 		end
 
+		if !params[:bf_free_tax].blank?
+		  	addr += sep+"bf_free_tax=#{params[:bf_free_tax]}"
+			sep = "&"
+		end
+
 		
 # byebug
 		addr

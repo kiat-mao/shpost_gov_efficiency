@@ -219,10 +219,11 @@ class ReportsController < ApplicationController
 	    sheet1.row(1).default_format = filter
 	    sheet1.row(2).default_format = filter
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,2] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,4] = "客户:#{params["business"]}"
-	    sheet1[0,6] = "客户类别:#{params["btype"]}"
-	    sheet1[0,8] = "二级行业名称:#{params[:industry]}"
+	    sheet1[0,1] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,3] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
+	    sheet1[0,5] = "客户:#{params["business"]}"
+	    sheet1[0,7] = "客户类别:#{params["btype"]}"
+	    sheet1[0,9] = "二级行业名称:#{params[:industry]}"
 	    
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -326,11 +327,12 @@ class ReportsController < ApplicationController
 	    sheet1.row(2).default_format = filter
 	    	    
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,2] = "区分公司:#{lv2_unit}"
-	    sheet1[0,4] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,6] = "客户:#{params["business"]}"
-	    sheet1[0,8] = "客户类别:#{params["btype"]}"
-	    sheet1[0,10] = "二级行业名称:#{params["industry"]}"
+	    sheet1[0,1] = "区分公司:#{lv2_unit}"
+	    sheet1[0,3] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,5] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
+	    sheet1[0,7] = "客户:#{params["business"]}"
+	    sheet1[0,9] = "客户类别:#{params["btype"]}"
+	    sheet1[0,11] = "二级行业名称:#{params["industry"]}"
 
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -430,6 +432,7 @@ class ReportsController < ApplicationController
 	    sheet1[0,2] = "客户:#{params["business"]}"
 	    sheet1[0,4] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,6] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,8] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -513,12 +516,14 @@ class ReportsController < ApplicationController
 
 	    sheet1.row(0).default_format = filter
 	    sheet1.row(1).default_format = filter
-	    sheet1.row(2).default_format = filter
-	    sheet1[0,0] = "二级行业名称:#{params["industry"]}"
-	    sheet1[0,2] = "客户类别:#{params["btype"]}"
-	    sheet1[0,4] = "客户:#{params["business"]}"
-	    sheet1[0,6] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,8] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1.row(2).default_format = filter    
+	    
+	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
+	    sheet1[0,2] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
+	    sheet1[0,4] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
+	    sheet1[0,6] = "客户:#{params["business"]}"
+	    sheet1[0,8] = "客户类别:#{params["btype"]}"
+	    sheet1[0,10] = "二级行业名称:#{params["industry"]}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -597,9 +602,10 @@ class ReportsController < ApplicationController
 	    
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,2] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,4] = "客户:#{params["business"]}"
-	    sheet1[0,6] = "客户类别:#{params["btype"]}"
-	    sheet1[0,8] = "二级行业名称:#{params["industry"]}"
+	    sheet1[0,4] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
+	    sheet1[0,6] = "客户:#{params["business"]}"
+	    sheet1[0,8] = "客户类别:#{params["btype"]}"
+	    sheet1[0,10] = "二级行业名称:#{params["industry"]}"
 	    sheet1[1,0] = "集散中心:#{params["distributive_center_no"]}"
 	    sheet1[1,2] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
 	    if !params[:search_time].blank? && (params[:search_time].eql?"by_m")

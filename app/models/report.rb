@@ -191,14 +191,20 @@ class Report
     end
 
     if !params[:delivered_date_end].blank?
-      expresses = expresses.where("expresses.status = ? and expresses.last_op_at <= ?", "delivered", params[:delivered_date_end])
+      expresses = expresses.where("expresses.status = ? and expresses.last_op_at <= ?", "delivered", params[:delivered_date_end].to_date+1.day)
     end
 
     if !params[:delivered_status].blank?
       expresses = expresses.where(delivered_status: params[:delivered_status])
     end
 
-    # byebug
+    if !params[:bf_free_tax].blank?
+      if params[:bf_free_tax].eql?"true"
+        expresses = expresses.bf_free_tax
+      else
+        expresses = expresses.no_bf_free_tax
+      end
+    end
 
     return expresses
   end
@@ -246,9 +252,9 @@ class Report
       if !params[:btype].blank?
         businesses = businesses.where(btype: params[:btype])
       end
-      btypes = businesses.select(:btype).distinct
+      btypes = businesses.group(:btype).count
     else
-      btypes = expresses.select("businesses.btype").distinct
+      btypes = expresses.group(:btype).count
     end
        
     total_amount = expresses.group("businesses.btype").count
@@ -259,8 +265,8 @@ class Report
     transit_delivery = expresses.where("expresses.status = 'waiting'").group("businesses.btype", "expresses.whereis").count
     delivered_status_amount = expresses.where("expresses.status = 'delivered'").group("businesses.btype", "expresses.delivered_status").count
 
-    btypes.each do |x|
-      btype = x.btype
+    btypes.each do |k,v|
+      btype = k
       total_am = total_amount[btype].blank? ? 0 : total_amount[btype]
       total_hj += total_am
       deliver_am =status_amount[[btype, "delivered"]].blank? ? 0 : status_amount[[btype, "delivered"]]
