@@ -69,13 +69,21 @@ zh-CN:
     monitor:
       name: "实时监控"
       submenu:
+        deliver_market_monitor_today:
+          name: "当日递监控(市场)"
+          link: "/reports/deliver_market_monitor?day=today"
+          need_count: false
+        deliver_unit_monitor_today:
+          name: "当日递监控(投递)"
+          link: "/reports/deliver_unit_monitor?day=today"
+          need_count: false
         deliver_market_monitor:
-          name: "投递监控(市场)"
-          link: "/reports/deliver_market_monitor"
+          name: "次日递监控(市场)"
+          link: "/reports/deliver_market_monitor?day=yestoday"
           need_count: false
         deliver_unit_monitor:
-          name: "投递监控(投递)"
-          link: "/reports/deliver_unit_monitor"
+          name: "次日递监控(投递)"
+          link: "/reports/deliver_unit_monitor?day=yestoday"
           need_count: false
     court_monitor:
       name: "法院实时监控"
