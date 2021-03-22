@@ -21,6 +21,10 @@
     g.column name: model_class.human_attribute_name(:industry), attribute: 'industry'
 
     g.column name: model_class.human_attribute_name(:time_limit), attribute: 'time_limit'
+
+    g.column name: model_class.human_attribute_name(:is_init_expresses_midday), attribute: 'is_init_expresses_midday' do |bussiness|
+      bussiness.is_init_expresses_midday ? '是' : '否'
+    end
    
     g.column do |business|
       ActiveSupport::SafeBuffer.new << 

@@ -63,9 +63,9 @@ class Express < ApplicationRecord
     Express.refresh_traces(start_date, end_date)
   end
 
-  def self.refresh_traces_last_month
-    start_date = Date.today.last_month
-    end_date = Date.today - 15.day
+  def self.refresh_traces_25days_ago
+    start_date = Date.today - 25.day
+    end_date = start_date + 1.day
     Express.refresh_traces(start_date, end_date)
   end
 
@@ -89,6 +89,16 @@ class Express < ApplicationRecord
     end_date = end_date.to_date
     puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
     businesses = Business.all
+    businesses.each do |business|
+      Express.init_expresses_by_business(business, start_date, end_date)
+    end
+  end
+
+  def self.init_expresses_midday
+    start_date = Date.today
+    end_date = start_date + 1.day
+    puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
+    businesses = Business.where(is_init_expresses_midday: true)
     businesses.each do |business|
       Express.init_expresses_by_business(business, start_date, end_date)
     end

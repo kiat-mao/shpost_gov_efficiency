@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_17_010738) do
+ActiveRecord::Schema.define(version: 2021_03_17_014309) do
 
   create_table "areas", force: :cascade do |t|
     t.string "code"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2021_03_17_010738) do
     t.integer "time_limit"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "is_init_expresses_midday"
   end
 
   create_table "expresses", force: :cascade do |t|
