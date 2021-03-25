@@ -154,9 +154,9 @@ module ReportHelper
 			addr += sep+"delivered_date_end=#{params[:delivered_date_end]}"
 			sep = "&"
 		end
-
-		if !params[:bf_free_tax].blank?
-		  	addr += sep+"bf_free_tax=#{params[:bf_free_tax]}"
+# byebug
+		if !params[:checkbox].blank? && (!params[:checkbox][:bf_free_tax].blank?) && (params[:checkbox][:bf_free_tax].eql?"1")
+		  	addr += sep+"bf_free_tax=#{params[:checkbox][:bf_free_tax]}"
 			sep = "&"
 		end
 

@@ -48,8 +48,7 @@ class Express < ApplicationRecord
 
   scope :bf_free_tax, -> {where(biz_product_no: '112104300300991')}
 
-  scope :no_bf_free_tax, -> {where("biz_product_no!=? or biz_product_no is null", '112104300300991')}
-
+  
   
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day

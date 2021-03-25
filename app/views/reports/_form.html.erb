@@ -9,8 +9,6 @@
       <% end %>
       <td><%= label_tag(:product, "产品类型:") %></td>
       <td><%= select_tag :product, options_for_select(Express::BASE_PRODUCT_NAME.invert.to_a.insert(0,""), :selected=>params[:product]) %></td> 
-      <td><%= label_tag(:bf_free_tax, "是否保税仓邮件:") %></td>
-      <td><%= select_tag :bf_free_tax, options_for_select([["是", :true], ["否", :false]].insert(0,""), :selected=>params[:bf_free_tax]) %></td>
       <td><%= label_tag(:business, "客户:") %></td>
       <td><%= text_field_tag(:business, params[:business]) %></td>  
       <% if !@is_court.nil? %>
@@ -92,6 +90,8 @@
     <% end %>
     <%= hidden_field_tag('day', @day) %>
   <% end %>
+  <%= check_box("checkbox","bf_free_tax")%><b>是否保税仓邮件</b>
+  <br>
   <font color="red" size=2>注：
     <br>1."客户"输入框可输入客户代号或客户名称进行模糊查询
     <br>2."二级行业名称"按ctrl键可进行多选</font>

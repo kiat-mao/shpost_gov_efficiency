@@ -174,7 +174,7 @@ class Report
       end
     end
 
-    if !params[:receiver_city_no].blank?&& !(params[:receiver_city_no].eql?"合计")
+    if !params[:receiver_city_no].blank? && !(params[:receiver_city_no].eql?"合计")
       if params[:receiver_province_no].eql?"nil"
         expresses = expresses.where(receiver_province_no: nil)
       else
@@ -198,12 +198,12 @@ class Report
       expresses = expresses.where(delivered_status: params[:delivered_status])
     end
 
-    if !params[:bf_free_tax].blank?
-      if params[:bf_free_tax].eql?"true"
-        expresses = expresses.bf_free_tax
-      else
-        expresses = expresses.no_bf_free_tax
-      end
+    if !params[:checkbox].blank? && (!params[:checkbox][:bf_free_tax].blank?) && (params[:checkbox][:bf_free_tax].eql?"1")
+      expresses = expresses.bf_free_tax
+    end
+    # from link
+    if !params[:bf_free_tax].blank? && (params[:bf_free_tax].eql?"1")
+      expresses = expresses.bf_free_tax
     end
 
     return expresses
@@ -326,7 +326,9 @@ class Report
     deliver_unit_hj = 0
  
     if expresses.count>0
-      total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id'", :last_unit_id).group(:last_unit).count
+      # total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id'", :last_unit_id).group(:last_unit).count
+      total_amount = expresses.left_outer_joins(:last_unit).left_outer_joins(:last_unit=>:parent_unit).group(:last_unit_id).group("units.name").group("units.parent_id").group("parent_units_units.name").count
+
       status_amount = expresses.group(:last_unit_id, :status).count
       deliver2 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
       deliver3 = expresses.where("expresses.status = 'delivered'").where("expresses.delivered_days < 3").group("expresses.last_unit_id").count
@@ -336,36 +338,36 @@ class Report
 
       total_amount.each do |k, v|
   # debugger
-        last_unit = k
+        last_unit_id = k[0]
         total_am = v
         total_hj += total_am
-        deliver_am =status_amount[[last_unit.try(:id), "delivered"]].blank? ? 0 : status_amount[[last_unit.try(:id), "delivered"]]
+        deliver_am =status_amount[[last_unit_id, "delivered"]].blank? ? 0 : status_amount[[last_unit_id, "delivered"]]
         deliver_hj += deliver_am
         deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
-        deliver3_per = deliver3[last_unit.try(:id)].blank? ? 0 : (deliver3[last_unit.try(:id)]/total_am.to_f*100).round(2)
-        deliver3_hj += deliver3[last_unit.try(:id)].blank? ? 0 : deliver3[last_unit.try(:id)]
-        deliver2_per = deliver2[last_unit.try(:id)].blank? ? 0 : (deliver2[last_unit.try(:id)]/total_am.to_f*100).round(2)
-        deliver2_hj += deliver2[last_unit.try(:id)].blank? ? 0 : deliver2[last_unit.try(:id)]
-        deliver5_per = deliver5[last_unit.try(:id)].blank? ? 0 : (deliver5[last_unit.try(:id)]/total_am.to_f*100).round(2)
-        deliver5_hj += deliver5[last_unit.try(:id)].blank? ? 0 : deliver5[last_unit.try(:id)]
-        waiting_am = status_amount[[last_unit.try(:id), "waiting"]].blank? ? 0 : status_amount[[last_unit.try(:id), "waiting"]]
+        deliver3_per = deliver3[last_unit_id].blank? ? 0 : (deliver3[last_unit_id]/total_am.to_f*100).round(2)
+        deliver3_hj += deliver3[last_unit_id].blank? ? 0 : deliver3[last_unit_id]
+        deliver2_per = deliver2[last_unit_id].blank? ? 0 : (deliver2[last_unit_id]/total_am.to_f*100).round(2)
+        deliver2_hj += deliver2[last_unit_id].blank? ? 0 : deliver2[last_unit_id]
+        deliver5_per = deliver5[last_unit_id].blank? ? 0 : (deliver5[last_unit_id]/total_am.to_f*100).round(2)
+        deliver5_hj += deliver5[last_unit_id].blank? ? 0 : deliver5[last_unit_id]
+        waiting_am = status_amount[[last_unit_id, "waiting"]].blank? ? 0 : status_amount[[last_unit_id, "waiting"]]
         waiting_hj += waiting_am
-        in_transit_am = transit_delivery[[last_unit.try(:id), "in_transit"]].blank? ? 0 : transit_delivery[[last_unit.try(:id), "in_transit"]]
+        in_transit_am = transit_delivery[[last_unit_id, "in_transit"]].blank? ? 0 : transit_delivery[[last_unit_id, "in_transit"]]
         in_transit_hj += in_transit_am
-        delivery_part_am = transit_delivery[[last_unit.try(:id), "delivery_part"]].blank? ? 0 : transit_delivery[[last_unit.try(:id), "delivery_part"]]
+        delivery_part_am = transit_delivery[[last_unit_id, "delivery_part"]].blank? ? 0 : transit_delivery[[last_unit_id, "delivery_part"]]
         delivery_part_hj += delivery_part_am
         waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
-        return_am = status_amount[[last_unit.try(:id), "returns"]].blank? ? 0 : status_amount[[last_unit.try(:id), "returns"]]
+        return_am = status_amount[[last_unit_id, "returns"]].blank? ? 0 : status_amount[[last_unit_id, "returns"]]
         return_hj += return_am
         return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
-        deliver_own_am =delivered_status_amount[[last_unit.try(:id), "own"]].blank? ? 0 :    delivered_status_amount[[last_unit.try(:id), "own"]]
+        deliver_own_am =delivered_status_amount[[last_unit_id, "own"]].blank? ? 0 :    delivered_status_amount[[last_unit_id, "own"]]
         deliver_own_hj += deliver_own_am
-        deliver_other_am =delivered_status_amount[[last_unit.try(:id), "other"]].blank? ? 0 : delivered_status_amount[[last_unit.try(:id), "other"]]
+        deliver_other_am =delivered_status_amount[[last_unit_id, "other"]].blank? ? 0 : delivered_status_amount[[last_unit_id, "other"]]
         deliver_other_hj += deliver_other_am
-        deliver_unit_am =delivered_status_amount[[last_unit.try(:id), "unit"]].blank? ? 0 : delivered_status_amount[[last_unit.try(:id), "unit"]]
+        deliver_unit_am =delivered_status_amount[[last_unit_id, "unit"]].blank? ? 0 : delivered_status_amount[[last_unit_id, "unit"]]
         deliver_unit_hj += deliver_unit_am
 
-        results[last_unit] = [k.try(:parent_id), total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per, in_transit_am, delivery_part_am]
+        results[last_unit_id] = [k[2], total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, deliver3_per, deliver2_per, waiting_am, waiting_per, return_am, return_per, deliver5_per, in_transit_am, delivery_part_am, k[1], k[3]]
       end
 
       results = results.sort{|x,y|  (x[0].nil? || x[1][0].nil?) ? 1 : ((y[0].nil? || y[1][0].nil?)? -1 : x[1][0]<=>y[1][0]) }.to_h
@@ -377,7 +379,7 @@ class Report
       waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
       return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
 
-      results["合计"] = ["", total_hj, deliver_hj, deliver_own_hj, deliver_other_hj, deliver_unit_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver5_per_hj, in_transit_hj, delivery_part_hj]
+      results["合计"] = ["", total_hj, deliver_hj, deliver_own_hj, deliver_other_hj, deliver_unit_hj, deliver_per_hj, deliver3_per_hj, deliver2_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver5_per_hj, in_transit_hj, delivery_part_hj, "", ""]
     end
 
     return results

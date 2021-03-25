@@ -217,15 +217,15 @@ class ReportsController < ApplicationController
 	    date_range = ""
 	    deliver_date_range = ""
 
-	    sheet1.row(0).default_format = filter
-	    sheet1.row(1).default_format = filter
-	    sheet1.row(2).default_format = filter
+	    0.upto(4) do |x|
+	    	sheet1.row(x).default_format = filter
+	    end 
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,1] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,3] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
-	    sheet1[0,5] = "客户:#{params["business"]}"
-	    sheet1[0,7] = "客户类别:#{params["btype"]}"
-	    sheet1[0,9] = "二级行业名称:#{params[:industry]}"
+	    sheet1[0,3] = "客户:#{params["business"]}"
+	    sheet1[0,5] = "客户类别:#{params["btype"]}"
+	    sheet1[0,7] = "二级行业名称:#{params[:industry]}"
+	    sheet1[1,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 	    
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -235,10 +235,10 @@ class ReportsController < ApplicationController
 	    	else
 	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 	    	end
-	    	sheet1[1,0] = date_range
+	    	sheet1[2,0] = date_range
 
 	    	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-	    	sheet1[2,0] = deliver_date_range
+	    	sheet1[3,0] = deliver_date_range
 	    end
 
 
@@ -247,11 +247,11 @@ class ReportsController < ApplicationController
 	    end
 
 	    0.upto(15) do |x|
-	      sheet1.row(4).set_format(x, title)
+	      sheet1.row(5).set_format(x, title)
 	    end
-	    sheet1.row(4).concat %w{客户类别 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(5).concat %w{客户类别 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
-	    count_row = 5
+	    count_row = 6
 
 	    results.each do |k, v|
 	      sheet1[count_row,0] = k
@@ -324,17 +324,17 @@ class ReportsController < ApplicationController
 	    date_range = ""
 	    deliver_date_range = ""
 
-	    sheet1.row(0).default_format = filter
-	    sheet1.row(1).default_format = filter
-	    sheet1.row(2).default_format = filter
+	    0.upto(4) do |x|
+	    	sheet1.row(x).default_format = filter
+	    end 
 	    	    
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,1] = "区分公司:#{lv2_unit}"
 	    sheet1[0,3] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,5] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
-	    sheet1[0,7] = "客户:#{params["business"]}"
-	    sheet1[0,9] = "客户类别:#{params["btype"]}"
-	    sheet1[0,11] = "二级行业名称:#{params["industry"]}"
+	    sheet1[0,5] = "客户:#{params["business"]}"
+	    sheet1[0,7] = "客户类别:#{params["btype"]}"
+	    sheet1[0,9] = "二级行业名称:#{params["industry"]}"
+	    sheet1[1,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -344,10 +344,10 @@ class ReportsController < ApplicationController
 	    	else
 	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 	    	end
-	    	sheet1[1,0] = date_range
+	    	sheet1[2,0] = date_range
 
 	    	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-	    	sheet1[2,0] = deliver_date_range
+	    	sheet1[3,0] = deliver_date_range
 	    end
 
 	    0.upto(1) do |x|
@@ -359,11 +359,11 @@ class ReportsController < ApplicationController
 	    end
 
 	    0.upto(16) do |x|
-	      sheet1.row(4).set_format(x, title)
+	      sheet1.row(5).set_format(x, title)
 	    end
-	    sheet1.row(4).concat %w{单位 网点 总邮件数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(5).concat %w{单位 网点 总邮件数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
-	    count_row = 5
+	    count_row = 6
 	    last_pid = nil
 
 	    results.each do |k, v|
@@ -427,14 +427,14 @@ class ReportsController < ApplicationController
 	    date_range = ""
 	    deliver_date_range = ""
 
-	    sheet1.row(0).default_format = filter
-	    sheet1.row(1).default_format = filter
-	    sheet1.row(2).default_format = filter
+	    0.upto(4) do |x|
+	    	sheet1.row(x).default_format = filter
+	    end  
 	    sheet1[0,0] = "客户类别:#{params["detail_btype"]}"
 	    sheet1[0,2] = "客户:#{params["business"]}"
 	    sheet1[0,4] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,6] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,8] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
+	    sheet1[1,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -443,10 +443,10 @@ class ReportsController < ApplicationController
 	    	else
 	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 	    	end
-	    	sheet1[1,0] = date_range
+	    	sheet1[2,0] = date_range
 
 	    	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-	    	sheet1[2,0] = deliver_date_range
+	    	sheet1[3,0] = deliver_date_range
 	    end
 
 	    0.upto(15) do |x|
@@ -454,11 +454,11 @@ class ReportsController < ApplicationController
 	    end
 
 	    0.upto(15) do |x|
-	      sheet1.row(4).set_format(x, title)
+	      sheet1.row(5).set_format(x, title)
 	    end
-	    sheet1.row(4).concat %w{客户 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(5).concat %w{客户 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
-	    count_row = 5
+	    count_row = 6
 
 	    results.each do |k, v|
 	      sheet1[count_row,0] = (k.eql?"合计") ? k : k.name
@@ -516,16 +516,17 @@ class ReportsController < ApplicationController
 	    date_range = ""
 	    deliver_date_range = ""
 
-	    sheet1.row(0).default_format = filter
-	    sheet1.row(1).default_format = filter
-	    sheet1.row(2).default_format = filter    
+	    0.upto(4) do |x|
+	    	sheet1.row(x).default_format = filter
+	    end  
 	    
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,2] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,4] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
-	    sheet1[0,6] = "客户:#{params["business"]}"
-	    sheet1[0,8] = "客户类别:#{params["btype"]}"
-	    sheet1[0,10] = "二级行业名称:#{params["industry"]}"
+	    sheet1[0,4] = "客户:#{params["business"]}"
+	    sheet1[0,6] = "客户类别:#{params["btype"]}"
+	    sheet1[0,8] = "二级行业名称:#{params["industry"]}"
+	    sheet1[1,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -534,22 +535,22 @@ class ReportsController < ApplicationController
 	    	else
 	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 	    	end
-	    	sheet1[1,0] = date_range
+	    	sheet1[2,0] = date_range
 
 	    	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-	    	sheet1[2,0] = deliver_date_range
+	    	sheet1[3,0] = deliver_date_range
 	    end
-
+	    
 	    0.upto(10) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
 	    0.upto(10) do |x|
-	      sheet1.row(4).set_format(x, title)
+	      sheet1.row(5).set_format(x, title)
 	    end
-	    sheet1.row(4).concat %w{客户名称 正向邮件总收寄数 正向邮件妥投数 正向邮件未妥投数 正向邮件妥投返单邮件收寄数 正向邮件妥投返单邮件未收寄数 返单邮件返回数(妥投数) 返单邮件未返回数(未妥投) 正向邮件退回数 正向邮件未妥投返单邮件已收寄数 返单邮件返单率%}
+	    sheet1.row(5).concat %w{客户名称 正向邮件总收寄数 正向邮件妥投数 正向邮件未妥投数 正向邮件妥投返单邮件收寄数 正向邮件妥投返单邮件未收寄数 返单邮件返回数(妥投数) 返单邮件未返回数(未妥投) 正向邮件退回数 正向邮件未妥投返单邮件已收寄数 返单邮件返单率%}
 
-	    count_row = 5
+	    count_row = 6
 
 	    results.each do |k, v|
 	      sheet1[count_row,0] = (k.eql?"合计") ? k : k.name
@@ -598,18 +599,18 @@ class ReportsController < ApplicationController
 	    date_range = ""
 	    deliver_date_range = ""
 
-	    0.upto(3) do |x|
+	    0.upto(4) do |x|
 	    	sheet1.row(x).default_format = filter
 	    end    
 	    
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,2] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,4] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'true')) ? '是' : '否'}"
-	    sheet1[0,6] = "客户:#{params["business"]}"
-	    sheet1[0,8] = "客户类别:#{params["btype"]}"
-	    sheet1[0,10] = "二级行业名称:#{params["industry"]}"
+	    sheet1[0,4] = "客户:#{params["business"]}"
+	    sheet1[0,6] = "客户类别:#{params["btype"]}"
+	    sheet1[0,8] = "二级行业名称:#{params["industry"]}"
 	    sheet1[1,0] = "集散中心:#{params["distributive_center_no"]}"
 	    sheet1[1,2] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
+	    sheet1[2,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 	    if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
     		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
       	end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month.strftime("%Y-%m-%d")
@@ -617,21 +618,22 @@ class ReportsController < ApplicationController
     	else
     		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
     	end
-    	sheet1[2,0] = date_range
+    	sheet1[3,0] = date_range
 
     	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-    	sheet1[3,0] = deliver_date_range
+    	sheet1[4,0] = deliver_date_range
+    	
 	    
 	    0.upto(17) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
 	    0.upto(17) do |x|
-	      sheet1.row(5).set_format(x, title)
+	      sheet1.row(6).set_format(x, title)
 	    end
-	    sheet1.row(5).concat %w{收寄省 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 平均妥投天数 次日妥投率 次日妥投总数 三日妥投率 三日妥投总数 五日妥投率 五日妥投总数 未妥投总数 未妥投率 退回数 退回率%}
+	    sheet1.row(6).concat %w{收寄省 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 平均妥投天数 次日妥投率 次日妥投总数 三日妥投率 三日妥投总数 五日妥投率 五日妥投总数 未妥投总数 未妥投率 退回数 退回率%}
 
-	    count_row = 6
+	    count_row = 7
 
 	    results.each do |k, v|
 	      sheet1[count_row,0] = k[0].blank? ? "其他" : ((k[0].eql?"合计") ? "合计" : (k[1].blank? ? k[0] : k[1]))
