@@ -16,7 +16,7 @@
           <td><%= label_tag(:btype, "客户类别:") %></td>
           <td><%= select_tag(:btype, options_for_select(Business.where.not(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
           <td><%= label_tag(:industry, "二级行业名称:") %></td>
-          <td><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry", class: "custom-dropdown form-control", multiple: true) %></td>     
+          <td style="position: static;"><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}, :selected=> params[:industry]),  multiple: true) %></td>
         <% else %>
           <td><%= label_tag(:btype, "客户类别:") %></td>
           <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>

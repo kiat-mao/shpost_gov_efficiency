@@ -15,6 +15,8 @@
 //= require twitter/bootstrap
 //= require bootstrap-datepicker
 //= require wice_grid
+//= require select2
+//= require select2_locale_zh-CN
 
 //= require bootstrap-table/bootstrap-table
 

@@ -87,10 +87,12 @@ gem 'spreadsheet', '~> 1.2', '>= 1.2.6'
 
 gem 'bootstrap-table-rails', '~> 1.13', '>= 1.13.4'
 
-########Oracle##############
-# gem 'ruby-oci8'
+gem 'select2-rails', '~> 4.0', '>= 4.0.13'
 
-# gem 'activerecord-oracle_enhanced-adapter'
+########Oracle##############
+gem 'ruby-oci8'
+
+gem 'activerecord-oracle_enhanced-adapter'
 ############################
 
 gem 'whenever'
