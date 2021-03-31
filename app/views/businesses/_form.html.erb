@@ -38,7 +38,14 @@
     <%= f.label :is_init_expresses_midday, :class => 'control-label' %>
     <font color="red">(若无特殊需求请选否)</font>
     <div class="controls">
-      <%= f.select(:is_init_expresses_midday, {"是":true, "否":false}) %>
+      <%= f.select(:is_init_expresses_midday, {"否":false, "是":true}) %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :is_all_visible, :class => 'control-label' %>
+    <font color="red">(若无特殊需求请选否)</font>
+    <div class="controls">
+      <%= f.select(:is_all_visible, {"否":false, "是":true}) %>
     </div>
   </div>
 

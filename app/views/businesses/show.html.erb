@@ -16,6 +16,8 @@
   <dd><%= @business.try :time_limit %></dd>
   <dt><strong><%= model_class.human_attribute_name(:is_init_expresses_midday) %>:</strong></dt>
   <dd><%= @business.try(:is_init_expresses_midday) ? '是' : '否' %></dd>
+   <dt><strong><%= model_class.human_attribute_name(:is_all_visible) %>:</strong></dt>
+  <dd><%= @business.try(:is_all_visible) ? '是' : '否' %></dd>
 </dl>
 <% if can? :index, Business %>
 <%= link_to t('.back', :default => t("helpers.links.back")),

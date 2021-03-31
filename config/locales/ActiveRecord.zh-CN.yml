@@ -296,7 +296,8 @@ zh-CN:
         btype: "客户类别"
         industry: "二级行业名称"
         time_limit: "催投警告时限（小时）"
-        is_init_expresses_midday: "是否当日中午更新"
+        is_init_expresses_midday: "是否存在当日递产品"
+        is_all_visible: "是否全市可见配送信息"
       express:
         express_no: "邮件号"
         business_id: "大客户"

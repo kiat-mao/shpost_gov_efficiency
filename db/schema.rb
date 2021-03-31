@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_17_014309) do
+ActiveRecord::Schema.define(version: 2021_03_31_055922) do
 
   create_table "areas", force: :cascade do |t|
     t.string "code"
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 2021_03_17_014309) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "is_init_expresses_midday"
+    t.boolean "is_all_visible"
   end
 
   create_table "expresses", force: :cascade do |t|
@@ -71,6 +72,7 @@ ActiveRecord::Schema.define(version: 2021_03_17_014309) do
     t.index ["business_id"], name: "index_expresses_on_business_id"
     t.index ["express_no"], name: "index_expresses_on_express_no"
     t.index ["last_unit_id"], name: "index_expresses_on_last_unit_id"
+    t.index ["post_unit_id"], name: "index_expresses_on_post_unit_id"
     t.index ["posting_date"], name: "index_expresses_on_posting_date"
     t.index ["status"], name: "index_expresses_on_status"
   end
