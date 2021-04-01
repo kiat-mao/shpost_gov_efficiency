@@ -110,7 +110,7 @@ class Express < ApplicationRecord
     start_date = start_date.to_date
     end_date = end_date.to_date
     puts("#{Time.now}, refresh_traces, start_date: #{start_date}, end_date: #{end_date}")
-    businesses = Business.all
+    businesses = Business.all.order(is_init_expresses_midday: :desc)
     businesses.each do |business|
       Express.refresh_traces_by_business(business, start_date, end_date)
 
