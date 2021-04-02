@@ -3,46 +3,39 @@
     <tr style="line-height: 40px;height: 40px;"> 
       <td><%= label_tag(:destination, "寄递范围:") %></td>
       <td><%= select_tag :destination, options_for_select(Report.select_destinations, :selected=>params[:destination]) %></td> 
+      <td><%= label_tag(:business, "客户:") %></td>
+      <td><%= text_field_tag(:business, params[:business]) %></td>  
       <% if !@is_market.nil? && !@is_market %>
         <td><%= label_tag(:lv2_unit, "区分公司:") %></td>
         <td><%= select_tag(:lv2_unit, options_for_select(Unit.where(level: 1).map{|u| [u.name,u.id]}.insert(0,""), :selected=> params[:lv2_unit]), id: "lv2_unit") %></td>
       <% end %>
+    </tr>
+    <tr>
       <td><%= label_tag(:product, "产品类型:") %></td>
-      <td><%= select_tag :product, options_for_select(Express::BASE_PRODUCT_NAME.invert.to_a.insert(0,""), :selected=>params[:product]) %></td> 
-      <td><%= label_tag(:business, "客户:") %></td>
-      <td><%= text_field_tag(:business, params[:business]) %></td>  
+      <td style="position: static;"><%= select_tag(:product, options_for_select(Express::BASE_PRODUCT_SELECT.invert.to_a.insert(0,""), :selected=>params[:product]), multiple: true) %></td> 
+      <td><%= label_tag(:btype, "客户类别:") %></td>
+      <td style="position: static;"><%= select_tag(:btype, options_for_select(Business.select_btypes(@is_court).map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype", multiple: true) %></td>     
       <% if !@is_court.nil? %>
         <% if !@is_court %>
-          <td><%= label_tag(:btype, "客户类别:") %></td>
-          <td><%= select_tag(:btype, options_for_select(Business.where.not(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
           <td><%= label_tag(:industry, "二级行业名称:") %></td>
           <td style="position: static;"><%= select_tag(:industry, options_for_select(Business.where.not(industry: "法院").select(:industry).distinct.map{|i| [i.industry,i.industry]}, :selected=> params[:industry]),  multiple: true) %></td>
-        <% else %>
-          <td><%= label_tag(:btype, "客户类别:") %></td>
-          <td><%= select_tag(:btype, options_for_select(Business.where(industry: "法院").select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
-          <%= hidden_field_tag('industry', '法院') %>
         <% end %>   
       <% else %>
-        <td><%= label_tag(:btype, "客户类别:") %></td>
-        <td><%= select_tag(:btype, options_for_select(Business.all.select(:btype).distinct.map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype") %></td>
         <td><%= label_tag(:industry, "二级行业名称:") %></td>
-        <td><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry", class: "custom-dropdown form-control", multiple: true) %></td>
-      <% end %> 
-       
+        <td style="position: static;"><%= select_tag(:industry, options_for_select(Business.all.select(:industry).distinct.map{|i| [i.industry,i.industry]}.insert(0,""), :selected=> params[:industry]), id: "industry", class: "custom-dropdown form-control", multiple: true) %></td>
+      <% end %>       
     </tr>
-  </table>
-  <% if !@is_province.blank? && @is_province %>
-    <table>
-      <tr style="line-height: 40px;height: 40px;">
+    <tr style="line-height: 40px;height: 40px;">
+      <td><%= label_tag(:posting_hour_start, "按收寄时间点:") %></td>
+      <td><%= select_tag :posting_hour_start, options_for_select(Report.select_posting_hours, :selected=>params[:posting_hour_start].blank? ? "0" : params[:posting_hour_start]) %> 
+      <%= label_tag(:posting_hour_end, "-") %>
+      <%= select_tag :posting_hour_end, options_for_select(Report.select_posting_hours, :selected=>params[:posting_hour_end].blank? ? "24" : params[:posting_hour_end]) %></td> 
+      <% if !@is_province.blank? && @is_province %>
         <td><%= label_tag(:distributive_center_no, "集散中心:") %></td>
         <td><%= select_tag :distributive_center_no, options_for_select(Express::DISTRIBUTIVE_CENTER_NAME.invert.to_a.insert(0,""), :selected=>params[:distributive_center_no]) %></td> 
-        <td><%= label_tag(:posting_hour_start, "按收寄时间点:") %></td>
-        <td><%= select_tag :posting_hour_start, options_for_select(Report.select_posting_hours, :selected=>params[:posting_hour_start].blank? ? "0" : params[:posting_hour_start]) %></td> 
-        <td><%= label_tag(:posting_hour_end, "-") %></td>
-        <td><%= select_tag :posting_hour_end, options_for_select(Report.select_posting_hours, :selected=>params[:posting_hour_end].blank? ? "24" : params[:posting_hour_end]) %></td> 
-      </tr>
-    </table>
-  <% end %>
+      <% end %>  
+    </tr>
+  </table>
     
   <% if !@is_monitor %>
     <%= radio_button_tag(:search_time, 'by_m', (@search_time.eql?"by_m")) %><b>按月查询</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -90,12 +83,12 @@
     <% end %>
     <%= hidden_field_tag('day', @day) %>
   <% end %>
+  
   <%= check_box("checkbox","bf_free_tax")%><b>是否保税仓邮件</b>
   <br>
   <font color="red" size=2>注：
     <br>1."客户"输入框可输入客户代号或客户名称进行模糊查询
-    <br>2."二级行业名称"按ctrl键可进行多选</font>
-      
+  </font>   
 
   <%= hidden_field_tag('is_search', @is_search) %> 
   <%= hidden_field_tag('is_court', @is_court) %>

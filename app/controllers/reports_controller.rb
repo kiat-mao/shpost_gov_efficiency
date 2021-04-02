@@ -217,15 +217,16 @@ class ReportsController < ApplicationController
 	    date_range = ""
 	    deliver_date_range = ""
 
-	    0.upto(4) do |x|
+	    0.upto(6) do |x|
 	    	sheet1.row(x).default_format = filter
 	    end 
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,1] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,3] = "客户:#{params["business"]}"
-	    sheet1[0,5] = "客户类别:#{params["btype"]}"
-	    sheet1[0,7] = "二级行业名称:#{params[:industry]}"
-	    sheet1[1,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[0,2] = "客户:#{params["business"]}"    
+	    sheet1[1,0] = "产品类型:#{Report.get_export_product_name(params["product"])}"
+	    sheet1[1,2] = "客户类别:#{params["btype"]}"
+	    sheet1[1,6] = "二级行业名称:#{params[:industry]}"
+	    sheet1[2,0] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
+	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 	    
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -235,23 +236,23 @@ class ReportsController < ApplicationController
 	    	else
 	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 	    	end
-	    	sheet1[2,0] = date_range
+	    	sheet1[4,0] = date_range
 
 	    	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-	    	sheet1[3,0] = deliver_date_range
+	    	sheet1[5,0] = deliver_date_range
 	    end
 
 
-	    0.upto(15) do |x|
+	    0.upto(16) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
-	    0.upto(15) do |x|
-	      sheet1.row(5).set_format(x, title)
+	    0.upto(16) do |x|
+	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(5).concat %w{客户类别 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(7).concat %w{客户类别 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日妥投率 三日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
-	    count_row = 6
+	    count_row = 8
 
 	    results.each do |k, v|
 	      sheet1[count_row,0] = k
@@ -261,23 +262,24 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,4] = v[3]
 	      sheet1[count_row,5] = v[4]
 	      sheet1[count_row,6] = v[5].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,7] = v[6].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,7] = v[15].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,8] = v[7].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,9] = v[12].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,10] = v[8]
-	      sheet1[count_row,11] = v[13]
-	      sheet1[count_row,12] = v[14]
-	      sheet1[count_row,13] = v[9].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,14] = v[10]
-	      sheet1[count_row,15] = v[11].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,9] = v[6].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,10] = v[12].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,11] = v[8]
+	      sheet1[count_row,12] = v[13]
+	      sheet1[count_row,13] = v[14]
+	      sheet1[count_row,14] = v[9].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,15] = v[10]
+	      sheet1[count_row,16] = v[11].to_s(:rounded, precision: 2)+"%"
 	      
-	      0.upto(9) do |i|
+	      0.upto(10) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end
-		    10.upto(13) do |i|
+		    11.upto(14) do |i|
 		      sheet1.row(count_row).set_format(i, red)
 		    end 
-		    14.upto(15) do |i|
+		    15.upto(16) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end  
 	      
@@ -324,17 +326,18 @@ class ReportsController < ApplicationController
 	    date_range = ""
 	    deliver_date_range = ""
 
-	    0.upto(4) do |x|
+	    0.upto(6) do |x|
 	    	sheet1.row(x).default_format = filter
 	    end 
 	    	    
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,1] = "区分公司:#{lv2_unit}"
-	    sheet1[0,3] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,5] = "客户:#{params["business"]}"
-	    sheet1[0,7] = "客户类别:#{params["btype"]}"
-	    sheet1[0,9] = "二级行业名称:#{params["industry"]}"
-	    sheet1[1,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[0,2] = "客户:#{params["business"]}"
+	    sheet1[0,6] = "区分公司:#{lv2_unit}"
+	    sheet1[1,0] = "产品类型:#{Report.get_export_product_name(params["product"])}"	    
+	    sheet1[1,2] = "客户类别:#{params["btype"]}"
+	    sheet1[1,6] = "二级行业名称:#{params["industry"]}"
+	    sheet1[2,0] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
+	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -344,55 +347,56 @@ class ReportsController < ApplicationController
 	    	else
 	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 	    	end
-	    	sheet1[2,0] = date_range
+	    	sheet1[4,0] = date_range
 
 	    	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-	    	sheet1[3,0] = deliver_date_range
+	    	sheet1[5,0] = deliver_date_range
 	    end
 
 	    0.upto(1) do |x|
 	      sheet1.column(x).width = 20
 	    end
 
-	    2.upto(16) do |x|
+	    2.upto(17) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
-	    0.upto(16) do |x|
-	      sheet1.row(5).set_format(x, title)
+	    0.upto(17) do |x|
+	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(5).concat %w{单位 网点 总邮件数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(7).concat %w{单位 网点 总邮件数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日妥投率 三日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
-	    count_row = 6
+	    count_row = 8
 	    last_pid = nil
 
 	    results.each do |k, v|
-	      sheet1[count_row,0] =  (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : (k.parent_id.blank? ? "" : k.parent_unit.name))
-	      sheet1[count_row,1] = k.blank? ? "其他" : ((k.eql?"合计") ? k : k.name)
+	      sheet1[count_row,0] =  (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : v[17])
+	      sheet1[count_row,1] = k.blank? ? "其他" : ((k.eql?"合计") ? k : v[16])
 	      sheet1[count_row,2] = v[1]
 	      sheet1[count_row,3] = v[2]
 	      sheet1[count_row,4] = v[3]
 	      sheet1[count_row,5] = v[4]
 	      sheet1[count_row,6] = v[5]
 	      sheet1[count_row,7] = v[6].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,8] = v[7].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,8] = v[18].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,9] = v[8].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,10] = v[13].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,11] = v[9]
-	      sheet1[count_row,12] = v[14]
-	      sheet1[count_row,13] = v[15]
-	      sheet1[count_row,14] = v[10].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,15] = v[11]
-	      sheet1[count_row,16] = v[12].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,10] = v[7].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,11] = v[13].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,12] = v[9]
+	      sheet1[count_row,13] = v[14]
+	      sheet1[count_row,14] = v[15]
+	      sheet1[count_row,15] = v[10].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,16] = v[11]
+	      sheet1[count_row,17] = v[12].to_s(:rounded, precision: 2)+"%"
 	      last_pid = v[0]
 	      
-	      0.upto(10) do |i|
+	      0.upto(11) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end 
-		    11.upto(14) do |i|
+		    12.upto(15) do |i|
 		      sheet1.row(count_row).set_format(i, red)
 		    end 
-		    15.upto(16) do |i|
+		    16.upto(17) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end 
 
@@ -427,14 +431,17 @@ class ReportsController < ApplicationController
 	    date_range = ""
 	    deliver_date_range = ""
 
-	    0.upto(4) do |x|
+	    0.upto(6) do |x|
 	    	sheet1.row(x).default_format = filter
 	    end  
-	    sheet1[0,0] = "客户类别:#{params["detail_btype"]}"
+
+	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
 	    sheet1[0,2] = "客户:#{params["business"]}"
-	    sheet1[0,4] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,6] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[1,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[1,0] = "产品类型:#{Report.get_export_product_name(params["product"])}"	 
+	    sheet1[1,2] = "客户类别:#{params["detail_btype"]}"
+	    sheet1[1,6] = "二级行业名称:#{params[:industry]}"
+	    sheet1[2,0] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
+	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -443,22 +450,22 @@ class ReportsController < ApplicationController
 	    	else
 	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 	    	end
-	    	sheet1[2,0] = date_range
+	    	sheet1[4,0] = date_range
 
 	    	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-	    	sheet1[3,0] = deliver_date_range
+	    	sheet1[5,0] = deliver_date_range
 	    end
 
-	    0.upto(15) do |x|
+	    0.upto(16) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
-	    0.upto(15) do |x|
-	      sheet1.row(5).set_format(x, title)
+	    0.upto(16) do |x|
+	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(5).concat %w{客户 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 三日妥投率 次日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(7).concat %w{客户 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日妥投率 三日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
-	    count_row = 6
+	    count_row = 8
 
 	    results.each do |k, v|
 	      sheet1[count_row,0] = (k.eql?"合计") ? k : k.name
@@ -468,23 +475,24 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,4] = v[3]
 	      sheet1[count_row,5] = v[4]
 	      sheet1[count_row,6] = v[5].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,7] = v[6].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,7] = v[15].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,8] = v[7].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,9] = v[12].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,10] = v[8]
-	      sheet1[count_row,11] = v[13]
-	      sheet1[count_row,12] = v[14]
-	      sheet1[count_row,13] = v[9].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,14] = v[10]
-	      sheet1[count_row,15] = v[11].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,9] = v[6].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,10] = v[12].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,11] = v[8]
+	      sheet1[count_row,12] = v[13]
+	      sheet1[count_row,13] = v[14]
+	      sheet1[count_row,14] = v[9].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,15] = v[10]
+	      sheet1[count_row,16] = v[11].to_s(:rounded, precision: 2)+"%"
 	      
-	      0.upto(9) do |i|
+	      0.upto(10) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end
-		    10.upto(13) do |i|
+		    11.upto(14) do |i|
 		      sheet1.row(count_row).set_format(i, red)
 		    end 
-		    14.upto(15) do |i|
+		    15.upto(16) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end  
 	      
@@ -521,11 +529,12 @@ class ReportsController < ApplicationController
 	    end  
 	    
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,2] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,4] = "客户:#{params["business"]}"
-	    sheet1[0,6] = "客户类别:#{params["btype"]}"
-	    sheet1[0,8] = "二级行业名称:#{params["industry"]}"
-	    sheet1[1,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[0,2] = "客户:#{params["business"]}"	    
+	    sheet1[1,0] = "产品类型:#{Report.get_export_product_name(params["product"])}"	 
+	    sheet1[1,2] = "客户类别:#{params["btype"]}"
+	    sheet1[1,6] = "二级行业名称:#{params["industry"]}"
+	    sheet1[2,0] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
+	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -535,10 +544,10 @@ class ReportsController < ApplicationController
 	    	else
 	    		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
 	    	end
-	    	sheet1[2,0] = date_range
+	    	sheet1[4,0] = date_range
 
 	    	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-	    	sheet1[3,0] = deliver_date_range
+	    	sheet1[5,0] = deliver_date_range
 	    end
 	    
 	    0.upto(10) do |x|
@@ -546,11 +555,11 @@ class ReportsController < ApplicationController
 	    end
 
 	    0.upto(10) do |x|
-	      sheet1.row(5).set_format(x, title)
+	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(5).concat %w{客户名称 正向邮件总收寄数 正向邮件妥投数 正向邮件未妥投数 正向邮件妥投返单邮件收寄数 正向邮件妥投返单邮件未收寄数 返单邮件返回数(妥投数) 返单邮件未返回数(未妥投) 正向邮件退回数 正向邮件未妥投返单邮件已收寄数 返单邮件返单率%}
+	    sheet1.row(7).concat %w{客户名称 正向邮件总收寄数 正向邮件妥投数 正向邮件未妥投数 正向邮件妥投返单邮件收寄数 正向邮件妥投返单邮件未收寄数 返单邮件返回数(妥投数) 返单邮件未返回数(未妥投) 正向邮件退回数 正向邮件未妥投返单邮件已收寄数 返单邮件返单率%}
 
-	    count_row = 6
+	    count_row = 8
 
 	    results.each do |k, v|
 	      sheet1[count_row,0] = (k.eql?"合计") ? k : k.name
@@ -604,13 +613,14 @@ class ReportsController < ApplicationController
 	    end    
 	    
 	    sheet1[0,0] = "寄递范围:#{params["destination"]}"
-	    sheet1[0,2] = "产品类型:#{params["product"].blank? ? "" : Express::BASE_PRODUCT_NAME[params["product"].to_sym]}"
-	    sheet1[0,4] = "客户:#{params["business"]}"
-	    sheet1[0,6] = "客户类别:#{params["btype"]}"
-	    sheet1[0,8] = "二级行业名称:#{params["industry"]}"
-	    sheet1[1,0] = "集散中心:#{params["distributive_center_no"]}"
-	    sheet1[1,2] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
-	    sheet1[2,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[0,2] = "客户:#{params["business"]}"    
+	    sheet1[1,0] = "产品类型:#{Report.get_export_product_name(params["product"])}"	
+	    sheet1[1,2] = "客户类别:#{params["btype"]}"
+	    sheet1[1,6] = "二级行业名称:#{params["industry"]}"
+	    sheet1[2,0] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
+	    sheet1[2,2] = "集散中心:#{params["distributive_center_no"]}"
+	    
+	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
 	    if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
     		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
       	end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month.strftime("%Y-%m-%d")
@@ -618,22 +628,22 @@ class ReportsController < ApplicationController
     	else
     		date_range = "收寄范围：#{params["posting_date_start"]} - #{params["posting_date_end"]}"
     	end
-    	sheet1[3,0] = date_range
+    	sheet1[4,0] = date_range
 
     	deliver_date_range = "妥投日期：#{params["delivered_date_start"]} - #{params["delivered_date_end"]}"
-    	sheet1[4,0] = deliver_date_range
+    	sheet1[5,0] = deliver_date_range
     	
 	    
-	    0.upto(17) do |x|
+	    0.upto(19) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
-	    0.upto(17) do |x|
-	      sheet1.row(6).set_format(x, title)
+	    0.upto(19) do |x|
+	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(6).concat %w{收寄省 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 平均妥投天数 次日妥投率 次日妥投总数 三日妥投率 三日妥投总数 五日妥投率 五日妥投总数 未妥投总数 未妥投率 退回数 退回率%}
+	    sheet1.row(7).concat %w{收寄省 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 平均妥投天数 当日妥投率 当日妥投总数 次日妥投率 次日妥投总数 三日妥投率 三日妥投总数 五日妥投率 五日妥投总数 未妥投总数 未妥投率 退回数 退回率%}
 
-	    count_row = 7
+	    count_row = 8
 
 	    results.each do |k, v|
 	      sheet1[count_row,0] = k[0].blank? ? "其他" : ((k[0].eql?"合计") ? "合计" : (k[1].blank? ? k[0] : k[1]))
@@ -644,24 +654,26 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,5] = v[4]
 	      sheet1[count_row,6] = v[5].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,7] = v[6].to_s(:rounded, precision: 2)
-	      sheet1[count_row,8] = v[7].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,9] = v[8]
-	      sheet1[count_row,10] = v[9].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,11] = v[10]
-	      sheet1[count_row,12] = v[11].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,13] = v[12]
-	      sheet1[count_row,14] = v[13]
-	      sheet1[count_row,15] = v[14].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,16] = v[15]
-	      sheet1[count_row,17] = v[16].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,8] = v[17].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,9] = v[18]
+	      sheet1[count_row,10] = v[7].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,11] = v[8]
+	      sheet1[count_row,12] = v[9].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,13] = v[10]
+	      sheet1[count_row,14] = v[11].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,15] = v[12]
+	      sheet1[count_row,16] = v[13]
+	      sheet1[count_row,17] = v[14].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,18] = v[15]
+	      sheet1[count_row,19] = v[16].to_s(:rounded, precision: 2)+"%"
 	      
-	      0.upto(13) do |i|
+	      0.upto(15) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end
-		    14.upto(15) do |i|
+		    16.upto(17) do |i|
 		    	sheet1.row(count_row).set_format(i, red)
 		    end
-		    16.upto(17) do |i|
+		    18.upto(19) do |i|
 		    	sheet1.row(count_row).set_format(i, body)
 		    end
 		    	      

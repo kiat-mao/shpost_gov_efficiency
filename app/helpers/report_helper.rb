@@ -3,20 +3,32 @@ module ReportHelper
 	def get_expresses_path(addr, detail_btype, status, last_unit_id, detail_business, transit_delivery, receipt_flag, receipt_status, delivered_days, receiver_province_no, receiver_city_no, delivered_status)
 	  # addr = "/expresses"
 	  sep="?"
+	  industry = nil
 
-		if !params[:industry].blank? && !params[:industry][0].blank?
-			if params[:industry].is_a?String
-				addr += sep+"industry=#{params[:industry]}"
-				sep = "&"
-			else
-				industry = params[:industry].compact.join(",")
-				addr += sep+"industry=#{industry}"
-				sep = "&"
+  	if !params[:is_court].blank? && (params[:is_court].eql?"true")
+  		industry = '法院'
+  	else
+			if !params[:industry].blank? && !params[:industry][0].blank?
+				if params[:industry].is_a?String
+					industry = params[:industry]
+				else
+					industry = params[:industry].compact.join(",")	
+				end	
 			end
 		end
 
-		if !params[:btype].blank?
-			addr += sep+"btype=#{params[:btype]}"
+		if !industry.blank?
+			addr += sep+"industry=#{industry}"
+			sep = "&"		
+		end
+
+		if !params[:btype].blank? && !params[:btype][0].blank?
+			if params[:btype].is_a?String
+				btype = params[:btype]
+			else
+				btype = params[:btype].compact.join(",")	
+			end
+			addr += sep+"btype=#{btype}"
 			sep = "&"
 		end
 
@@ -90,8 +102,13 @@ module ReportHelper
 			sep = "&"
 		end
 
-		if !params[:product].blank?
-			addr += sep+"product=#{params[:product]}"
+		if !params[:product].blank? && !params[:product][0].blank?
+			if params[:product].is_a?String
+				product = params[:product]
+			else
+				product = params[:product].compact.join(",")	
+			end
+			addr += sep+"product=#{product}"
 			sep = "&"
 		end
 

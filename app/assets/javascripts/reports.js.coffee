@@ -34,4 +34,16 @@ ready = ->
 		closeOnSelect: false;
 	});
 
+	$( "#product" ).select2({
+		width: "180px"
+		theme: "bootstrap";
+		closeOnSelect: false;
+	});
+
+	$( "#btype" ).select2({
+		width: "300px"
+		theme: "bootstrap";
+		closeOnSelect: false;
+	});
+
 	

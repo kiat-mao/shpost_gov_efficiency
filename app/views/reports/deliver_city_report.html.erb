@@ -24,6 +24,8 @@
         <th><b>单位/快递柜收数</b></th>
         <th><b>妥投率</b></th>
         <th><b>平均妥投天数</b></th>
+        <th><b>当日妥投率</b></th>
+        <th><b>当日妥投总数</b></th>
         <th><b>次日妥投率</b></th>
         <th><b>次日妥投总数</b></th>
         <th><b>三日妥投率</b></th>
@@ -51,6 +53,8 @@
       <td><u><%= link_to v[4], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, nil, params[:receiver_province_no], k[0].blank? ? "nil" : k[0], "unit"), target: '_blank' %></u></td>
       <td><%= v[5].to_s(:rounded, precision: 2)+"%" %></td>
       <td><%= v[6].to_s(:rounded, precision: 2) %></td>
+      <td><%= v[17].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><u><%= link_to v[18], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "1", params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></u></td>
       <td><%= v[7].to_s(:rounded, precision: 2)+"%" %></td>
       <td><u><%= link_to v[8], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "2", params[:receiver_province_no], k[0].blank? ? "nil" : k[0], nil), target: '_blank' %></u></td>
       <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
