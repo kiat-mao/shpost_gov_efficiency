@@ -12,9 +12,9 @@
     </tr>
     <tr>
       <td><%= label_tag(:product, "产品类型:") %></td>
-      <td style="position: static;"><%= select_tag(:product, options_for_select(Express::BASE_PRODUCT_SELECT.invert.to_a.insert(0,""), :selected=>params[:product]), multiple: true) %></td> 
+      <td style="position: static;"><%= select_tag(:product, options_for_select(Express::BASE_PRODUCT_SELECT.invert.to_a, :selected=>params[:product]), multiple: true) %></td> 
       <td><%= label_tag(:btype, "客户类别:") %></td>
-      <td style="position: static;"><%= select_tag(:btype, options_for_select(Business.select_btypes(@is_court).map{|i| [i.btype,i.btype]}.insert(0,""), :selected=> params[:btype]), id: "btype", multiple: true) %></td>     
+      <td style="position: static;"><%= select_tag(:btype, options_for_select(Business.select_btypes(@is_court).map{|i| [i.btype,i.btype]}, :selected=> params[:btype]), id: "btype", multiple: true) %></td>     
       <% if !@is_court.nil? %>
         <% if !@is_court %>
           <td><%= label_tag(:industry, "二级行业名称:") %></td>
@@ -84,7 +84,7 @@
     <%= hidden_field_tag('day', @day) %>
   <% end %>
   
-  <%= check_box("checkbox","bf_free_tax")%><b>是否保税仓邮件</b>
+  <%= check_box("checkbox","bf_free_tax", checked: @bf_free_tax) %><b>是否保税仓邮件</b>
   <br>
   <font color="red" size=2>注：
     <br>1."客户"输入框可输入客户代号或客户名称进行模糊查询

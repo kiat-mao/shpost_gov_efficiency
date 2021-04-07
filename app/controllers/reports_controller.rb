@@ -6,6 +6,10 @@ class ReportsController < ApplicationController
 		@is_court = false
 		@is_market = true
 		@is_monitor = false
+		@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
 		unless request.get?
 			init_result
@@ -36,6 +40,10 @@ class ReportsController < ApplicationController
   	@is_court = false
   	@is_market = false
   	@is_monitor = false
+  	@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
 		unless request.get?
 			init_result_unit
@@ -62,6 +70,10 @@ class ReportsController < ApplicationController
   	@is_market = true
   	@is_monitor = true
   	@day = params[:day]
+  	@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
   	unless request.get?
 			init_result
@@ -75,6 +87,10 @@ class ReportsController < ApplicationController
 		@is_market = false
 		@is_monitor = true
 		@day = params[:day]
+		@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
 		unless request.get?
 			init_result_unit
@@ -88,6 +104,10 @@ class ReportsController < ApplicationController
 		@is_court = true
 		@is_market = true
 		@is_monitor = false
+		@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
 		unless request.get?
 			init_result
@@ -102,6 +122,10 @@ class ReportsController < ApplicationController
   	@is_court = true
   	@is_market = false
   	@is_monitor = false
+  	@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
 		unless request.get?
 			init_result_unit
@@ -115,6 +139,10 @@ class ReportsController < ApplicationController
   	@is_court = true
   	@is_market = true
   	@is_monitor = true
+  	@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
   	unless request.get?
 			init_result
@@ -127,6 +155,10 @@ class ReportsController < ApplicationController
 		@is_court = true
 		@is_market = false
 		@is_monitor = true
+		@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
 		unless request.get?
 			init_result_unit
@@ -155,6 +187,10 @@ class ReportsController < ApplicationController
   	@is_court = nil
   	@is_market = nil
   	@is_monitor = false
+  	@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
 		unless request.get?
 			init_result_receipt
@@ -181,6 +217,10 @@ class ReportsController < ApplicationController
   	@is_market = nil
   	@is_monitor = false
   	@is_province = true
+  	@bf_free_tax = false
+		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
+			@bf_free_tax = true
+		end
 
 		unless request.get?
 			init_result_province_city
