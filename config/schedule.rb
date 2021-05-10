@@ -31,6 +31,13 @@ every :day, at: '12:30pm' do
   runner "Express.init_expresses_midday"
 end
 
+every '30 12-23 * * *' do
+  runner "Express.refresh_traces_today"
+end
+
+every '0 13-23 * * *' do
+  runner "Express.refresh_traces_today"
+end
 #
 # every 2.hours do
 #   command "/usr/bin/some_great_command"

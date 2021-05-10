@@ -76,8 +76,16 @@ class Express < ApplicationRecord
 
   def self.refresh_traces_yesterday
     start_date = Date.today - 1.day
-    end_date = Date.today + 1.day
+    end_date = Date.today
     Express.refresh_traces(start_date, end_date)
+  end
+
+
+  #only business with is_init_expresses_midday true
+  def self.refresh_traces_today
+    start_date = Date.today
+    end_date = Date.today + 1.day
+    Express.refresh_traces(start_date, end_date, true)
   end
   
   def self.init_expresses(start_date, end_date)
@@ -103,14 +111,17 @@ class Express < ApplicationRecord
     end
   end
 
-  def self.refresh_traces(start_date, end_date)
+  def self.refresh_traces(start_date, end_date, only_midday = false)
     if start_date.blank? || end_date.blank?
       return
     end
     start_date = start_date.to_date
     end_date = end_date.to_date
     puts("#{Time.now}, refresh_traces, start_date: #{start_date}, end_date: #{end_date}")
-    businesses = Business.all.order(is_init_expresses_midday: :desc)
+    #businesses = Business.all.order(is_init_expresses_midday: :desc)
+    
+    businesses = Business.where(is_init_expresses_midday: only_midday)
+
     businesses.each do |business|
       Express.refresh_traces_by_business(business, start_date, end_date)
 
