@@ -38,7 +38,7 @@ class Report
       if industry.is_a?String
         industry = params[:industry].split(",")
       end
-      expresses = expresses.where("businesses.industry in (?)", industry)
+      expresses = expresses.where(businesses: {industry: industry})
     end
     
     if !params[:btype].blank? && !params[:btype][0].blank?
@@ -47,7 +47,8 @@ class Report
       if btype.is_a?String
         btype = params[:btype].split(",")
       end
-      expresses = expresses.where("businesses.btype in (?)", btype)
+      # expresses = expresses.where("businesses.btype in (?)", btype)
+      expresses = expresses.where(businesses: {btype: btype})
     end
 
     if !params[:business].blank?
@@ -73,14 +74,14 @@ class Report
     end
     
     if !params[:detail_btype].blank? && !(params[:detail_btype].eql?"合计")
-      expresses = expresses.where("businesses.btype = ?", params[:detail_btype])
+      expresses = expresses.where(businesses: {btype: params[:detail_btype]})
     end
 
     if !params[:status].blank?
       if params[:status].eql?"not_delivered"
         expresses = expresses.where.not(status: "delivered")
       else
-        expresses = expresses.where("expresses.status = ?", params[:status])
+        expresses = expresses.where(status: params[:status])
       end
     end
 
@@ -99,9 +100,9 @@ class Report
     # end
     if !params[:is_court].blank?
       if params[:is_court].eql?"false"
-        expresses = expresses.where.not("businesses.industry = ?", "法院")
+        expresses = expresses.where.not(businesses: {industry: "法院"})
       else
-        expresses = expresses.where("businesses.industry = ?", "法院")
+        expresses = expresses.where(businesses: {industry: "法院"})
       end
     end
 
@@ -122,7 +123,7 @@ class Report
     end
 
     if !params[:lv2_unit].blank?
-      expresses = expresses.left_outer_joins(:last_unit).where("units.parent_id = ?", params[:lv2_unit])
+      expresses = expresses.left_outer_joins(:last_unit).where(units: {parent_id: params[:lv2_unit]})
     end
 
     if !params[:transit_delivery].blank?
@@ -144,12 +145,12 @@ class Report
       end
 
       if !product.include?"other_product"       
-        expresses = expresses.where("expresses.base_product_no in (?)", product)
+        expresses = expresses.where(base_product_no: product)
       else
         if product.size==1
           expresses = expresses.other_product
         else
-          expresses = expresses.where("expresses.base_product_no in (?)", product-["other_product"]).or(expresses.where.not(base_product_no: Express::BASE_PRODUCT_NOS.values)).or(expresses.where(base_product_no: nil))
+          expresses = expresses.where(base_product_no: product-["other_product"]).or(expresses.where.not(base_product_no: Express::BASE_PRODUCT_NOS.values)).or(expresses.where(base_product_no: nil))
         end
         if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:base_product_no].blank?
           params[:expresses][:f][:base_product_no] = nil
@@ -235,6 +236,10 @@ class Report
     deliver2_hj = 0
     deliver3_hj = 0
     deliver5_hj = 0
+    deliver0_per = 0.00
+    deliver2_per = 0.00
+    deliver3_per = 0.00
+    deliver5_per = 0.00
     waiting_hj = 0
     return_hj = 0
     in_transit_hj = 0
@@ -242,7 +247,7 @@ class Report
     deliver_own_hj = 0
     deliver_other_hj = 0
     deliver_unit_hj = 0
-
+    
     if current_user.superadmin? || current_user.company_admin?
       if (!params[:is_court].blank?) && (params[:is_court].eql?"true")
         businesses = Business.where(industry: "法院")
@@ -274,30 +279,29 @@ class Report
       btypes = expresses.group(:btype).count
     end
        
-    total_amount = expresses.group("businesses.btype").count
     status_amount = expresses.group("businesses.btype", "expresses.status").count
-    deliver0 = expresses.delivered.where("expresses.delivered_days < 1").group("businesses.btype").count
-    deliver2 = expresses.delivered.where("expresses.delivered_days < 2").group("businesses.btype").count
-    deliver3 = expresses.delivered.where("expresses.delivered_days < 3").group("businesses.btype").count
-    deliver5 = expresses.delivered.where("expresses.delivered_days < 5").group("businesses.btype").count
+    deliver_days_amount = expresses.delivered.where("expresses.delivered_days < 5").group("businesses.btype").group("expresses.delivered_days").count
     transit_delivery = expresses.waiting.group("businesses.btype", "expresses.whereis").count
     delivered_status_amount = expresses.delivered.group("businesses.btype", "expresses.delivered_status").count
 
     btypes.each do |k,v|
       btype = k
-      total_am = total_amount[btype].blank? ? 0 : total_amount[btype]
+      total_am = get_total_amount(k, status_amount)
       total_hj += total_am
       deliver_am =status_amount[[btype, "delivered"]].blank? ? 0 : status_amount[[btype, "delivered"]]
       deliver_hj += deliver_am
       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
-      deliver0_per = deliver0[btype].blank? ? 0 : (deliver0[btype]/total_am.to_f*100).round(2)
-      deliver0_hj += deliver0[btype].blank? ? 0 : deliver0[btype]
-      deliver2_per = deliver2[btype].blank? ? 0 : (deliver2[btype]/total_am.to_f*100).round(2)
-      deliver2_hj += deliver2[btype].blank? ? 0 : deliver2[btype]
-      deliver3_per = deliver3[btype].blank? ? 0 : (deliver3[btype]/total_am.to_f*100).round(2)
-      deliver3_hj += deliver3[btype].blank? ? 0 : deliver3[btype]
-      deliver5_per = deliver5[btype].blank? ? 0 : (deliver5[btype]/total_am.to_f*100).round(2)
-      deliver5_hj += deliver5[btype].blank? ? 0 : deliver5[btype]
+      deliver_days_am = get_deliver_days_amount(k, deliver_days_amount)
+      if !deliver_days_am.blank?
+        deliver0_per = total_am>0 ? (deliver_days_am["deliver0_am"]/total_am.to_f*100).round(2) : 0
+        deliver0_hj += deliver_days_am["deliver0_am"].blank? ? 0 : deliver_days_am["deliver0_am"]
+        deliver2_per = total_am>0 ? (deliver_days_am["deliver2_am"]/total_am.to_f*100).round(2) : 0
+        deliver2_hj += deliver_days_am["deliver2_am"].blank? ? 0 : deliver_days_am["deliver2_am"]
+        deliver3_per = total_am>0 ? (deliver_days_am["deliver3_am"]/total_am.to_f*100).round(2) : 0
+        deliver3_hj += deliver_days_am["deliver3_am"].blank? ? 0 : deliver_days_am["deliver3_am"]
+        deliver5_per = total_am>0 ? (deliver_days_am["deliver5_am"]/total_am.to_f*100).round(2) : 0
+        deliver5_hj += deliver_days_am["deliver5_am"].blank? ? 0 : deliver_days_am["deliver5_am"]
+      end
       waiting_am = status_amount[[btype, "waiting"]].blank? ? 0 : status_amount[[btype, "waiting"]]
       waiting_hj += waiting_am
       in_transit_am = transit_delivery[[btype, "in_transit"]].blank? ? 0 : transit_delivery[[btype, "in_transit"]]
@@ -339,6 +343,10 @@ class Report
     deliver2_hj = 0
     deliver3_hj = 0
     deliver5_hj = 0
+    deliver0_per = 0.00
+    deliver2_per = 0.00
+    deliver3_per = 0.00
+    deliver5_per = 0.00
     waiting_hj = 0
     return_hj = 0
     in_transit_hj = 0
@@ -346,35 +354,34 @@ class Report
     deliver_own_hj = 0
     deliver_other_hj = 0
     deliver_unit_hj = 0
- 
+  
     if expresses.count>0
-      # total_amount = expresses.left_outer_joins(:last_unit).order("'parent_id'", :last_unit_id).group(:last_unit).count
       total_amount = expresses.left_outer_joins(:last_unit).left_outer_joins(:last_unit=>:parent_unit).group(:last_unit_id).group("units.name").group("units.parent_id").group("parent_units_units.name").count
 
-      status_amount = expresses.group(:last_unit_id, :status).count
-      deliver0 = expresses.delivered.where("expresses.delivered_days < 1").group("expresses.last_unit_id").count
-      deliver2 = expresses.delivered.where("expresses.delivered_days < 2").group("expresses.last_unit_id").count
-      deliver3 = expresses.delivered.where("expresses.delivered_days < 3").group("expresses.last_unit_id").count
-      deliver5 = expresses.delivered.where("expresses.delivered_days < 5").group("expresses.last_unit_id").count
+      status_amount = expresses.group(:last_unit_id).group(:status).count
+      deliver_days_amount = expresses.delivered.where("expresses.delivered_days < 5").group(:last_unit_id).group("expresses.delivered_days").count
       transit_delivery = expresses.waiting.group("expresses.last_unit_id", "expresses.whereis").count
       delivered_status_amount = expresses.delivered.group(:last_unit_id, :delivered_status).count
 
       total_amount.each do |k, v|
-  # debugger
         last_unit_id = k[0]
         total_am = v
         total_hj += total_am
+    
         deliver_am =status_amount[[last_unit_id, "delivered"]].blank? ? 0 : status_amount[[last_unit_id, "delivered"]]
         deliver_hj += deliver_am
         deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
-        deliver0_per = deliver0[last_unit_id].blank? ? 0 : (deliver0[last_unit_id]/total_am.to_f*100).round(2)
-        deliver0_hj += deliver0[last_unit_id].blank? ? 0 : deliver0[last_unit_id]
-        deliver2_per = deliver2[last_unit_id].blank? ? 0 : (deliver2[last_unit_id]/total_am.to_f*100).round(2)
-        deliver2_hj += deliver2[last_unit_id].blank? ? 0 : deliver2[last_unit_id]
-        deliver3_per = deliver3[last_unit_id].blank? ? 0 : (deliver3[last_unit_id]/total_am.to_f*100).round(2)
-        deliver3_hj += deliver3[last_unit_id].blank? ? 0 : deliver3[last_unit_id]  
-        deliver5_per = deliver5[last_unit_id].blank? ? 0 : (deliver5[last_unit_id]/total_am.to_f*100).round(2)
-        deliver5_hj += deliver5[last_unit_id].blank? ? 0 : deliver5[last_unit_id]
+        deliver_days_am = get_deliver_days_amount(last_unit_id, deliver_days_amount)
+        if !deliver_days_am.blank?
+          deliver0_per = total_am>0 ? (deliver_days_am["deliver0_am"]/total_am.to_f*100).round(2) : 0
+          deliver0_hj += deliver_days_am["deliver0_am"].blank? ? 0 : deliver_days_am["deliver0_am"]
+          deliver2_per = total_am>0 ? (deliver_days_am["deliver2_am"]/total_am.to_f*100).round(2) : 0
+          deliver2_hj += deliver_days_am["deliver2_am"].blank? ? 0 : deliver_days_am["deliver2_am"]
+          deliver3_per = total_am>0 ? (deliver_days_am["deliver3_am"]/total_am.to_f*100).round(2) : 0
+          deliver3_hj += deliver_days_am["deliver3_am"].blank? ? 0 : deliver_days_am["deliver3_am"] 
+          deliver5_per = total_am>0 ? (deliver_days_am["deliver5_am"]/total_am.to_f*100).round(2) : 0
+          deliver5_hj += deliver_days_am["deliver5_am"].blank? ? 0 : deliver_days_am["deliver5_am"]
+        end
         waiting_am = status_amount[[last_unit_id, "waiting"]].blank? ? 0 : status_amount[[last_unit_id, "waiting"]]
         waiting_hj += waiting_am
         in_transit_am = transit_delivery[[last_unit_id, "in_transit"]].blank? ? 0 : transit_delivery[[last_unit_id, "in_transit"]]
@@ -419,6 +426,10 @@ class Report
     deliver2_hj = 0
     deliver3_hj = 0
     deliver5_hj = 0
+    deliver0_per = 0.00
+    deliver2_per = 0.00
+    deliver3_per = 0.00
+    deliver5_per = 0.00
     waiting_hj = 0
     return_hj = 0
     in_transit_hj = 0
@@ -428,29 +439,29 @@ class Report
     deliver_unit_hj = 0
     
     businesses = Business.where(btype: params[:detail_btype])   
-    total_amount = expresses.group(:business).count
+    # total_amount = expresses.group(:business).count
     status_amount = expresses.group(:business_id, :status).count
-    deliver0 = expresses.delivered.where("expresses.delivered_days < 1").group(:business_id).count
-    deliver2 = expresses.delivered.where("expresses.delivered_days < 2").group(:business_id).count
-    deliver3 = expresses.delivered.where("expresses.delivered_days < 3").group(:business_id).count
-    deliver5 = expresses.delivered.where("expresses.delivered_days < 5").group(:business_id).count
+    deliver_days_amount = expresses.delivered.where("expresses.delivered_days < 5").group(:business_id).group("expresses.delivered_days").count
     transit_delivery = expresses.waiting.group("expresses.business_id", "expresses.whereis").count
     delivered_status_amount = expresses.delivered.group(:business_id, :delivered_status).count
 
     businesses.each do |x|
-      total_am = total_amount[x].blank? ? 0 : total_amount[x]
+      total_am = get_total_amount(x.id, status_amount)
       total_hj += total_am
       deliver_am =status_amount[[x.try(:id), "delivered"]].blank? ? 0 : status_amount[[x.try(:id), "delivered"]]
       deliver_hj += deliver_am
       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
-      deliver0_per = deliver0[x.try(:id)].blank? ? 0 : (deliver0[x.try(:id)]/total_am.to_f*100).round(2)
-      deliver0_hj += deliver0[x.try(:id)].blank? ? 0 : deliver0[x.try(:id)]
-      deliver2_per = deliver2[x.try(:id)].blank? ? 0 : (deliver2[x.try(:id)]/total_am.to_f*100).round(2)
-      deliver2_hj += deliver2[x.try(:id)].blank? ? 0 : deliver2[x.try(:id)]
-      deliver3_per = deliver3[x.try(:id)].blank? ? 0 : (deliver3[x.try(:id)]/total_am.to_f*100).round(2)
-      deliver3_hj += deliver3[x.try(:id)].blank? ? 0 : deliver3[x.try(:id)]
-      deliver5_per = deliver5[x.try(:id)].blank? ? 0 : (deliver5[x.try(:id)]/total_am.to_f*100).round(2)
-      deliver5_hj += deliver5[x.try(:id)].blank? ? 0 : deliver5[x.try(:id)]
+      deliver_days_am = get_deliver_days_amount(x.id, deliver_days_amount)
+      if !deliver_days_am.blank?
+        deliver0_per = total_am>0 ? (deliver_days_am["deliver0_am"]/total_am.to_f*100).round(2) : 0
+        deliver0_hj += deliver_days_am["deliver0_am"].blank? ? 0 : deliver_days_am["deliver0_am"]
+        deliver2_per = total_am>0 ? (deliver_days_am["deliver2_am"]/total_am.to_f*100).round(2) : 0
+        deliver2_hj += deliver_days_am["deliver2_am"].blank? ? 0 : deliver_days_am["deliver2_am"]
+        deliver3_per = total_am>0 ? (deliver_days_am["deliver3_am"]/total_am.to_f*100).round(2) : 0
+        deliver3_hj += deliver_days_am["deliver3_am"].blank? ? 0 : deliver_days_am["deliver3_am"]
+        deliver5_per = total_am>0 ? (deliver_days_am["deliver5_am"]/total_am.to_f*100).round(2) : 0
+        deliver5_hj += deliver_days_am["deliver5_am"].blank? ? 0 : deliver_days_am["deliver5_am"]
+      end
       waiting_am = status_amount[[x.try(:id), "waiting"]].blank? ? 0 : status_amount[[x.try(:id), "waiting"]]
       waiting_hj += waiting_am
       in_transit_am = transit_delivery[[x.try(:id), "in_transit"]].blank? ? 0 : transit_delivery[[x.try(:id), "in_transit"]]
@@ -586,67 +597,69 @@ class Report
     deliver2_hj = 0      #次日妥投总数
     deliver3_hj = 0      #三日妥投总数
     deliver5_hj = 0      #五日妥投总数
+    deliver0_per = 0.00
+    deliver2_per = 0.00
+    deliver3_per = 0.00
+    deliver5_per = 0.00
     waiting_hj = 0       #未妥投总数
     return_hj = 0        #退回数
     deliver_own_hj = 0   #妥投本人收总数
     deliver_other_hj = 0 #妥投他人收总数
     deliver_unit_hj = 0  #妥投单位/快递柜收总数
 
+
     # 省
     if params[:receiver_province_no].blank?   
       expresses = expresses.left_outer_joins(:receiver_province)
       total_amount = expresses.group(:receiver_province_no, "areas.name").count
-      status_amount = expresses.group(:receiver_province_no, "areas.name", :status).count
-      deliver0 = expresses.delivered.where("expresses.delivered_days < 1").group(:receiver_province_no, "areas.name").count
-      deliver2 = expresses.delivered.where("expresses.delivered_days < 2").group(:receiver_province_no, "areas.name").count
-      deliver3 = expresses.delivered.where("expresses.delivered_days < 3").group(:receiver_province_no, "areas.name").count
-      deliver5 = expresses.delivered.where("expresses.delivered_days < 5").group(:receiver_province_no, "areas.name").count
-      deliver_avg = expresses.delivered.group(:receiver_province_no, "areas.name").average(:delivered_days)
-      delivered_status_amount = expresses.delivered.group(:receiver_province_no, "areas.name", :delivered_status).count
+      status_amount = expresses.group(:receiver_province_no).group(:status).count
+      deliver_days_amount = expresses.delivered.where("expresses.delivered_days < 5").group(:receiver_province_no).group("expresses.delivered_days").count
+      deliver_avg = expresses.delivered.group(:receiver_province_no).average(:delivered_days)
+      delivered_status_amount = expresses.delivered.group(:receiver_province_no, :delivered_status).count
     else
       # 市
-      # expresses = expresses.left_outer_joins(:receiver_province).where.not("areas.is_prov=? and areas.is_city=?", true, false)
       expresses = expresses.left_outer_joins(:receiver_city)
       total_amount = expresses.group(:receiver_city_no, "areas.name").count
-      status_amount = expresses.group(:receiver_city_no, "areas.name", :status).count
-      deliver0 = expresses.delivered.where("expresses.delivered_days < 1").group(:receiver_city_no, "areas.name").count
-      deliver2 = expresses.delivered.where("expresses.delivered_days < 2").group(:receiver_city_no, "areas.name").count
-      deliver3 = expresses.delivered.where("expresses.delivered_days < 3").group(:receiver_city_no, "areas.name").count
-      deliver5 = expresses.delivered.where("expresses.delivered_days < 5").group(:receiver_city_no, "areas.name").count
-      deliver_avg = expresses.delivered.group(:receiver_city_no, "areas.name").average(:delivered_days)
-      delivered_status_amount = expresses.delivered.group(:receiver_city_no, "areas.name", :delivered_status).count
+      status_amount = expresses.group(:receiver_city_no).group(:status).count
+      deliver_days_amount = expresses.delivered.where("expresses.delivered_days < 5").group(:receiver_city_no).group("expresses.delivered_days").count
+      deliver_avg = expresses.delivered.group(:receiver_city_no).average(:delivered_days)
+      delivered_status_amount = expresses.delivered.group(:receiver_city_no, :delivered_status).count
     end
- 
+
     total_amount.each do |k, v|
       total_am = v
       total_hj += total_am
-      deliver_am =status_amount[[k[0], k[1], "delivered"]].blank? ? 0 : status_amount[[k[0], k[1], "delivered"]]
+      deliver_am =status_amount[[k[0], "delivered"]].blank? ? 0 : status_amount[[k[0], "delivered"]]
       deliver_hj += deliver_am
       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
-      deliver_days_avg = deliver_avg[k].blank? ? 0 : deliver_avg[k]
-      deliver0_am = deliver0[k].blank? ? 0 : deliver0[k]
-      deliver0_hj += deliver0_am
-      deliver0_per = total_am>0 ? (deliver0_am/total_am.to_f*100).round(2) : 0
-      deliver2_am = deliver2[k].blank? ? 0 : deliver2[k]
-      deliver2_hj += deliver2_am
-      deliver2_per = total_am>0 ? (deliver2_am/total_am.to_f*100).round(2) : 0
-      deliver3_am = deliver3[k].blank? ? 0 : deliver3[k]
-      deliver3_hj += deliver3_am
-      deliver3_per = total_am>0 ? (deliver3_am/total_am.to_f*100).round(2) : 0
-      deliver5_am = deliver5[k].blank? ? 0 : deliver5[k]
-      deliver5_hj += deliver5_am
-      deliver5_per = total_am>0 ? (deliver5_am/total_am.to_f*100).round(2) : 0
-      waiting_am = status_amount[[k[0], k[1], "waiting"]].blank? ? 0 : status_amount[[k[0], k[1], "waiting"]]
+      deliver_days_avg = deliver_avg[k[0]].blank? ? 0 : deliver_avg[k[0]]
+      deliver_days_am = get_deliver_days_amount(k[0], deliver_days_amount)
+      
+      if !deliver_days_am.blank?
+        deliver0_am = deliver_days_am["deliver0_am"].blank? ? 0 : deliver_days_am["deliver0_am"]
+        deliver0_hj += deliver0_am
+        deliver0_per = total_am>0 ? (deliver0_am/total_am.to_f*100).round(2) : 0
+        deliver2_am = deliver_days_am["deliver2_am"].blank? ? 0 : deliver_days_am["deliver2_am"]
+        deliver2_hj += deliver2_am
+        deliver2_per = total_am>0 ? (deliver2_am/total_am.to_f*100).round(2) : 0
+        deliver3_am = deliver_days_am["deliver3_am"].blank? ? 0 : deliver_days_am["deliver3_am"]
+        deliver3_hj += deliver3_am
+        deliver3_per = total_am>0 ? (deliver3_am/total_am.to_f*100).round(2) : 0
+        deliver5_am = deliver_days_am["deliver5_am"].blank? ? 0 : deliver_days_am["deliver5_am"]
+        deliver5_hj += deliver5_am
+        deliver5_per = total_am>0 ? (deliver5_am/total_am.to_f*100).round(2) : 0
+      end
+      waiting_am = status_amount[[k[0], "waiting"]].blank? ? 0 : status_amount[[k[0], "waiting"]]
       waiting_hj += waiting_am
       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
-      return_am = status_amount[[k[0], k[1], "returns"]].blank? ? 0 : status_amount[[k[0], k[1], "returns"]]
+      return_am = status_amount[[k[0], "returns"]].blank? ? 0 : status_amount[[k[0], "returns"]]
       return_hj += return_am
       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
-      deliver_own_am =delivered_status_amount[[k[0], k[1], "own"]].blank? ? 0 :    delivered_status_amount[[k[0], k[1], "own"]]
+      deliver_own_am =delivered_status_amount[[k[0], "own"]].blank? ? 0 :    delivered_status_amount[[k[0], "own"]]
       deliver_own_hj += deliver_own_am
-      deliver_other_am =delivered_status_amount[[k[0], k[1], "other"]].blank? ? 0 : delivered_status_amount[[k[0], k[1], "other"]]
+      deliver_other_am =delivered_status_amount[[k[0], "other"]].blank? ? 0 : delivered_status_amount[[k[0], "other"]]
       deliver_other_hj += deliver_other_am
-      deliver_unit_am =delivered_status_amount[[k[0], k[1], "unit"]].blank? ? 0 : delivered_status_amount[[k[0], k[1], "unit"]]
+      deliver_unit_am =delivered_status_amount[[k[0], "unit"]].blank? ? 0 : delivered_status_amount[[k[0], "unit"]]
       deliver_unit_hj += deliver_unit_am
 
       results[k] = [total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, deliver_days_avg, deliver2_per, deliver2_am, deliver3_per, deliver3_am, deliver5_per, deliver5_am, waiting_am, waiting_per, return_am, return_per, deliver0_per, deliver0_am]
@@ -684,6 +697,32 @@ class Report
       products = products[0, products.length-1]
     end
     return products
+  end
+
+  def self.get_total_amount(key, status_amount)
+    total_am = 0
+    
+    Express::STATUS_NAME.each do |k, v|
+      total_am += status_amount[[key, k.to_s]].blank? ? 0 : status_amount[[key, k.to_s]]
+    end
+
+    return total_am
+  end
+
+  def self.get_deliver_days_amount(key, deliver_days_amount)
+    deliver_days_am = {}
+
+    d0 = deliver_days_amount[[key, 0]].blank? ? 0 : deliver_days_amount[[key, 0]]
+    d1 = deliver_days_amount[[key, 1]].blank? ? 0 : deliver_days_amount[[key, 1]]
+    d2 = deliver_days_amount[[key, 2]].blank? ? 0 : deliver_days_amount[[key, 2]]
+    d3 = deliver_days_amount[[key, 3]].blank? ? 0 : deliver_days_amount[[key, 3]]
+    d4 = deliver_days_amount[[key, 4]].blank? ? 0 : deliver_days_amount[[key, 4]]
+    
+    deliver0_am = d0
+    deliver2_am = d0 + d1
+    deliver3_am = d0 + d1 + d2
+    deliver5_am = d0 + d1 + d2 + d3 + d4
+    deliver_days_am = {"deliver0_am"=>deliver0_am, "deliver2_am"=>deliver2_am, "deliver3_am"=>deliver3_am, "deliver5_am"=>deliver5_am}
   end
 
 end

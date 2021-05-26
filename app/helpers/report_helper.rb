@@ -5,31 +5,33 @@ module ReportHelper
 	  sep="?"
 	  industry = nil
 
-  	if !params[:is_court].blank? && (params[:is_court].eql?"true")
-  		industry = '法院'
-  	else
-			if !params[:industry].blank? && !params[:industry][0].blank?
-				if params[:industry].is_a?String
-					industry = params[:industry]
+	  if detail_btype.blank?
+	  	if !params[:is_court].blank? && (params[:is_court].eql?"true")
+	  		industry = '法院'
+	  	else
+				if !params[:industry].blank? && !params[:industry][0].blank?
+					if params[:industry].is_a?String
+						industry = params[:industry]
+					else
+						industry = params[:industry].compact.join(",")	
+					end	
+				end
+			end
+
+			if !industry.blank?
+				addr += sep+"industry=#{industry}"
+				sep = "&"		
+			end
+
+			if !params[:btype].blank? && !params[:btype][0].blank?
+				if params[:btype].is_a?String
+					btype = params[:btype]
 				else
-					industry = params[:industry].compact.join(",")	
-				end	
+					btype = params[:btype].compact.join(",")	
+				end
+				addr += sep+"btype=#{btype}"
+				sep = "&"
 			end
-		end
-
-		if !industry.blank?
-			addr += sep+"industry=#{industry}"
-			sep = "&"		
-		end
-
-		if !params[:btype].blank? && !params[:btype][0].blank?
-			if params[:btype].is_a?String
-				btype = params[:btype]
-			else
-				btype = params[:btype].compact.join(",")	
-			end
-			addr += sep+"btype=#{btype}"
-			sep = "&"
 		end
 
 		if !params[:business].blank?
