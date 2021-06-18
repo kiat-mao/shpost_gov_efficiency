@@ -121,7 +121,7 @@ class Express < ApplicationRecord
     #businesses = Business.all.order(is_init_expresses_midday: :desc)
     
     businesses = Business.where(is_init_expresses_midday: only_midday)
-
+    
     businesses.each do |business|
       Express.refresh_traces_by_business(business, start_date, end_date)
 
@@ -203,6 +203,9 @@ class Express < ApplicationRecord
     express.base_product_no = pkp_waybill_base.base_product_no
     express.biz_product_no = pkp_waybill_base.biz_product_no
 
+    #quanchengluyun = 3
+    express.transfer_type = pkp_waybill_base.transfer_type
+
     #distributive_center_no
     #NJ = 21112100
     express.distributive_center_no = pkp_waybill_base.pkp_waybill_biz.distributive_center_no
@@ -251,7 +254,7 @@ class Express < ApplicationRecord
     mail_trace ||= MailTrace.find_by mail_no: self.express_no
 
     if ! mail_trace.blank?
-      self.status = Express.to_status(mail_trace.status) || Express::statuses[:waiting]
+      self.status = Express.to_status (mail_trace.status) || Express::statuses[:waiting]
       if self.delivered? && self.delivered_status.blank?
         begin
           self.delivered_status = mail_trace.status
