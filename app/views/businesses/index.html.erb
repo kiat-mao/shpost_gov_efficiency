@@ -30,6 +30,10 @@
       bussiness.is_all_visible ? '是' : '否'
     end
 
+    g.column name: model_class.human_attribute_name(:static_alert), attribute: 'static_alert' do |bussiness|
+      bussiness.static_alert ? '是' : '否'
+    end
+
     g.column do |business|
       ActiveSupport::SafeBuffer.new << 
         (link_to t('.edit', :default => t("helpers.links.edit")), edit_business_path(business), :class => 'btn btn-xs btn-primary' if can? :update, business) << ' ' <<

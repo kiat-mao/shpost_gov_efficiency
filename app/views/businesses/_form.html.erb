@@ -48,6 +48,13 @@
       <%= f.select(:is_all_visible, {"否":false, "是":true}) %>
     </div>
   </div>
+  <div class="control-group">
+    <%= f.label :static_alert, :class => 'control-label' %>
+    <font color="red">(若无特殊需求请选否)</font>
+    <div class="controls">
+      <%= f.select(:static_alert, {"否":false, "是":true}) %>
+    </div>
+  </div>
 
 
  
