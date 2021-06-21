@@ -338,7 +338,8 @@ class Express < ApplicationRecord
     if delivered? || returns?
       if ! posting_date.blank? && ! last_op_at.blank?
          self.delivered_days = (last_op_at.to_date - posting_date.to_date).to_i
-         return self.delivered_days
+         self.delivered_hour = last_op_at.hour
+         return #self.delivered_days
       end
     end
     self.delivered_days = nil
