@@ -179,6 +179,11 @@ module ReportHelper
 			sep = "&"
 		end
 
+		if !params[:transfer_type].blank?
+			addr += sep+"transfer_type=#{params[:transfer_type]}"
+			sep = "&"
+		end
+
 		
 # byebug
 		addr

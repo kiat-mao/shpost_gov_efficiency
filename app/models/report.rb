@@ -152,9 +152,10 @@ class Report
         else
           expresses = expresses.where(base_product_no: product-["other_product"]).or(expresses.where.not(base_product_no: Express::BASE_PRODUCT_NOS.values)).or(expresses.where(base_product_no: nil))
         end
-        if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:base_product_no].blank?
-          params[:expresses][:f][:base_product_no] = nil
-        end
+      end
+
+      if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:base_product_no].blank?
+        params[:expresses][:f][:base_product_no] = nil
       end
     end
 
@@ -222,6 +223,23 @@ class Report
       expresses = expresses.bf_free_tax
     end
 # byebug
+    if !params[:transfer_type].blank? || (!params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank? && !params[:expresses][:f][:transfer_type][0].blank?)
+      if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank? && !params[:expresses][:f][:transfer_type][0].blank?
+        transfer_type = params[:expresses][:f][:transfer_type][0]
+      else
+        transfer_type = params[:transfer_type]
+      end
+      
+      if transfer_type.eql?"3"       
+        expresses = expresses.all_land
+      elsif transfer_type.eql?"other_type" 
+        expresses = expresses.other_type
+      end
+
+      if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank?
+        params[:expresses][:f][:transfer_type] = nil
+      end
+    end
 
     return expresses
   end
@@ -597,10 +615,16 @@ class Report
     deliver2_hj = 0      #次日妥投总数
     deliver3_hj = 0      #三日妥投总数
     deliver5_hj = 0      #五日妥投总数
+    deliver1.5_hj = 0      #1.5日妥投总数
+    deliver2.5_hj = 0      #2.5日妥投总数
+    deliver3.5_hj = 0      #3.5日妥投总数
     deliver0_per = 0.00
     deliver2_per = 0.00
     deliver3_per = 0.00
     deliver5_per = 0.00
+    deliver1.5_per = 0.00
+    deliver2.5_per = 0.00
+    deliver3.5_per = 0.00
     waiting_hj = 0       #未妥投总数
     return_hj = 0        #退回数
     deliver_own_hj = 0   #妥投本人收总数
@@ -648,6 +672,15 @@ class Report
         deliver5_am = deliver_days_am["deliver5_am"].blank? ? 0 : deliver_days_am["deliver5_am"]
         deliver5_hj += deliver5_am
         deliver5_per = total_am>0 ? (deliver5_am/total_am.to_f*100).round(2) : 0
+        deliver1.5_am = deliver_days_am["deliver1.5_am"].blank? ? 0 : deliver_days_am["deliver1.5_am"]
+        deliver1.5_hj += deliver1.5_am
+        deliver1.5_per = total_am>0 ? (deliver1.5_am/total_am.to_f*100).round(2) : 0
+        deliver2.5_am = deliver_days_am["deliver2.5_am"].blank? ? 0 : deliver_days_am["deliver2.5_am"]
+        deliver2.5_hj += deliver2.5_am
+        deliver2.5_per = total_am>0 ? (deliver2.5_am/total_am.to_f*100).round(2) : 0
+        deliver3.5_am = deliver_days_am["deliver3.5_am"].blank? ? 0 : deliver_days_am["deliver3.5_am"]
+        deliver3.5_hj += deliver3.5_am
+        deliver3.5_per = total_am>0 ? (deliver3.5_am/total_am.to_f*100).round(2) : 0
       end
       waiting_am = status_amount[[k[0], "waiting"]].blank? ? 0 : status_amount[[k[0], "waiting"]]
       waiting_hj += waiting_am
@@ -662,7 +695,7 @@ class Report
       deliver_unit_am =delivered_status_amount[[k[0], "unit"]].blank? ? 0 : delivered_status_amount[[k[0], "unit"]]
       deliver_unit_hj += deliver_unit_am
 
-      results[k] = [total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, deliver_days_avg, deliver2_per, deliver2_am, deliver3_per, deliver3_am, deliver5_per, deliver5_am, waiting_am, waiting_per, return_am, return_per, deliver0_per, deliver0_am]
+      results[k] = [total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, deliver_days_avg, deliver2_per, deliver2_am, deliver3_per, deliver3_am, deliver5_per, deliver5_am, waiting_am, waiting_per, return_am, return_per, deliver0_per, deliver0_am, deliver1.5_per, deliver1.5_am, deliver2.5_per, deliver2.5_am, deliver3.5_per, deliver3.5_am]
     end
 
     results = results.sort{|x,y|  x[0][0].nil? ? 1 : (y[0][0].nil? ? -1 : x[0][0]<=>y[0][0]) }.to_h
@@ -672,12 +705,15 @@ class Report
     deliver2_per_hj = total_hj>0 ? (deliver2_hj/total_hj.to_f*100).round(2) : 0
     deliver3_per_hj = total_hj>0 ? (deliver3_hj/total_hj.to_f*100).round(2) : 0
     deliver5_per_hj = total_hj>0 ? (deliver5_hj/total_hj.to_f*100).round(2) : 0
+    deliver1.5_per_hj = total_hj>0 ? (deliver1.5_hj/total_hj.to_f*100).round(2) : 0
+    deliver2.5_per_hj = total_hj>0 ? (deliver2.5_hj/total_hj.to_f*100).round(2) : 0
+    deliver3.5_per_hj = total_hj>0 ? (deliver3.5_hj/total_hj.to_f*100).round(2) : 0
     waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
     return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
     deliver_days_avg_hj = expresses.delivered.average(:delivered_days).blank? ? 0 : expresses.delivered.average(:delivered_days)
       
     if total_hj>0
-      results[["合计","合计"]] = [total_hj, deliver_hj, deliver_own_hj, deliver_other_hj, deliver_unit_hj, deliver_per_hj, deliver_days_avg_hj, deliver2_per_hj, deliver2_hj, deliver3_per_hj, deliver3_hj, deliver5_per_hj, deliver5_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver0_per_hj, deliver0_hj]
+      results[["合计","合计"]] = [total_hj, deliver_hj, deliver_own_hj, deliver_other_hj, deliver_unit_hj, deliver_per_hj, deliver_days_avg_hj, deliver2_per_hj, deliver2_hj, deliver3_per_hj, deliver3_hj, deliver5_per_hj, deliver5_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, deliver0_per_hj, deliver0_hj, deliver1.5_per_hj, deliver1.5_hj, deliver2.5_per_hj, deliver2.5_hj, deliver3.5_per_hj, deliver3.5_hj]
     end
 # byebug
     return results

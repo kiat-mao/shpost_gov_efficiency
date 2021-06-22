@@ -34,6 +34,8 @@
         <td><%= label_tag(:distributive_center_no, "集散中心:") %></td>
         <td><%= select_tag :distributive_center_no, options_for_select(Express::DISTRIBUTIVE_CENTER_NAME.invert.to_a.insert(0,""), :selected=>params[:distributive_center_no]) %></td> 
       <% end %>  
+      <td><%= label_tag(:transfer_type, "运输方式:") %></td>
+      <td><%= select_tag(:transfer_type, options_for_select(Express::TRANSFER_TYPE_SELECT.invert.to_a.insert(0,""), :selected=>params[:transfer_type])) %></td> 
     </tr>
   </table>
     

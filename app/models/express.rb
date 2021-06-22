@@ -40,6 +40,10 @@ class Express < ApplicationRecord
 
   DISTRIBUTIVE_CENTER_NAME = { '21112100': '南京集航'}
 
+  TRANSFER_TYPE_NAME = {all_land: '全陆运', other_type: '其他'}
+  TRANSFER_TYPE_NOS =  {all_land: '3'}
+  TRANSFER_TYPE_SELECT = {'3' => '全陆运', other_type: '其他'}
+
   scope :standard_express, -> {where(base_product_no: '11210')}
 
   scope :express_package, -> {where(base_product_no: '11312')}
@@ -47,6 +51,10 @@ class Express < ApplicationRecord
   scope :other_product, -> {where.not(base_product_no: Express::BASE_PRODUCT_NOS.values).or(Express.where(base_product_no: nil))}
 
   scope :bf_free_tax, -> {where(biz_product_no: '112104300300991')}
+
+  scope :all_land, -> {where(transfer_type: '3')}
+
+  scope :other_type, -> {where.not(transfer_type: '3').or(Express.where(transfer_type: nil))}
 
   
   
@@ -371,6 +379,26 @@ class Express < ApplicationRecord
 
   def distributive_center_name
     distributive_center_no.blank? ? "" : Express::DISTRIBUTIVE_CENTER_NAME["#{distributive_center_no}".to_sym]
+  end
+
+  def transfer_type_name
+    if !transfer_type.blank? && (transfer_type.eql?TRANSFER_TYPE_NOS["all_land".to_sym])
+      Express::TRANSFER_TYPE_NAME["#{TRANSFER_TYPE_NOS.invert[transfer_type]}".to_sym]
+    else
+      Express::TRANSFER_TYPE_NAME["other_type".to_sym]
+    end
+  end
+
+  def need_alert?
+    need_alert = false
+
+    if !self.business.static_alert.blank? && self.business.static_alert && !self.business.time_limit.blank?
+      if Time.now - self.business.time_limit.hours > self.last_op_at
+        need_alert = true
+      end
+    end
+
+    return need_alert
   end
 
 end

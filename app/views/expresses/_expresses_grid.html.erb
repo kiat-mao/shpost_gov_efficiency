@@ -4,78 +4,146 @@
 
 <%= grid(@expresss_grid) do |g|
   g.column name: model_class.human_attribute_name(:express_no), attribute: 'express_no' do |express|
-    [express.express_no,{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.express_no, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.express_no,{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: "二级行业", attribute: 'industry', assoc: :business do |express|
-    [express.business.try(:industry),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.business.try(:industry), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.business.try(:industry),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class_b.human_attribute_name(:btype), attribute: 'btype', assoc: :business do |express|
-    [express.business.try(:btype),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.business.try(:btype), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.business.try(:btype),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class_b.human_attribute_name(:code), attribute: 'code', assoc: :business do |express|
-    [express.business.try(:code),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.business.try(:code), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.business.try(:code),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class_b.human_attribute_name(:name), attribute: 'name', assoc: :business do |express|
-    [express.business.try(:name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.business.try(:name), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.business.try(:name),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '收寄单位代码', attribute: 'no', assoc: :post_unit do |express|
-    [express.post_unit.try(:no),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.post_unit.try(:no), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.post_unit.try(:no),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '收寄单位名称', attribute: 'name', assoc: :post_unit do |express|
-    [express.post_unit.try(:name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.post_unit.try(:name), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.post_unit.try(:name),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '收寄区分公司', attribute: 'name', assoc: :post_parent_unit, table_alias: 'post_parent_units_expresses' do |express|
-    [express.post_parent_unit.try(:name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.post_parent_unit.try(:name), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.post_parent_unit.try(:name),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class.human_attribute_name(:posting_date), attribute: 'posting_date' do |express|
-    [(l express.posting_date),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [(l express.posting_date), {style: 'font-size: 12px;color: red;'}]
+    else
+      [(l express.posting_date),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '集散中心', attribute: 'distributive_center_no', custom_filter: Express::DISTRIBUTIVE_CENTER_NAME.invert do |express|
-    [express.distributive_center_name,{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.distributive_center_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.distributive_center_name,{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '收寄省', attribute: 'name', assoc: :receiver_province do |express|
-    [express.receiver_province.try(:name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.receiver_province.try(:name), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.receiver_province.try(:name),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '收寄市', assoc: :receiver_city, attribute: 'name', table_alias: 'receiver_cities_expresses' do |express|
-    [express.receiver_city.try(:name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.receiver_city.try(:name), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.receiver_city.try(:name),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '收寄区', attribute: 'name', assoc: :receiver_county, table_alias: "receiver_counties_expresses"  do |express|
-    [express.receiver_county.try(:name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.receiver_county.try(:name), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.receiver_county.try(:name),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class.human_attribute_name(:receiver_district), attribute: 'receiver_district' do |express|
-    [express.try(:receiver_district),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.try(:receiver_district), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.try(:receiver_district),{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '最后投递单位', attribute: 'no', assoc: :last_unit, table_alias: 'last_units_expresses' do |express|
-    [express.last_unit.try(:no)||express.last_unit_no,{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.last_unit.try(:no)||express.last_unit_no, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.last_unit.try(:no)||express.last_unit_no,{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '最后投递单位名称', attribute: 'name', assoc: :last_unit, table_alias: 'last_units_expresses' do |express|
-    [express.last_unit.try(:name)||express.last_unit_name,{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.last_unit.try(:name)||express.last_unit_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.last_unit.try(:name)||express.last_unit_name,{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '最后投递区分公司', attribute: 'name', assoc: :last_parent_unit, table_alias: 'last_parent_units_expresses' do |express|
-    [express.last_parent_unit.try(:name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.last_parent_unit.try(:name), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.last_parent_unit.try(:name),{style: 'font-size: 12px;'}]
+    end
   end
 
   # g.column name: model_class.human_attribute_name(:status), attribute: 'status' do |express|
   #   express.status_name
   # end
   g.column name: model_class.human_attribute_name(:status), attribute: 'status', custom_filter: Express::STATUS_NAME.invert do |express| 
-    if express.status.eql?"waiting"
+    if express.need_alert? || (express.status.eql?"waiting")
       [express.status_name, {style: 'font-size: 12px;color: red;'}]
     else
       [express.status_name,{style: 'font-size: 12px;'}]
@@ -83,35 +151,75 @@
   end
 
   g.column name: '轨迹位置', attribute: 'whereis', custom_filter: Express::WHEREIS_NAME.invert do |express| 
-    [express.whereis_name, {style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.whereis_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.whereis_name,{style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: '产品类型', attribute: 'base_product_no', custom_filter: Express::BASE_PRODUCT_SELECT.invert do |express| 
-    [express.base_product_no_name, {style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.base_product_no_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.base_product_no_name,{style: 'font-size: 12px;'}]
+    end
   end
 
-  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc' do |express|    
-    [express.last_op_desc.try(:truncate, 35), {title: express.last_op_desc}]
+  g.column name: '运输方式', attribute: 'transfer_type', custom_filter: Express::TRANSFER_TYPE_SELECT.invert do |express| 
+    if express.need_alert?
+      [express.transfer_type_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.transfer_type_name, {style: 'font-size: 12px;'}]
+    end
+  end
+
+  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc' do |express|  
+    if express.need_alert?
+      [express.last_op_desc.try(:truncate, 35), {title: express.last_op_desc, style: 'font-size: 12px;color: red;'}]
+    else
+      [express.last_op_desc.try(:truncate, 35), {title: express.last_op_desc}]
+    end  
   end
 
   g.column name: model_class.human_attribute_name(:last_op_at), attribute: 'last_op_at' do |express|
-    [(express.last_op_at.blank? ? "" : (l express.last_op_at)),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [(express.last_op_at.blank? ? "" : (l express.last_op_at)), {style: 'font-size: 12px;color: red;'}]
+    else
+      [(express.last_op_at.blank? ? "" : (l express.last_op_at)), {style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class.human_attribute_name(:receipt_flag), attribute: 'receipt_flag', custom_filter: Express::RECEIPT_FLAG_SELECT.invert do |express| 
-    [(express.receipt_flag_name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.receipt_flag_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.receipt_flag_name, {style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class.human_attribute_name(:receipt_status), attribute: 'receipt_status', custom_filter: Express::RECEIPT_STATUS_SELECT.invert do |express| 
-    [(express.receipt_status_name),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.receipt_status_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.receipt_status_name, {style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class.human_attribute_name(:pre_waybill_no), attribute: 'pre_waybill_no' do |express|
-    [(express.pre_waybill_no),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.pre_waybill_no, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.pre_waybill_no, {style: 'font-size: 12px;'}]
+    end
   end
 
   g.column name: model_class.human_attribute_name(:receipt_waybill_no), attribute: 'receipt_waybill_no' do |express|
-    [(express.receipt_waybill_no),{style: 'font-size: 12px;'}]
+    if express.need_alert?
+      [express.receipt_waybill_no, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.receipt_waybill_no, {style: 'font-size: 12px;'}]
+    end
   end
 
   g.column in_csv: false do |express|
