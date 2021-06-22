@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_18_080638) do
+ActiveRecord::Schema.define(version: 2021_06_22_014349) do
 
   create_table "areas", force: :cascade do |t|
     t.string "code"
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 2021_06_18_080638) do
     t.string "last_op_desc"
     t.string "sign"
     t.string "desc"
-    t.integer "delivered_days"
+    t.float "delivered_days"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "last_unit_no"
@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(version: 2021_06_18_080638) do
     t.integer "parent_unit_id"
     t.string "biz_product_no"
     t.string "transfer_type"
+    t.integer "delivered_hour"
     t.index ["business_id"], name: "index_expresses_on_business_id"
     t.index ["express_no"], name: "index_expresses_on_express_no"
     t.index ["last_unit_id"], name: "index_expresses_on_last_unit_id"
