@@ -345,8 +345,8 @@ class Express < ApplicationRecord
   def fill_delivered_days
     if delivered? || returns?
       if ! posting_date.blank? && ! last_op_at.blank?
-         self.delivered_days = (last_op_at.to_date - posting_date.to_date).to_i
          self.delivered_hour = last_op_at.hour
+         self.delivered_days = last_op_at.to_date - posting_date.to_date - ((delivered_hour < 12) ? 0.5 : 0)
          return #self.delivered_days
       end
     end
