@@ -382,8 +382,8 @@ class Express < ApplicationRecord
   end
 
   def transfer_type_name
-    if !transfer_type.blank? && (transfer_type.eql?TRANSFER_TYPE_NOS["all_land".to_sym])
-      Express::TRANSFER_TYPE_NAME["#{TRANSFER_TYPE_NOS.invert[transfer_type]}".to_sym]
+    if !transfer_type.blank? && (transfer_type.eql? Express::TRANSFER_TYPE_NOS["all_land".to_sym])
+      Express::TRANSFER_TYPE_NAME["#{Express::TRANSFER_TYPE_NOS.invert[transfer_type]}".to_sym]
     else
       Express::TRANSFER_TYPE_NAME["other_type".to_sym]
     end
