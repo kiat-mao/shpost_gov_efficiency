@@ -284,14 +284,14 @@ class ReportsController < ApplicationController
 	    end
 
 
-	    0.upto(16) do |x|
+	    0.upto(20) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
-	    0.upto(16) do |x|
+	    0.upto(20) do |x|
 	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(7).concat %w{客户类别 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日妥投率 三日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(7).concat %w{客户类别 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日上午妥投率 次日妥投率 三日上午妥投率 三日妥投率 四日上午妥投率 五日上午妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
 	    count_row = 8
 
@@ -304,23 +304,27 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,5] = v[4]
 	      sheet1[count_row,6] = v[5].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,7] = v[15].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,8] = v[7].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,9] = v[6].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,10] = v[12].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,11] = v[8]
-	      sheet1[count_row,12] = v[13]
-	      sheet1[count_row,13] = v[14]
-	      sheet1[count_row,14] = v[9].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,15] = v[10]
-	      sheet1[count_row,16] = v[11].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,8] = v[16].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,9] = v[7].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,10] = v[17].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,11] = v[6].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,12] = v[18].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,13] = v[19].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,14] = v[12].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,15] = v[8]
+	      sheet1[count_row,16] = v[13]
+	      sheet1[count_row,17] = v[14]
+	      sheet1[count_row,18] = v[9].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,19] = v[10]
+	      sheet1[count_row,20] = v[11].to_s(:rounded, precision: 2)+"%"
 	      
-	      0.upto(10) do |i|
+	      0.upto(14) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end
-		    11.upto(14) do |i|
+		    15.upto(18) do |i|
 		      sheet1.row(count_row).set_format(i, red)
 		    end 
-		    15.upto(16) do |i|
+		    19.upto(20) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end  
 	      
@@ -399,14 +403,14 @@ class ReportsController < ApplicationController
 	      sheet1.column(x).width = 20
 	    end
 
-	    2.upto(17) do |x|
+	    2.upto(21) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
-	    0.upto(17) do |x|
+	    0.upto(21) do |x|
 	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(7).concat %w{单位 网点 总邮件数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日妥投率 三日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(7).concat %w{单位 网点 总邮件数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日上午妥投率 次日妥投率 三日上午妥投率 三日妥投率 四日上午妥投率 五日上午妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
 	    count_row = 8
 	    last_pid = nil
@@ -421,24 +425,28 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,6] = v[5]
 	      sheet1[count_row,7] = v[6].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,8] = v[18].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,9] = v[8].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,10] = v[7].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,11] = v[13].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,12] = v[9]
-	      sheet1[count_row,13] = v[14]
-	      sheet1[count_row,14] = v[15]
-	      sheet1[count_row,15] = v[10].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,16] = v[11]
-	      sheet1[count_row,17] = v[12].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,9] = v[19].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,10] = v[8].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,11] = v[20].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,12] = v[7].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,13] = v[21].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,14] = v[22].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,15] = v[13].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,16] = v[9]
+	      sheet1[count_row,17] = v[14]
+	      sheet1[count_row,18] = v[15]
+	      sheet1[count_row,19] = v[10].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,20] = v[11]
+	      sheet1[count_row,21] = v[12].to_s(:rounded, precision: 2)+"%"
 	      last_pid = v[0]
 	      
-	      0.upto(11) do |i|
+	      0.upto(15) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end 
-		    12.upto(15) do |i|
+		    16.upto(19) do |i|
 		      sheet1.row(count_row).set_format(i, red)
 		    end 
-		    16.upto(17) do |i|
+		    20.upto(21) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end 
 
@@ -499,14 +507,14 @@ class ReportsController < ApplicationController
 	    	sheet1[5,0] = deliver_date_range
 	    end
 
-	    0.upto(16) do |x|
+	    0.upto(20) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
-	    0.upto(16) do |x|
+	    0.upto(20) do |x|
 	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(7).concat %w{客户 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日妥投率 三日妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(7).concat %w{客户 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 当日妥投率 次日上午妥投率 次日妥投率 三日上午妥投率 三日妥投率 四日上午妥投率 五日上午妥投率 五日妥投率 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
 	    count_row = 8
 
@@ -519,23 +527,27 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,5] = v[4]
 	      sheet1[count_row,6] = v[5].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,7] = v[15].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,8] = v[7].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,9] = v[6].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,10] = v[12].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,11] = v[8]
-	      sheet1[count_row,12] = v[13]
-	      sheet1[count_row,13] = v[14]
-	      sheet1[count_row,14] = v[9].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,15] = v[10]
-	      sheet1[count_row,16] = v[11].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,8] = v[16].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,9] = v[7].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,10] = v[17].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,11] = v[6].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,12] = v[18].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,13] = v[19].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,14] = v[12].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,15] = v[8]
+	      sheet1[count_row,16] = v[13]
+	      sheet1[count_row,17] = v[14]
+	      sheet1[count_row,18] = v[9].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,19] = v[10]
+	      sheet1[count_row,20] = v[11].to_s(:rounded, precision: 2)+"%"
 	      
-	      0.upto(10) do |i|
+	      0.upto(14) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end
-		    11.upto(14) do |i|
+		    15.upto(18) do |i|
 		      sheet1.row(count_row).set_format(i, red)
 		    end 
-		    15.upto(16) do |i|
+		    19.upto(20) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end  
 	      
@@ -678,14 +690,14 @@ class ReportsController < ApplicationController
     	sheet1[5,0] = deliver_date_range
     	
 	    
-	    0.upto(25) do |x|
+	    0.upto(27) do |x|
 	      sheet1.column(x).width = 16
 	    end
 
-	    0.upto(25) do |x|
+	    0.upto(27) do |x|
 	      sheet1.row(7).set_format(x, title)
 	    end
-	    sheet1.row(7).concat %w{收寄省 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 平均妥投天数 当日妥投率 当日妥投总数 次日妥投率 次日妥投总数 三日上午妥投率 三日上午妥投总数 三日妥投率 三日妥投总数 四日上午妥投率 四日上午妥投总数 五日上午妥投率 五日上午妥投总数 五日妥投率 五日妥投总数 未妥投总数 未妥投率 退回数 退回率%}
+	    sheet1.row(7).concat %w{收寄省 收寄数 总妥投数 本人收数 他人收数 单位/快递柜收数 妥投率 平均妥投天数 当日妥投率 当日妥投总数 次日上午妥投率 次日上午妥投总数 次日妥投率 次日妥投总数 三日上午妥投率 三日上午妥投总数 三日妥投率 三日妥投总数 四日上午妥投率 四日上午妥投总数 五日上午妥投率 五日上午妥投总数 五日妥投率 五日妥投总数 未妥投总数 未妥投率 退回数 退回率%}
 
 	    count_row = 8
 
@@ -700,30 +712,32 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,7] = v[6].to_s(:rounded, precision: 2)
 	      sheet1[count_row,8] = v[17].to_s(:rounded, precision: 2)+"%"
 	      sheet1[count_row,9] = v[18]
-	      sheet1[count_row,10] = v[7].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,11] = v[8]
-	      sheet1[count_row,12] = v[19].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,13] = v[20]
-	      sheet1[count_row,14] = v[9].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,15] = v[10]
-	      sheet1[count_row,16] = v[21].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,17] = v[22]
-	      sheet1[count_row,18] = v[23].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,19] = v[24]
-	      sheet1[count_row,20] = v[11].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,21] = v[12]
-	      sheet1[count_row,22] = v[13]
-	      sheet1[count_row,23] = v[14].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,24] = v[15]
-	      sheet1[count_row,25] = v[16].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,10] = v[25].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,11] = v[26]
+	      sheet1[count_row,12] = v[7].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,13] = v[8]
+	      sheet1[count_row,14] = v[19].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,15] = v[20]
+	      sheet1[count_row,16] = v[9].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,17] = v[10]
+	      sheet1[count_row,18] = v[21].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,19] = v[22]
+	      sheet1[count_row,20] = v[23].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,21] = v[24]
+	      sheet1[count_row,22] = v[11].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,23] = v[12]
+	      sheet1[count_row,24] = v[13]
+	      sheet1[count_row,25] = v[14].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,26] = v[15]
+	      sheet1[count_row,27] = v[16].to_s(:rounded, precision: 2)+"%"
 	      
-	      0.upto(21) do |i|
+	      0.upto(23) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end
-		    22.upto(23) do |i|
+		    24.upto(25) do |i|
 		    	sheet1.row(count_row).set_format(i, red)
 		    end
-		    24.upto(25) do |i|
+		    26.upto(27) do |i|
 		    	sheet1.row(count_row).set_format(i, body)
 		    end
 		    	      

@@ -35,6 +35,8 @@
         <th><b>平均妥投天数</b></th>
         <th><b>当日妥投率</b></th>
         <th><b>当日妥投总数</b></th>
+        <th><b>次日上午妥投率</b></th>
+        <th><b>次日上午妥投总数</b></th>
         <th><b>次日妥投率</b></th>
         <th><b>次日妥投总数</b></th>
         <th><b>三日上午妥投率</b></th>
@@ -71,6 +73,8 @@
       <td><%= v[6].to_s(:rounded, precision: 2) %></td>
       <td><%= v[17].to_s(:rounded, precision: 2)+"%" %></td>
       <td><u><%= link_to v[18], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "0", k[0].blank? ? "nil" : k[0], nil, nil), target: '_blank' %></u></td>
+      <td><%= v[25].to_s(:rounded, precision: 2)+"%" %></td>
+      <td><u><%= link_to v[26], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "0.5", k[0].blank? ? "nil" : k[0], nil, nil), target: '_blank' %></u></td>
       <td><%= v[7].to_s(:rounded, precision: 2)+"%" %></td>
       <td><u><%= link_to v[8], get_expresses_path("/expresses", nil, "delivered", nil, nil, nil, nil, nil, "1", k[0].blank? ? "nil" : k[0], nil, nil), target: '_blank' %></u></td>
       <td><%= v[19].to_s(:rounded, precision: 2)+"%" %></td>

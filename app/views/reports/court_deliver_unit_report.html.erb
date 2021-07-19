@@ -34,8 +34,12 @@
         <th><b>单位/快递柜收数</b></th>
         <th><b>妥投率</b></th>
         <th><b>当日妥投率</b></th>
+        <th><b>次日上午妥投率</b></th>
         <th><b>次日妥投率</b></th>
+        <th><b>三日上午妥投率</b></th>
         <th><b>三日妥投率</b></th>
+        <th><b>四日上午妥投率</b></th>
+        <th><b>五日上午妥投率</b></th>
         <th><b>五日妥投率</b></th>
         <th><b>未妥投总数</b></th>
         <th><b>在途中数</b></th>
@@ -59,8 +63,12 @@
         <td><u><%= link_to v[5], get_expresses_path("/expresses", nil, "delivered", (k.blank? ? "其他" : k), nil, nil, nil, nil, nil, nil, nil, "unit"), target: '_blank' %></u></td>
         <td><%= v[6].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[18].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[19].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[20].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[7].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[21].to_s(:rounded, precision: 2)+"%" %></td>
+        <td><%= v[22].to_s(:rounded, precision: 2)+"%" %></td>
         <td><%= v[13].to_s(:rounded, precision: 2)+"%" %></td>
         <td id='waiting'><%= link_to v[9], get_expresses_path("/expresses", nil, "waiting", (k.blank? ? "其他" : k), nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
         <td id='waiting'><%= link_to v[14], get_expresses_path("/expresses", nil, "waiting", (k.blank? ? "其他" : k), nil, "in_transit", nil, nil, nil, nil, nil, nil), target: '_blank' %></td>

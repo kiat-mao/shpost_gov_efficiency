@@ -392,7 +392,7 @@ class Express < ApplicationRecord
   def need_alert?
     need_alert = false
 
-    if !self.business.static_alert.blank? && self.business.static_alert && !self.business.time_limit.blank?
+    if !self.business.static_alert.blank? && self.business.static_alert && !self.business.time_limit.blank? && (self.status.eql?"waiting")
       if Time.now - self.business.time_limit.hours > self.last_op_at
         need_alert = true
       end
