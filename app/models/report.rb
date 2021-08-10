@@ -222,7 +222,7 @@ class Report
     if !params[:bf_free_tax].blank? && (params[:bf_free_tax].eql?"1")
       expresses = expresses.bf_free_tax
     end
-# byebug
+
     if !params[:transfer_type].blank? || (!params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank? && !params[:expresses][:f][:transfer_type][0].blank?)
       if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank? && !params[:expresses][:f][:transfer_type][0].blank?
         transfer_type = params[:expresses][:f][:transfer_type][0]
@@ -238,6 +238,14 @@ class Report
 
       if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank?
         params[:expresses][:f][:transfer_type] = nil
+      end
+    end
+
+    if !params[:need_alert].blank? && (params[:need_alert].eql?"true")
+      if RailsEnv.is_oracle?
+        expresses = expresses.where("businesses.static_alert=? and expresses.status=?", true, "waiting").where("businesses.time_limit is not null").where("expresses.last_op_at + businesses.time_limit/24)<?", Time.now)
+      else
+        expresses = expresses.where("businesses.static_alert=? and expresses.status=?", true, "waiting").where("businesses.time_limit is not null").where("datetime(expresses.last_op_at, '+' || businesses.time_limit || ' hours')<?", Time.now)
       end
     end
 
