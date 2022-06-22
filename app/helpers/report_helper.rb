@@ -189,6 +189,11 @@ module ReportHelper
 			sep = "&"
 		end
 
+		if !params[:delivered_days_show].blank?
+			addr += sep+"delivered_days_show=#{params[:delivered_days_show]}"
+			sep = "&"
+		end
+
 		
 # byebug
 		addr

@@ -1,0 +1,82 @@
+<% if !@results.blank? %>
+  <table data-toggle="table" 
+  data-height="700">
+    <thead>
+      <tr class= 'nowrap'>
+        <th><b>客户类别</b></th>
+        <th><b>收寄数</b></th>
+        <th><b>总妥投数</b></th>
+        <th><b>本人收数</b></th>
+        <th><b>他人收数</b></th>
+        <th><b>单位/快递柜收数</b></th>
+        <th><b>妥投率</b></th>
+        <% 
+          if !@is_monitor
+            d = 0.0
+
+            while d <= params[:delivered_days_show].to_f-1
+        %>
+            <th><b><%= Report::DELIVERED_DAYS_NAME[d]%>妥投率</b></th>
+        <%
+              d += 0.5
+            end
+          end
+        %>
+        <th><b>未妥投总数</b></th>
+        <th><b>在途中数</b></th>
+        <th><b>投递端数</b></th>
+        <th><b>未妥投率</b></th>
+        <th><b>退回数</b></th>
+        <th><b>退回率</b></th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @results.each do |k, v| %>
+     <tr class= 'nowrap'>
+      <!-- 客户类别 -->
+      <% if k.eql?"合计" %>
+        <td><%= k %></td>
+      <% else %>
+        <td><u><%= link_to k, get_expresses_path("/reports/business_market_report", k, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+      <% end %>
+      <!-- 收寄数 -->
+      <td><u><%= link_to v[0], get_expresses_path("/expresses", k, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+      <!-- 总妥投数 -->
+      <td><u><%= link_to v[1], get_expresses_path("/expresses", k, "delivered", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+      <!-- 本人收数 -->
+      <td><u><%= link_to v[2], get_expresses_path("/expresses", k, "delivered", nil, nil, nil, nil, nil, nil, nil, nil, "own", nil), target: '_blank' %></u></td>
+      <!-- 他人收数 -->
+      <td><u><%= link_to v[3], get_expresses_path("/expresses", k, "delivered", nil, nil, nil, nil, nil, nil, nil, nil, "other", nil), target: '_blank' %></u></td>
+      <!-- 单位/快递柜收数 -->
+      <td><u><%= link_to v[4], get_expresses_path("/expresses", k, "delivered", nil, nil, nil, nil, nil, nil, nil, nil, "unit", nil), target: '_blank' %></u></td>
+      <!-- 妥投率 -->
+      <td><%= v[5].to_s(:rounded, precision: 2)+"%" %></td>
+      <!-- **日妥投率 -->
+      <% if !@is_monitor
+          i = 0.0
+
+          while i <= params[:delivered_days_show].to_f-1
+      %>
+            <td><%= v[12][i][1].to_s(:rounded, precision: 2)+"%" %></td>
+      <%
+            i += 0.5
+          end
+        end
+      %>
+      <!-- 未妥投总数 -->
+      <td id='waiting'><%= link_to v[6], get_expresses_path("/expresses", k, "waiting", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
+      <!-- 在途中数 -->
+      <td id='waiting'><%= link_to v[10], get_expresses_path("/expresses", k, "waiting", nil, nil, "in_transit", nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
+      <!-- 投递端数 -->
+      <td id='waiting'><%= link_to v[11], get_expresses_path("/expresses", k, "waiting", nil, nil, "delivery_part", nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
+      <!-- 未妥投率 -->
+      <td><font color="red"><%= v[7].to_s(:rounded, precision: 2)+"%" %></font></td>
+      <!-- 退回数 -->
+      <td><u><%= link_to v[8], get_expresses_path("/expresses", k, "returns", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+      <!-- 退回率 -->
+      <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
+    </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>

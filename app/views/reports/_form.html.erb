@@ -36,6 +36,10 @@
       <% end %>  
       <td><%= label_tag(:transfer_type, "运输方式:") %></td>
       <td><%= select_tag(:transfer_type, options_for_select(Express::TRANSFER_TYPE_SELECT.invert.to_a.insert(0,""), :selected=>params[:transfer_type])) %></td> 
+      <% if !@is_monitor && !@is_receipt %>
+      <td><%= label_tag(:delivered_days_show, "展示几日妥投率:") %></td>
+      <td><%= select_tag(:delivered_days_show, options_for_select(Report.select_delivered_days_show, :selected=>(params[:delivered_days_show].blank? ? "3" : params[:delivered_days_show]))) %></td> 
+      <% end %>
     </tr>
   </table>
     
@@ -90,6 +94,7 @@
   <br>
   <font color="red" size=2>注：
     <br>1."客户"输入框可输入客户代号或客户名称进行模糊查询
+    <% if !@is_monitor && !@is_receipt %><br>2."展示几日妥投率"选择大于5,查询结果可能耗时较久，请耐心等待<% end %>
   </font>   
 
   <%= hidden_field_tag('is_search', @is_search) %> 
