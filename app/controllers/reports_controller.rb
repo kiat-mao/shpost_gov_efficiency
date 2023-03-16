@@ -392,9 +392,9 @@ class ReportsController < ApplicationController
 	    deliver_date_range = ""
 	    #总列数,params[:delivered_days_show].to_i-1)*2+1是几日妥投率，14是其余固定项
 	    if params[:is_monitor].eql?"true"
-	    	cols = 14
+	    	cols = 15
 	    else
-      	cols = (params[:delivered_days_show].to_i-1)*2+1+14 
+      	cols = (params[:delivered_days_show].to_i-1)*2+1+15 
       end
 
 	    0.upto(6) do |x|
@@ -449,7 +449,7 @@ class ReportsController < ApplicationController
         i += 0.5
       end
 
-	    sheet1.row(7).concat %w{未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
+	    sheet1.row(7).concat %w{未及时妥投数 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
 	    count_row = 8
 	    last_pid = nil
@@ -471,18 +471,19 @@ class ReportsController < ApplicationController
           j += 0.5
         end
 
-	      sheet1[count_row,col] = v[7]
-	      sheet1[count_row,col+1] = v[11]
-	      sheet1[count_row,col+2] = v[12]
-	      sheet1[count_row,col+3] = v[8].to_s(:rounded, precision: 2)+"%"
-	      sheet1[count_row,col+4] = v[9]
-	      sheet1[count_row,col+5] = v[10].to_s(:rounded, precision: 2)+"%"
+        sheet1[count_row,col] = v[16]
+	      sheet1[count_row,col+1] = v[7]
+	      sheet1[count_row,col+2] = v[11]
+	      sheet1[count_row,col+3] = v[12]
+	      sheet1[count_row,col+4] = v[8].to_s(:rounded, precision: 2)+"%"
+	      sheet1[count_row,col+5] = v[9]
+	      sheet1[count_row,col+6] = v[10].to_s(:rounded, precision: 2)+"%"
 	      last_pid = v[0]
 	      
-	      0.upto(cols-7) do |i|
+	      0.upto(cols-8) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end 
-		    (cols-6).upto(cols-3) do |i|
+		    (cols-7).upto(cols-3) do |i|
 		      sheet1.row(count_row).set_format(i, red)
 		    end 
 		    (cols-2).upto(cols-1) do |i|

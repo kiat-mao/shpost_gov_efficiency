@@ -96,6 +96,13 @@ zh-CN:
           name: "投递监控(投递)"
           link: "/reports/court_deliver_unit_monitor"
           need_count: false
+    # receiver_query:
+    #   name: "收件人信息查询"
+    #   submenu:
+    #     receiver_query:
+    #       name: "收件人信息查询"
+    #       link: "/expresses/receiver_query"
+    #       need_count: false
     message:
       name: "消息管理"
       needrole:

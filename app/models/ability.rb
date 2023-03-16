@@ -71,7 +71,7 @@ class Ability
 			can :read, Unit, id: user.unit_id
 			can :read, Unit, parent_id: user.unit.id
 			
-			can :update, User, id: user.id
+			can [:update, :show], User, id: user.id
 			can :read, Business
 
 			can [:read, :get_mail_trace], Express, post_unit_id: user.unit_id

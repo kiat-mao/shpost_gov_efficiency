@@ -33,10 +33,235 @@ class Report
 
   DELIVERED_DAYS_NAME = {0.0 => '当日', 0.5 => '次日上午', 1.0 => '次日下午', 1.5 => '三日上午', 2.0 => '三日下午', 2.5 => '四日上午', 3.0 => '四日下午', 3.5 => '五日上午', 4.0 => '五日下午', 4.5 => '六日上午', 5.0 => '六日下午', 5.5 => '七日上午', 6.0 => '七日下午', 6.5 => '八日上午', 7.0 => '八日下午', 7.5 => '九日上午', 8.0 => '九日下午', 8.5 => '十日上午', 9.0 => '十日下午', 9.5 => '十一日上午', 10.0 => '十一日下午'}
 
+  # def self.get_filter_expresses(params)
+  #   start_date = nil
+  #   end_date = nil
+  #   expresses = Express.left_outer_joins(:business)
+    
+  #   if !params[:industry].blank? && !params[:industry][0].blank?
+  #     industry = params[:industry]
+  #     # from link
+  #     if industry.is_a?String
+  #       industry = params[:industry].split(",")
+  #     end
+  #     expresses = expresses.where(businesses: {industry: industry})
+  #   end
+    
+  #   if !params[:btype].blank? && !params[:btype][0].blank?
+  #     btype = params[:btype]
+  #     # from link
+  #     if btype.is_a?String
+  #       btype = params[:btype].split(",")
+  #     end
+  #     # expresses = expresses.where("businesses.btype in (?)", btype)
+  #     expresses = expresses.where(businesses: {btype: btype})
+  #   end
+
+  #   if !params[:business].blank?
+  #     expresses = expresses.where("businesses.code like ? or businesses.name like ?", "%#{params[:business]}%", "%#{params[:business]}%")
+  #   end
+
+  #   if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
+  #     if !params[:year].blank? && !params[:month].blank?
+  #       start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month
+  #       end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month+1.day
+  #     end
+  #   else
+  #     start_date = params[:posting_date_start] if !params[:posting_date_start].blank?
+  #     end_date = params[:posting_date_end].to_date+1.day if !params[:posting_date_end].blank?
+  #   end
+
+  #   if !start_date.blank?
+  #     expresses = expresses.where("expresses.posting_date >= ?",start_date)
+  #   end
+
+  #   if !end_date.blank?
+  #     expresses = expresses.where("expresses.posting_date <= ?", end_date)
+  #   end
+    
+  #   if !params[:detail_btype].blank? && !(params[:detail_btype].eql?"合计")
+  #     expresses = expresses.where(businesses: {btype: params[:detail_btype]})
+  #   end
+
+  #   if !params[:status].blank?
+  #     if params[:status].eql?"not_delivered"
+  #       expresses = expresses.where.not(status: "delivered")
+  #     else
+  #       expresses = expresses.where(status: params[:status])
+  #     end
+  #   end
+
+  #   if !params[:last_unit_id].blank? && !(params[:last_unit_id].eql?"合计")
+  #     if params[:last_unit_id].eql?"其他"
+  #       expresses = expresses.where(last_unit_id: nil)
+  #     else
+  #       expresses = expresses.where(last_unit_id: params[:last_unit_id])
+  #     end
+  #   end
+
+  #   # if (!params[:is_court].blank?) && (params[:is_court].eql?"true")
+  #   #   expresses = expresses.where.not(receiver_province_no: "310000")
+  #   # else
+  #   #   expresses = expresses.where.not("businesses.industry = ? and expresses.receiver_province_no != ?", "法院", "310000") 
+  #   # end
+  #   if !params[:is_court].blank?
+  #     if params[:is_court].eql?"false"
+  #       expresses = expresses.where.not(businesses: {industry: "法院"})
+  #     else
+  #       expresses = expresses.where(businesses: {industry: "法院"})
+  #     end
+  #   end
+
+  #   if !params[:detail_business].blank?
+  #     expresses = expresses.where(business_id: params[:detail_business])
+  #   end
+
+  #   if !params[:destination].blank?
+  #     if params[:destination].eql?"全国"
+  #       expresses = expresses.where.not(receiver_province_no: nil)
+  #     elsif params[:destination].eql?"本省"
+  #       expresses = expresses.where(receiver_province_no: "310000")
+  #     elsif params[:destination].eql?"异地"
+  #       expresses = expresses.where.not(receiver_province_no: "310000")
+  #     elsif params[:destination].eql?"国际"
+  #       expresses = expresses.where(receiver_province_no: "nil")
+  #     end         
+  #   end
+
+  #   if !params[:lv2_unit].blank?
+  #     expresses = expresses.left_outer_joins(:last_unit).where(units: {parent_id: params[:lv2_unit]})
+  #   end
+
+  #   if !params[:transit_delivery].blank?
+  #     expresses = expresses.where(whereis: params[:transit_delivery])
+  #   end
+
+  #   if !params[:product].blank? || (!params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:base_product_no].blank? && !params[:expresses][:f][:base_product_no][0].blank?)
+  #     # from wice_grid
+  #     if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:base_product_no].blank? && !params[:expresses][:f][:base_product_no][0].blank?
+  #       product = params[:expresses][:f][:base_product_no][0].split(",")
+  #     else
+  #       # from link
+  #       if params[:product].is_a?String
+  #         product = params[:product].split(",")
+  #       # from submit
+  #       else
+  #         product = params[:product]
+  #       end
+  #     end
+
+  #     if !product.include?"other_product"       
+  #       expresses = expresses.where(base_product_no: product)
+  #     else
+  #       if product.size==1
+  #         expresses = expresses.other_product
+  #       else
+  #         expresses = expresses.where(base_product_no: product-["other_product"]).or(expresses.where.not(base_product_no: Express::BASE_PRODUCT_NOS.values)).or(expresses.where(base_product_no: nil))
+  #       end
+  #     end
+
+  #     if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:base_product_no].blank?
+  #       params[:expresses][:f][:base_product_no] = nil
+  #     end
+  #   end
+
+  #   if !params[:receipt_flag].blank?
+  #     expresses = expresses.where(receipt_flag: params[:receipt_flag])
+  #   end
+
+  #   if !params[:receipt_status].blank?
+  #     if params[:receipt_status].eql?"no_receipt_receive"
+  #       expresses = expresses.no_receipt_receive
+  #     elsif params[:receipt_status].eql?"receipt_receive"
+  #       expresses = expresses.receipt_receive
+  #     elsif params[:receipt_status].eql?"receipt_delivered"
+  #       expresses = expresses.receipt_delivered  
+  #     elsif params[:receipt_status].eql?"receipt_receive_or_delivered"
+  #       expresses = expresses.where.not(receipt_status: nil)         
+  #     end
+  #   end
+      
+  #   if !params[:distributive_center_no].blank?
+  #     expresses = expresses.where(distributive_center_no: params[:distributive_center_no])
+  #   end
+
+  #   if !params[:posting_hour_start].blank? && !params[:posting_hour_end].blank?
+  #     expresses = expresses.where("posting_hour >= ? and posting_hour < ?", params[:posting_hour_start].to_i, params[:posting_hour_end].to_i)
+  #   end
+
+  #   if !params[:receiver_province_no].blank? && !(params[:receiver_province_no].eql?"合计")
+  #     if params[:receiver_province_no].eql?"nil"
+  #       expresses = expresses.where(receiver_province_no: nil)
+  #     else
+  #       expresses = expresses.where(receiver_province_no: params[:receiver_province_no])
+  #     end
+  #   end
+
+  #   if !params[:receiver_city_no].blank? && !(params[:receiver_city_no].eql?"合计")
+  #     if params[:receiver_province_no].eql?"nil"
+  #       expresses = expresses.where(receiver_province_no: nil)
+  #     else
+  #       expresses = expresses.where(receiver_city_no: params[:receiver_city_no])
+  #     end
+  #   end
+
+  #   if !params[:delivered_days].blank?
+  #     expresses = expresses.where("delivered_days <= ?", params[:delivered_days].to_f)
+  #   end
+
+  #   if !params[:delivered_date_start].blank?
+  #     expresses = expresses.delivered.where("expresses.last_op_at >= ?", params[:delivered_date_start])
+  #   end
+
+  #   if !params[:delivered_date_end].blank?
+  #     expresses = expresses.delivered.where("expresses.last_op_at <= ?", params[:delivered_date_end].to_date+1.day)
+  #   end
+
+  #   if !params[:delivered_status].blank?
+  #     expresses = expresses.where(delivered_status: params[:delivered_status])
+  #   end
+
+  #   if !params[:checkbox].blank? && (!params[:checkbox][:bf_free_tax].blank?) && (params[:checkbox][:bf_free_tax].eql?"1")
+  #     expresses = expresses.bf_free_tax
+  #   end
+  #   # from link
+  #   if !params[:bf_free_tax].blank? && (params[:bf_free_tax].eql?"1")
+  #     expresses = expresses.bf_free_tax
+  #   end
+
+  #   if !params[:transfer_type].blank? || (!params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank? && !params[:expresses][:f][:transfer_type][0].blank?)
+  #     if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank? && !params[:expresses][:f][:transfer_type][0].blank?
+  #       transfer_type = params[:expresses][:f][:transfer_type][0]
+  #     else
+  #       transfer_type = params[:transfer_type]
+  #     end
+      
+  #     if transfer_type.eql?"3"       
+  #       expresses = expresses.all_land
+  #     elsif transfer_type.eql?"other_type" 
+  #       expresses = expresses.other_type
+  #     end
+
+  #     if !params[:expresses].blank? && !params[:expresses][:f].blank? && !params[:expresses][:f][:transfer_type].blank?
+  #       params[:expresses][:f][:transfer_type] = nil
+  #     end
+  #   end
+
+  #   if !params[:need_alert].blank? && (params[:need_alert].eql?"true")
+  #     if RailsEnv.is_oracle?
+  #       expresses = expresses.where("businesses.static_alert=? and expresses.status=?", true, "waiting").where("businesses.time_limit is not null").where("expresses.last_op_at + businesses.time_limit/24)<?", Time.now)
+  #     else
+  #       expresses = expresses.where("businesses.static_alert=? and expresses.status=?", true, "waiting").where("businesses.time_limit is not null").where("datetime(expresses.last_op_at, '+' || businesses.time_limit || ' hours')<?", Time.now)
+  #     end
+  #   end
+
+  #   return expresses
+  # end
+
   def self.get_filter_expresses(params)
     start_date = nil
     end_date = nil
-    expresses = Express.left_outer_joins(:business)
+    expresses = Express.all
     
     if !params[:industry].blank? && !params[:industry][0].blank?
       industry = params[:industry]
@@ -44,7 +269,8 @@ class Report
       if industry.is_a?String
         industry = params[:industry].split(",")
       end
-      expresses = expresses.where(businesses: {industry: industry})
+      businesses = Business.where(industry: industry).map{|b| b.id}.uniq
+      expresses = expresses.where(business_id: businesses)
     end
     
     if !params[:btype].blank? && !params[:btype][0].blank?
@@ -53,12 +279,13 @@ class Report
       if btype.is_a?String
         btype = params[:btype].split(",")
       end
-      # expresses = expresses.where("businesses.btype in (?)", btype)
-      expresses = expresses.where(businesses: {btype: btype})
+      businesses = Business.where(btype: btype).map{|b| b.id}.uniq
+      expresses = expresses.where(business_id: businesses)
     end
 
     if !params[:business].blank?
-      expresses = expresses.where("businesses.code like ? or businesses.name like ?", "%#{params[:business]}%", "%#{params[:business]}%")
+      businesses = Business.where("businesses.code like ? or businesses.name like ?", "%#{params[:business]}%", "%#{params[:business]}%").map{|b| b.id}.uniq
+      expresses = expresses.where(business_id: businesses)
     end
 
     if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -80,7 +307,8 @@ class Report
     end
     
     if !params[:detail_btype].blank? && !(params[:detail_btype].eql?"合计")
-      expresses = expresses.where(businesses: {btype: params[:detail_btype]})
+      businesses = Business.where(btype: params[:detail_btype]).map{|b| b.id}.uniq
+      expresses = expresses.where(business_id: businesses)
     end
 
     if !params[:status].blank?
@@ -105,10 +333,11 @@ class Report
     #   expresses = expresses.where.not("businesses.industry = ? and expresses.receiver_province_no != ?", "法院", "310000") 
     # end
     if !params[:is_court].blank?
+      businesses = Business.where(industry: "法院").map{|b| b.id}.uniq
       if params[:is_court].eql?"false"
-        expresses = expresses.where.not(businesses: {industry: "法院"})
+        expresses = expresses.where.not(business_id: businesses)
       else
-        expresses = expresses.where(businesses: {industry: "法院"})
+        expresses = expresses.where(business_id: businesses)
       end
     end
 
@@ -249,14 +478,21 @@ class Report
 
     if !params[:need_alert].blank? && (params[:need_alert].eql?"true")
       if RailsEnv.is_oracle?
-        expresses = expresses.where("businesses.static_alert=? and expresses.status=?", true, "waiting").where("businesses.time_limit is not null").where("expresses.last_op_at + businesses.time_limit/24)<?", Time.now)
+        expresses = expresses.left_outer_joins(:business).where("businesses.static_alert=? and expresses.status=?", true, "waiting").where("businesses.time_limit is not null").where("expresses.last_op_at + businesses.time_limit/24)<?", Time.now)
       else
-        expresses = expresses.where("businesses.static_alert=? and expresses.status=?", true, "waiting").where("businesses.time_limit is not null").where("datetime(expresses.last_op_at, '+' || businesses.time_limit || ' hours')<?", Time.now)
+        expresses = expresses.left_outer_joins(:business).where("businesses.static_alert=? and expresses.status=?", true, "waiting").where("businesses.time_limit is not null").where("datetime(expresses.last_op_at, '+' || businesses.time_limit || ' hours')<?", Time.now)
+      end
+    end
+
+    if !params[:is_delay].blank? && !params[:delivered_days_show].blank?
+      if params[:is_delay].eql?"true"
+        expresses = expresses.where("expresses.delivered_days > ? or expresses.status = ?", params[:delivered_days_show].to_f, "waiting")
       end
     end
 
     return expresses
   end
+
 
   def self.get_deliver_market_result(expresses, params, current_user)
     results = {}
@@ -273,6 +509,7 @@ class Report
     deliver_unit_hj = 0
     delivered_days_hj = init_delivered_days_hj(params[:delivered_days_show])   #某日的妥投总数
     
+    expresses = expresses.left_outer_joins(:business)
     if current_user.superadmin? || current_user.company_admin?
       if (!params[:is_court].blank?) && (params[:is_court].eql?"true")
         businesses = Business.where(industry: "法院")
@@ -363,6 +600,7 @@ class Report
     deliver_other_hj = 0
     deliver_unit_hj = 0
     delivered_days_hj = init_delivered_days_hj(params[:delivered_days_show])   #某日的妥投总数
+    delay_hj = 0
   
     if expresses.count>0
       total_amount = expresses.left_outer_joins(:last_unit).left_outer_joins(:last_unit=>:parent_unit).group(:last_unit_id).group("units.name").group("units.parent_id").group("parent_units_units.name").count
@@ -371,6 +609,7 @@ class Report
       deliver_days_amount = expresses.delivered.where("expresses.delivered_days <= ?", params[:delivered_days_show].to_f-1).group(:last_unit_id).group("expresses.delivered_days").count
       transit_delivery = expresses.waiting.group("expresses.last_unit_id", "expresses.whereis").count
       delivered_status_amount = expresses.delivered.group(:last_unit_id, :delivered_status).count
+      delay_amount = expresses.where("expresses.delivered_days > ? or expresses.status = ?", params[:delivered_days_show].to_f, "waiting").group(:last_unit_id).count
 
       total_amount.each do |k, v|
         last_unit_id = k[0]
@@ -399,9 +638,11 @@ class Report
         deliver_other_hj += deliver_other_am
         deliver_unit_am =delivered_status_amount[[last_unit_id, "unit"]].blank? ? 0 : delivered_status_amount[[last_unit_id, "unit"]]
         deliver_unit_hj += deliver_unit_am
+        delay_am = delay_amount[last_unit_id].blank? ? 0 : delay_amount[last_unit_id]
+        delay_hj += delay_am
 
-        # 0上级单位id, 1总邮件数, 2总妥投数, 3本人收数, 4他人收数, 5单位/快递柜收数, 6妥投率, 7未妥投总数, 8未妥投率, 9退回数, 10退回率, 11在途中数, 12投递端数, 13单位名称, 14上级单位名称, 15各日妥投率
-        results[last_unit_id] = [k[2], total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, waiting_am, waiting_per, return_am, return_per, in_transit_am, delivery_part_am, k[1], k[3], delivered_days_xj]
+        # 0上级单位id, 1总邮件数, 2总妥投数, 3本人收数, 4他人收数, 5单位/快递柜收数, 6妥投率, 7未妥投总数, 8未妥投率, 9退回数, 10退回率, 11在途中数, 12投递端数, 13单位名称, 14上级单位名称, 15各日妥投率, 16未及时妥投数
+        results[last_unit_id] = [k[2], total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, waiting_am, waiting_per, return_am, return_per, in_transit_am, delivery_part_am, k[1], k[3], delivered_days_xj, delay_am]
       end
 
       results = results.sort{|x,y|  (x[0].nil? || x[1][0].nil?) ? 1 : ((y[0].nil? || y[1][0].nil?)? -1 : x[1][0]<=>y[1][0]) }.to_h
@@ -411,8 +652,8 @@ class Report
       return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
       process_delivered_days_hj(delivered_days_hj, total_hj)
 
-      # 0"", 1总邮件数, 2总妥投数, 3本人收数, 4他人收数, 5单位/快递柜收数, 6妥投率, 7未妥投总数, 8未妥投率, 9退回数, 10退回率, 11在途中数, 12投递端数, 13单位名称, 14上级单位名称, 15各日妥投率
-      results["合计"] = ["", total_hj, deliver_hj, deliver_own_hj, deliver_other_hj, deliver_unit_hj, deliver_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, in_transit_hj, delivery_part_hj, "", "", delivered_days_hj]
+      # 0"", 1总邮件数, 2总妥投数, 3本人收数, 4他人收数, 5单位/快递柜收数, 6妥投率, 7未妥投总数, 8未妥投率, 9退回数, 10退回率, 11在途中数, 12投递端数, 13单位名称, 14上级单位名称, 15各日妥投率, 16未及时妥投数
+      results["合计"] = ["", total_hj, deliver_hj, deliver_own_hj, deliver_other_hj, deliver_unit_hj, deliver_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, in_transit_hj, delivery_part_hj, "", "", delivered_days_hj, delay_hj]
     end
 
     return results

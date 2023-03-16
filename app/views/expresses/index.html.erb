@@ -5,7 +5,7 @@
   <h1><%=t '.title', :default => [:'helpers.titles.index', '%{model} Manage'], :model => model_class.model_name.human.titleize %></h1>
   <%= render partial: '/layouts/page_size' %>
   <div style="float:right">
-  	<%= check_box("checkbox","alert", onclick: "window.location.href='#{get_expresses_path("/expresses", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)}'") %>显示预警邮件
+  	<%= check_box("checkbox","alert", onclick: "window.location.href='#{get_expresses_path("/expresses", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true, nil)}'") %>显示预警邮件
     <button class="btn btn-primary wg-external-csv-export-button" data-grid-name="expresses">导出</button>
   </div>
 </div>

@@ -1,6 +1,6 @@
 module ReportHelper
-	# 根路径, 行业市场, 状态, 网点(投递维度),客户名称(返单),是否在途,是否正向(返单),返单状态,妥投天数,收寄省,收寄市,妥投状态,显示预警邮件
-	def get_expresses_path(addr, detail_btype, status, last_unit_id, detail_business, transit_delivery, receipt_flag, receipt_status, delivered_days, receiver_province_no, receiver_city_no, delivered_status, need_alert)
+	# 根路径, 行业市场, 状态, 网点(投递维度),客户名称(返单),是否在途,是否正向(返单),返单状态,妥投天数,收寄省,收寄市,妥投状态,显示预警邮件,是否统计未及时妥投
+	def get_expresses_path(addr, detail_btype, status, last_unit_id, detail_business, transit_delivery, receipt_flag, receipt_status, delivered_days, receiver_province_no, receiver_city_no, delivered_status, need_alert, is_delay)
 	  # addr = "/expresses"
 	  sep="?"
 	  industry = nil
@@ -191,6 +191,11 @@ module ReportHelper
 
 		if !params[:delivered_days_show].blank?
 			addr += sep+"delivered_days_show=#{params[:delivered_days_show]}"
+			sep = "&"
+		end
+
+		if !is_delay.blank?
+			addr += sep+"is_delay=#{is_delay}"
 			sep = "&"
 		end
 
