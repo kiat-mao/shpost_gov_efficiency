@@ -218,6 +218,9 @@ class Express < ApplicationRecord
     #NJ = 21112100
     express.distributive_center_no = pkp_waybill_base.pkp_waybill_biz.distributive_center_no
 
+    # 4 dewu
+    express.postage_total = pkp_waybill_base.postage_total
+
     # receipt
     if ! pkp_waybill_base.receipt_flag.blank?
       if pkp_waybill_base.receipt_flag.eql?('6')
@@ -347,9 +350,10 @@ class Express < ApplicationRecord
       if ! posting_date.blank? && ! last_op_at.blank?
          self.delivered_hour = last_op_at.hour
          self.delivered_days = last_op_at.to_date - posting_date.to_date - ((delivered_hour < 12) ? 0.5 : 0)
-         return #self.delivered_days
+         return 
       end
     end
+    self.delivered_hour = nil
     self.delivered_days = nil
   end
 

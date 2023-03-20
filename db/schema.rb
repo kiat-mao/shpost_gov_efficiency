@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_22_014349) do
+ActiveRecord::Schema.define(version: 2023_03_20_033307) do
 
   create_table "areas", force: :cascade do |t|
     t.string "code"
@@ -69,16 +69,23 @@ ActiveRecord::Schema.define(version: 2021_06_22_014349) do
     t.integer "posting_hour"
     t.string "distributive_center_no"
     t.string "delivered_status"
-    t.integer "parent_unit_id"
     t.string "biz_product_no"
     t.string "transfer_type"
     t.integer "delivered_hour"
+    t.string "last_prov"
+    t.string "last_city"
+    t.boolean "is_change_addr"
+    t.boolean "is_cancelled"
+    t.decimal "postage_total"
     t.index ["business_id"], name: "index_expresses_on_business_id"
+    t.index ["delivered_days"], name: "index_expresses_on_delivered_days"
+    t.index ["delivered_status"], name: "index_expresses_on_delivered_status"
     t.index ["express_no"], name: "index_expresses_on_express_no"
     t.index ["last_unit_id"], name: "index_expresses_on_last_unit_id"
     t.index ["post_unit_id"], name: "index_expresses_on_post_unit_id"
     t.index ["posting_date"], name: "index_expresses_on_posting_date"
     t.index ["status"], name: "index_expresses_on_status"
+    t.index ["whereis"], name: "index_expresses_on_whereis"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -145,7 +152,7 @@ ActiveRecord::Schema.define(version: 2021_06_22_014349) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
+    t.string "email"
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
