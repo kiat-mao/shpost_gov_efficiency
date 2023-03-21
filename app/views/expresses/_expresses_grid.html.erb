@@ -222,6 +222,46 @@
     end
   end
 
+  g.column name: model_class.human_attribute_name(:last_prov), attribute: 'last_prov' do |express|
+    if express.need_alert?
+      [express.try(:last_prov), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.try(:last_prov),{style: 'font-size: 12px;'}]
+    end
+  end
+
+  g.column name: model_class.human_attribute_name(:last_city), attribute: 'last_city' do |express|
+    if express.need_alert?
+      [express.try(:last_city), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.try(:last_city),{style: 'font-size: 12px;'}]
+    end
+  end
+
+  g.column name: model_class.human_attribute_name(:is_change_addr), attribute: 'is_change_addr' do |express|
+    if express.need_alert?
+      [express.is_change_addr_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.is_change_addr_name, {style: 'font-size: 12px;'}]
+    end
+  end
+
+  g.column name: model_class.human_attribute_name(:is_cancelled), attribute: 'is_cancelled' do |express|
+    if express.need_alert?
+      [express.is_cancelled_name, {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.is_cancelled_name, {style: 'font-size: 12px;'}]
+    end
+  end
+
+  g.column name: model_class.human_attribute_name(:postage_total), attribute: 'postage_total' do |express|
+    if express.need_alert?
+      [express.try(:postage_total), {style: 'font-size: 12px;color: red;'}]
+    else
+      [express.try(:postage_total),{style: 'font-size: 12px;'}]
+    end
+  end
+
   g.column in_csv: false do |express|
     ActiveSupport::SafeBuffer.new << 
       (link_to '邮件全过程信息', get_mail_trace_express_path(express), :class => 'btn btn-xs btn-primary', target: '_blank' if can? :read, express) 

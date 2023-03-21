@@ -57,7 +57,22 @@ class Express < ApplicationRecord
   scope :other_type, -> {where.not(transfer_type: '3').or(Express.where(transfer_type: nil))}
 
   
-  
+  def is_change_addr_name
+    if is_change_addr
+      name = "是"
+    else
+      name = "否"
+    end
+  end
+
+  def is_cancelled_name
+    if is_cancelled
+      name = "是"
+    else
+      name = "否"
+    end
+  end
+
   def self.init_expresses_yesterday
     start_date = Date.today - 1.day
     end_date = Date.today

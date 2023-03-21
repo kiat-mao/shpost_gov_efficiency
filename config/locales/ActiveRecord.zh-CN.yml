@@ -316,6 +316,11 @@ zh-CN:
         receipt_status: "返单状态"
         pre_waybill_no: "正向单号"
         receipt_waybill_no: "反向单号"
+        last_prov: "目前邮件所在省"
+        last_city: "目前邮件所在市"
+        is_change_addr: "是否改址"
+        is_cancelled: "是否撤单"
+        postage_total: "实收邮费"
       message:
         title: "标题"
         content: "内容"
