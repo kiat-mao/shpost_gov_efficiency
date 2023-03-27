@@ -23,7 +23,7 @@
             end
           end
         %>
-        <th><b><%= params[:delivered_days_show] %>日未妥投数</b></th>
+        <th><b><%= Report::DELAY_DELIVERED_NAME[params[:delivered_days_show].to_f] %>日未妥投数</b></th>
         <th><b>未妥投总数</b></th>
         <th><b>在途中数</b></th>
         <th><b>投递端数</b></th>
