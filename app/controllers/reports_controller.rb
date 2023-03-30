@@ -60,7 +60,7 @@ class ReportsController < ApplicationController
       flash[:alert] = "无数据"
       redirect_to request.referer
     else
-    	send_data(deliver_unit_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "投递情况监控报表-投递维度_#{Time.now.strftime("%Y%m%d")}.xls")  
+    	send_data(deliver_unit_report_xls_content_for(params, @results, @parent_unit_results),:type => "text/excel;charset=utf-8; header=present",:filename => "投递情况监控报表-投递维度_#{Time.now.strftime("%Y%m%d")}.xls")  
     end
   end
 
@@ -374,10 +374,12 @@ class ReportsController < ApplicationController
 	  	
 	  	expresses = Report.get_filter_expresses(params).accessible_by(current_ability)
 
-      @results = Report.get_deliver_unit_result(expresses, params)
+	  	all_results = Report.get_deliver_unit_result(expresses, params)
+      @results = all_results[0]
+      @parent_unit_results = all_results[1]
   	end
 
-  	def deliver_unit_report_xls_content_for(params,results)
+  	def deliver_unit_report_xls_content_for(params,results,parent_unit_results)
 	  	xls_report = StringIO.new  
 	    book = Spreadsheet::Workbook.new  
 	    sheet1 = book.create_worksheet :name => "统计表"  
@@ -452,9 +454,47 @@ class ReportsController < ApplicationController
 	    sheet1.row(7).concat %w{未及时妥投数 未妥投总数 在途中数 投递端数 未妥投率 退回数 退回率}
 
 	    count_row = 8
-	    last_pid = nil
+	    last_pid = results.values[0]
 
 	    results.each do |k, v|
+	    	if (params[:is_monitor].eql?"false") && (params[:is_court].eql?"false") && (v[0] != last_pid) && !parent_unit_results[last_pid].blank?
+	    		sheet1[count_row,0] =  parent_unit_results[last_pid][0]
+		      sheet1[count_row,1] = ""
+		      sheet1[count_row,2] = parent_unit_results[last_pid][1]
+		      sheet1[count_row,3] = parent_unit_results[last_pid][2]
+		      sheet1[count_row,4] = parent_unit_results[last_pid][3]
+		      sheet1[count_row,5] = parent_unit_results[last_pid][4]
+		      sheet1[count_row,6] = parent_unit_results[last_pid][5]
+		      sheet1[count_row,7] = parent_unit_results[last_pid][6].to_s(:rounded, precision: 2)+"%"
+		      j = 0.0
+	        col = 8
+	        while j <= params[:delivered_days_show].to_f-1
+	          sheet1[count_row,col] = (parent_unit_results[last_pid][14][j]/parent_unit_results[last_pid][1]).to_s(:rounded, precision: 2)+"%"
+	          col += 1
+	          j += 0.5
+	        end
+
+	        sheet1[count_row,col] = parent_unit_results[last_pid][13]
+		      sheet1[count_row,col+1] = parent_unit_results[last_pid][7]
+		      sheet1[count_row,col+2] = parent_unit_results[last_pid][11]
+		      sheet1[count_row,col+3] = parent_unit_results[last_pid][12]
+		      sheet1[count_row,col+4] = parent_unit_results[last_pid][8].to_s(:rounded, precision: 2)+"%"
+		      sheet1[count_row,col+5] = parent_unit_results[last_pid][9]
+		      sheet1[count_row,col+6] = parent_unit_results[last_pid][10].to_s(:rounded, precision: 2)+"%"
+
+		      0.upto(cols-8) do |i|
+			      sheet1.row(count_row).set_format(i, body)
+			    end 
+			    (cols-7).upto(cols-3) do |i|
+			      sheet1.row(count_row).set_format(i, red)
+			    end 
+			    (cols-2).upto(cols-1) do |i|
+			      sheet1.row(count_row).set_format(i, body)
+			    end 
+
+		      
+		      count_row += 1
+	    	end
 	      sheet1[count_row,0] =  (k.blank? || (k.eql?"合计")) ? "" : ((v[0] == last_pid) ? "" : v[14])
 	      sheet1[count_row,1] = k.blank? ? "其他" : ((k.eql?"合计") ? k : v[13])
 	      sheet1[count_row,2] = v[1]
@@ -479,7 +519,7 @@ class ReportsController < ApplicationController
 	      sheet1[count_row,col+5] = v[9]
 	      sheet1[count_row,col+6] = v[10].to_s(:rounded, precision: 2)+"%"
 	      last_pid = v[0]
-	      
+		    
 	      0.upto(cols-8) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end 

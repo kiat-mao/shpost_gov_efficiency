@@ -5,7 +5,7 @@
   <table>
     <tr>
       <td>
-        <%= link_to "报表导出", get_expresses_path("/reports/business_market_report_export", params[:detail_btype], nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary', method: :post%>
+        <%= link_to "报表导出", get_expresses_path("/reports/business_market_report_export", params[:detail_btype], nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary', method: :post%>
       </td>
     </tr>
   </table>
@@ -47,15 +47,15 @@
         <!-- 客户 -->
         <td><%= (k.eql?"合计") ? k : k.name %></td>
         <!-- 收寄数 -->
-        <td><u><%= link_to v[0], get_expresses_path("/expresses", params[:detail_btype], nil, nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[0], get_expresses_path("/expresses", params[:detail_btype], nil, nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
         <!-- 总妥投数 -->
-        <td><u><%= link_to v[1], get_expresses_path("/expresses", params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[1], get_expresses_path("/expresses", params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
         <!-- 本人收数 -->
-        <td><u><%= link_to v[2], get_expresses_path("/expresses", params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, "own", nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[2], get_expresses_path("/expresses", params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, "own", nil, nil, nil), target: '_blank' %></u></td>
         <!-- 他人收数 -->
-        <td><u><%= link_to v[3], get_expresses_path("/expresses", params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, "other", nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[3], get_expresses_path("/expresses", params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, "other", nil, nil, nil), target: '_blank' %></u></td>
         <!-- 单位/快递柜收数 -->
-        <td><u><%= link_to v[4], get_expresses_path("/expresses", params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, "unit", nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[4], get_expresses_path("/expresses", params[:detail_btype], "delivered", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, "unit", nil, nil, nil), target: '_blank' %></u></td>
         <!-- 妥投率 -->
         <td><%= v[5].to_s(:rounded, precision: 2)+"%" %></td>
         <!-- **日妥投率 -->
@@ -69,15 +69,15 @@
           end
         %>
         <!-- 未妥投总数 -->
-        <td id='waiting'><%= link_to v[6], get_expresses_path("/expresses", params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[6], get_expresses_path("/expresses", params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
         <!-- 在途中数 -->
-        <td id='waiting'><%= link_to v[10], get_expresses_path("/expresses", params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, "in_transit", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[10], get_expresses_path("/expresses", params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, "in_transit", nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
         <!-- 投递端数 -->
-        <td id='waiting'><%= link_to v[11], get_expresses_path("/expresses", params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, "delivery_part", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
+        <td id='waiting'><%= link_to v[11], get_expresses_path("/expresses", params[:detail_btype], "waiting", nil, (k.eql?"合计") ? nil : k.id, "delivery_part", nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></td>
         <!-- 未妥投率 -->
         <td><font color="red"><%= v[7].to_s(:rounded, precision: 2)+"%" %></font></td>
         <!-- 退回数 -->
-        <td><u><%= link_to v[8], get_expresses_path("/expresses", params[:detail_btype], "returns", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to v[8], get_expresses_path("/expresses", params[:detail_btype], "returns", nil, (k.eql?"合计") ? nil : k.id, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
         <!-- 退回率 -->
         <td><%= v[9].to_s(:rounded, precision: 2)+"%" %></td>
       </tr>

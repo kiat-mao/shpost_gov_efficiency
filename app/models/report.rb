@@ -491,6 +491,11 @@ class Report
       end
     end
 
+    if !params[:parent_unit_id].blank?
+      last_unit_ids = Unit.where(parent_id: params[:parent_unit_id].to_i).map{|u| u.id}.uniq
+      expresses = expresses.where(last_unit_id: last_unit_ids)
+    end
+
     return expresses
   end
 
@@ -588,9 +593,96 @@ class Report
     return results
   end
 
+  # def self.get_deliver_unit_result(expresses, params)
+  #   results = {}
+  #   results1 = {}
+  #   total_hj = 0
+  #   deliver_hj = 0
+  #   waiting_hj = 0
+  #   return_hj = 0
+  #   in_transit_hj = 0
+  #   delivery_part_hj = 0
+  #   deliver_own_hj = 0
+  #   deliver_other_hj = 0
+  #   deliver_unit_hj = 0
+  #   delivered_days_hj = init_delivered_days_hj(params[:delivered_days_show]) #某日的妥投总数
+  #   delay_hj = 0
+  
+  #   if expresses.count>0
+  #     # 总邮件数
+  #     total_amount = expresses.left_outer_joins(:last_unit).left_outer_joins(:last_unit=>:parent_unit).group(:last_unit_id).group("units.name").group("units.parent_id").group("parent_units_units.name").count
+  #     # 总妥投数,未妥投总数,退回数
+  #     status_amount = expresses.group(:last_unit_id).group(:status).count
+  #     # **日妥投率
+  #     deliver_days_amount = expresses.delivered.where("expresses.delivered_days <= ?", params[:delivered_days_show].to_f-1).group(:last_unit_id).group("expresses.delivered_days").count
+  #     # 在途中数,投递端数
+  #     transit_delivery = expresses.waiting.group("expresses.last_unit_id", "expresses.whereis").count
+  #     # 本人收数,他人收数,单位/快递柜收数
+  #     delivered_status_amount = expresses.delivered.group(:last_unit_id, :delivered_status).count
+  #     # *日未妥投数
+  #     delay_amount = expresses.where("expresses.delivered_days > ? or expresses.status = ?", params[:delivered_days_show].to_f, "waiting").group(:last_unit_id).count
+
+  #     total_amount.each do |k, v|
+  #       last_unit_id = k[0]
+  #       # 总邮件数
+  #       total_am = v
+  #       total_hj += total_am    
+  #       # 总妥投数
+  #       deliver_am =status_amount[[last_unit_id, "delivered"]].blank? ? 0 : status_amount[[last_unit_id, "delivered"]]
+  #       deliver_hj += deliver_am
+  #       # 妥投率
+  #       deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
+  #       # 各日妥投率
+  #       delivered_days_xj = get_deliverd_days_per_hj(delivered_days_hj, params[:delivered_days_show], deliver_days_amount, last_unit_id, total_am)
+  #       # 未妥投总数
+  #       waiting_am = status_amount[[last_unit_id, "waiting"]].blank? ? 0 : status_amount[[last_unit_id, "waiting"]]
+  #       waiting_hj += waiting_am
+  #       # 在途中数
+  #       in_transit_am = transit_delivery[[last_unit_id, "in_transit"]].blank? ? 0 : transit_delivery[[last_unit_id, "in_transit"]]
+  #       in_transit_hj += in_transit_am
+  #       # 投递端数
+  #       delivery_part_am = transit_delivery[[last_unit_id, "delivery_part"]].blank? ? 0 : transit_delivery[[last_unit_id, "delivery_part"]]
+  #       delivery_part_hj += delivery_part_am
+  #       # 未妥投率
+  #       waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0
+  #       # 退回数 
+  #       return_am = status_amount[[last_unit_id, "returns"]].blank? ? 0 : status_amount[[last_unit_id, "returns"]]
+  #       return_hj += return_am
+  #       # 退回率
+  #       return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
+  #       # 本人收数
+  #       deliver_own_am =delivered_status_amount[[last_unit_id, "own"]].blank? ? 0 :    delivered_status_amount[[last_unit_id, "own"]]
+  #       deliver_own_hj += deliver_own_am
+  #       # 他人收数
+  #       deliver_other_am =delivered_status_amount[[last_unit_id, "other"]].blank? ? 0 : delivered_status_amount[[last_unit_id, "other"]]
+  #       deliver_other_hj += deliver_other_am
+  #       # 单位/快递柜收数
+  #       deliver_unit_am =delivered_status_amount[[last_unit_id, "unit"]].blank? ? 0 : delivered_status_amount[[last_unit_id, "unit"]]
+  #       deliver_unit_hj += deliver_unit_am
+  #       # 未及时妥投数
+  #       delay_am = delay_amount[last_unit_id].blank? ? 0 : delay_amount[last_unit_id]
+  #       delay_hj += delay_am
+
+  #       # 0上级单位id, 1总邮件数, 2总妥投数, 3本人收数, 4他人收数, 5单位/快递柜收数, 6妥投率, 7未妥投总数, 8未妥投率, 9退回数, 10退回率, 11在途中数, 12投递端数, 13单位名称, 14上级单位名称, 15各日妥投率, 16未及时妥投数
+  #       results[last_unit_id] = [k[2], total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, waiting_am, waiting_per, return_am, return_per, in_transit_am, delivery_part_am, k[1], k[3], delivered_days_xj, delay_am]
+  #     end
+
+  #     results = results.sort{|x,y|  (x[0].nil? || x[1][0].nil?) ? 1 : ((y[0].nil? || y[1][0].nil?)? -1 : x[1][0]<=>y[1][0]) }.to_h
+
+  #     deliver_per_hj = total_hj>0 ? (deliver_hj/total_hj.to_f*100).round(2) : 0
+  #     waiting_per_hj = total_hj>0 ? (waiting_hj/total_hj.to_f*100).round(2) : 0 
+  #     return_per_hj = total_hj>0 ? (return_hj/total_hj.to_f*100).round(2) : 0
+  #     process_delivered_days_hj(delivered_days_hj, total_hj)
+
+  #     # 0"", 1总邮件数, 2总妥投数, 3本人收数, 4他人收数, 5单位/快递柜收数, 6妥投率, 7未妥投总数, 8未妥投率, 9退回数, 10退回率, 11在途中数, 12投递端数, 13单位名称, 14上级单位名称, 15各日妥投率, 16未及时妥投数
+  #     results["合计"] = ["", total_hj, deliver_hj, deliver_own_hj, deliver_other_hj, deliver_unit_hj, deliver_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, in_transit_hj, delivery_part_hj, "", "", delivered_days_hj, delay_hj]
+  #   end
+
+  #   return results
+  # end
+
   def self.get_deliver_unit_result(expresses, params)
     results = {}
-    results1 = {}
     total_hj = 0
     deliver_hj = 0
     waiting_hj = 0
@@ -600,50 +692,79 @@ class Report
     deliver_own_hj = 0
     deliver_other_hj = 0
     deliver_unit_hj = 0
-    delivered_days_hj = init_delivered_days_hj(params[:delivered_days_show])   #某日的妥投总数
+    delivered_days_hj = init_delivered_days_hj(params[:delivered_days_show]) #某日的妥投总数
     delay_hj = 0
+    parent_unit_hj = []
+    parent_unit_results = {}
   
     if expresses.count>0
-      total_amount = expresses.left_outer_joins(:last_unit).left_outer_joins(:last_unit=>:parent_unit).group(:last_unit_id).group("units.name").group("units.parent_id").group("parent_units_units.name").count
-
+      # 总邮件数
+      total_amount = expresses.left_outer_joins(:last_unit).left_outer_joins(:last_unit=>:parent_unit).group(:last_unit_id).group("units.name").group("units.parent_id").group("parent_units_units.name").order("units.parent_id, expresses.last_unit_id").count
+      # 总妥投数,未妥投总数,退回数
       status_amount = expresses.group(:last_unit_id).group(:status).count
+      # **日妥投率
       deliver_days_amount = expresses.delivered.where("expresses.delivered_days <= ?", params[:delivered_days_show].to_f-1).group(:last_unit_id).group("expresses.delivered_days").count
+      # 在途中数,投递端数
       transit_delivery = expresses.waiting.group("expresses.last_unit_id", "expresses.whereis").count
+      # 本人收数,他人收数,单位/快递柜收数
       delivered_status_amount = expresses.delivered.group(:last_unit_id, :delivered_status).count
+      # *日未妥投数
       delay_amount = expresses.where("expresses.delivered_days > ? or expresses.status = ?", params[:delivered_days_show].to_f, "waiting").group(:last_unit_id).count
-
+      last_parent_id = total_amount.keys[0][2]
+    
       total_amount.each do |k, v|
         last_unit_id = k[0]
+        
+        # 总邮件数
         total_am = v
-        total_hj += total_am
-    
+        total_hj += total_am    
+        # 总妥投数
         deliver_am =status_amount[[last_unit_id, "delivered"]].blank? ? 0 : status_amount[[last_unit_id, "delivered"]]
         deliver_hj += deliver_am
+        # 妥投率
         deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
-        
+        # 各日妥投率
         delivered_days_xj = get_deliverd_days_per_hj(delivered_days_hj, params[:delivered_days_show], deliver_days_amount, last_unit_id, total_am)
-
+        # 未妥投总数
         waiting_am = status_amount[[last_unit_id, "waiting"]].blank? ? 0 : status_amount[[last_unit_id, "waiting"]]
         waiting_hj += waiting_am
+        # 在途中数
         in_transit_am = transit_delivery[[last_unit_id, "in_transit"]].blank? ? 0 : transit_delivery[[last_unit_id, "in_transit"]]
         in_transit_hj += in_transit_am
+        # 投递端数
         delivery_part_am = transit_delivery[[last_unit_id, "delivery_part"]].blank? ? 0 : transit_delivery[[last_unit_id, "delivery_part"]]
         delivery_part_hj += delivery_part_am
-        waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0 
+        # 未妥投率
+        waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0
+        # 退回数 
         return_am = status_amount[[last_unit_id, "returns"]].blank? ? 0 : status_amount[[last_unit_id, "returns"]]
         return_hj += return_am
+        # 退回率
         return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
+        # 本人收数
         deliver_own_am =delivered_status_amount[[last_unit_id, "own"]].blank? ? 0 :    delivered_status_amount[[last_unit_id, "own"]]
         deliver_own_hj += deliver_own_am
+        # 他人收数
         deliver_other_am =delivered_status_amount[[last_unit_id, "other"]].blank? ? 0 : delivered_status_amount[[last_unit_id, "other"]]
         deliver_other_hj += deliver_other_am
+        # 单位/快递柜收数
         deliver_unit_am =delivered_status_amount[[last_unit_id, "unit"]].blank? ? 0 : delivered_status_amount[[last_unit_id, "unit"]]
         deliver_unit_hj += deliver_unit_am
+        # 未及时妥投数
         delay_am = delay_amount[last_unit_id].blank? ? 0 : delay_amount[last_unit_id]
         delay_hj += delay_am
 
         # 0上级单位id, 1总邮件数, 2总妥投数, 3本人收数, 4他人收数, 5单位/快递柜收数, 6妥投率, 7未妥投总数, 8未妥投率, 9退回数, 10退回率, 11在途中数, 12投递端数, 13单位名称, 14上级单位名称, 15各日妥投率, 16未及时妥投数
         results[last_unit_id] = [k[2], total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, waiting_am, waiting_per, return_am, return_per, in_transit_am, delivery_part_am, k[1], k[3], delivered_days_xj, delay_am]
+        # 计算单位小计
+        if k[2] != last_parent_id          
+          parent_unit_hj = []
+        end
+        parent_unit_hj = cal_parent_unit_hj(parent_unit_hj, results[last_unit_id])
+        parent_unit_results[k[2]] = parent_unit_hj if !parent_unit_hj.blank?
+
+        # byebug
+        last_parent_id = k[2]
       end
 
       results = results.sort{|x,y|  (x[0].nil? || x[1][0].nil?) ? 1 : ((y[0].nil? || y[1][0].nil?)? -1 : x[1][0]<=>y[1][0]) }.to_h
@@ -657,7 +778,7 @@ class Report
       results["合计"] = ["", total_hj, deliver_hj, deliver_own_hj, deliver_other_hj, deliver_unit_hj, deliver_per_hj, waiting_hj, waiting_per_hj, return_hj, return_per_hj, in_transit_hj, delivery_part_hj, "", "", delivered_days_hj, delay_hj]
     end
 
-    return results
+    return [results, parent_unit_results]
   end
 
   def self.get_business_result(expresses, params)
@@ -998,5 +1119,47 @@ class Report
     delivered_days_hj.each do |k,v|
       delivered_days_hj[k] = [v, total_hj>0 ? (v/total_hj.to_f*100).round(2) : 0]
     end
+  end
+
+  def self.cal_parent_unit_hj(parent_unit_hj, results)
+    # results=[0上级单位id, 1总邮件数, 2总妥投数, 3本人收数, 4他人收数, 5单位/快递柜收数, 6妥投率, 7未妥投总数, 8未妥投率, 9退回数, 10退回率, 11在途中数, 12投递端数, 13单位名称, 14上级单位名称, 15各日妥投率, 16未及时妥投数]
+
+    # 总邮件数
+    total_am = (parent_unit_hj[1].blank? ? 0 : parent_unit_hj[1])+results[1]
+    # 总妥投数
+    deliver_am = (parent_unit_hj[2].blank? ? 0 : parent_unit_hj[2])+results[2]
+    # 本人收数
+    deliver_own_am = (parent_unit_hj[3].blank? ? 0 : parent_unit_hj[3])+results[3]
+    # 他人收数
+    deliver_other_am = (parent_unit_hj[4].blank? ? 0 : parent_unit_hj[4])+results[4]
+    # 单位/快递柜收数
+    deliver_unit_am = (parent_unit_hj[5].blank? ? 0 : parent_unit_hj[5])+results[5]
+    # 妥投率
+    deliver_per = total_am>0 ? (deliver_am/total_am.to_f*100).round(2) : 0
+    # 未妥投总数
+    waiting_am = (parent_unit_hj[7].blank? ? 0 : parent_unit_hj[7])+results[7]
+    # 未妥投率
+    waiting_per = total_am>0 ? (waiting_am/total_am.to_f*100).round(2) : 0
+    # 退回数 
+    return_am = (parent_unit_hj[9].blank? ? 0 : parent_unit_hj[9])+results[9]
+    # 退回率
+    return_per = total_am>0 ? (return_am/total_am.to_f*100).round(2) : 0
+    # 在途中数
+    in_transit_am = (parent_unit_hj[11].blank? ? 0 : parent_unit_hj[11])+results[11]
+    # 投递端数
+    delivery_part_am = (parent_unit_hj[12].blank? ? 0 : parent_unit_hj[12])+results[12]
+    # 未及时妥投数
+    delay_am = (parent_unit_hj[13].blank? ? 0 : parent_unit_hj[13])+results[16]
+    # 各日妥投数
+    delivered_days_am = {}
+    # parent_unit_hj[14].each do |k,v|
+    #   delivered_days_am[k] = v+results[15][k][0]
+    # end
+    results[15].each do |k,v|
+      delivered_days_am[k] = v[0] + (parent_unit_hj[14].blank? ? 0 : parent_unit_hj[14][k])
+    end
+    
+    parent_unit_hj = ["小计", total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, waiting_am, waiting_per, return_am, return_per, in_transit_am, delivery_part_am, delay_am, delivered_days_am]
+    
   end
 end
