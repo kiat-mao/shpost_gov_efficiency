@@ -1,5 +1,5 @@
 class AddIsInternationalToBusinesses < ActiveRecord::Migration[6.0]
   def change
-  	add_column :businesses, :is_international, :boolean
+  	add_column :businesses, :is_international, :boolean, default: false 
   end
 end
