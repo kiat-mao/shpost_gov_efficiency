@@ -1,0 +1,33 @@
+<%- model_class = CountryTimeLimit -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => [:'helpers.titles.index', '%{model} Manage'], :model => model_class.model_name.human.titleize %></h1>
+  <%= render partial: '/layouts/page_size' %>
+  <div style="float:right">
+    <% if can? :new, CountryTimeLimit %>
+      <%= link_to t('.new', :default => t("helpers.links.new")),
+                  new_country_time_limit_path,
+                  :class => 'btn btn-primary' %>
+    <% end %>
+  </div>
+</div>
+
+<%= grid(@country_time_limits_grid) do |g|
+    g.column name: model_class.human_attribute_name(:country), attribute: 'country'
+
+    g.column name: model_class.human_attribute_name(:interchange1), attribute: 'interchange1'
+
+    g.column name: model_class.human_attribute_name(:interchange2), attribute: 'interchange2'
+
+    g.column name: model_class.human_attribute_name(:air), attribute: 'air'
+
+    g.column name: model_class.human_attribute_name(:arrive), attribute: 'arrive'
+
+    g.column name: model_class.human_attribute_name(:leave), attribute: 'leave'
+
+    g.column do |country_time_limit|
+      ActiveSupport::SafeBuffer.new << 
+        (link_to t('.edit', :default => t("helpers.links.edit")), edit_country_time_limit_path(country_time_limit), :class => 'btn btn-xs btn-primary' if can? :update, country_time_limit) << ' ' <<
+        (link_to t('.destroy', :default => t("helpers.links.destroy")), country_time_limit_path(country_time_limit), :method => :delete, :data => { :confirm => t('wice_grid.saved_query_deletion_confirmation', :default => t("helpers.links.confirm", :default => '确定删除?')) }, :class => 'btn btn-xs btn-danger' if can? :destroy, country_time_limit)
+    end
+  end 
+%>

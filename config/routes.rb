@@ -105,6 +105,9 @@ Rails.application.routes.draw do
     end
   end
   
+  resources :country_time_limits
+
+  resources :receiver_zones
 
   # match "/reports/deliver_market_report" => "reports#deliver_market_report", via: [:get, :post]
   

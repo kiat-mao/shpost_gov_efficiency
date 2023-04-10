@@ -1,0 +1,41 @@
+<%= form_for @receiver_zone, :html => { :class => 'form-horizontal' } do |f| %>
+  <% @receiver_zone.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+  <% end %>
+  <div class="control-group">
+    <%= f.label :zone, :class => 'control-label' %>
+    <font color="red">(必填)</font>
+    <div class="controls">
+      <%= f.text_field :zone, :class => 'text_field', :id => 'zone' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :country_time_limit_id, :class => 'control-label' %>
+    <font color="red">(必选)</font>
+    <div class="controls">
+      <%= f.select :country_time_limit_id, CountryTimeLimit.accessible_by(current_ability).collect {|c| [c.country,c.id]}, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :start_postcode, :class => 'control-label' %>
+    <font color="red">(必填)</font>
+    <div class="controls">
+      <%= f.text_field :start_postcode, :class => 'text_field', :id => 'start_postcode' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :end_postcode, :class => 'control-label' %>
+    <font color="red">(必填)</font>
+    <div class="controls">
+      <%= f.text_field :end_postcode, :class => 'text_field', :id => 'end_postcode' %>
+    </div>
+  </div>
+  
+  <div class="form-actions">
+    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <% if can? :index, ReceiverZone%>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                receiver_zones_path, :class => 'btn' %>
+    <% end %>
+  </div>
+<% end %>

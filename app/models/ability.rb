@@ -23,6 +23,8 @@ class Ability
 
 			can "report", "DeliverUnitReport"
 			can :manage, Message
+			can :manage, CountryTimeLimit
+			can :manage, ReceiverZone
 			#can :manage, User
 		elsif user.company_admin?
 			can :manage, Unit
@@ -47,6 +49,8 @@ class Ability
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
 			can [:read, :details], Message
+			can :manage, CountryTimeLimit
+			can :manage, ReceiverZone
 		elsif user.unitadmin?
 			can [:read, :user], Unit, id: user.unit.id
 			can :read, Unit, parent_id: user.unit.id

@@ -1,0 +1,50 @@
+<%= form_for @country_time_limit, :html => { :class => 'form-horizontal' } do |f| %>
+  <% @country_time_limit.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+  <% end %>
+  <div class="control-group">
+    <%= f.label :country, :class => 'control-label' %>
+    <font color="red">(必填)</font>
+    <div class="controls">
+      <%= f.text_field :country, :class => 'text_field', :id => 'country' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :interchange1, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :interchange1, :class => 'text_field', :id => 'interchange1' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :interchange2, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :interchange2, :class => 'text_field', :id => 'interchange2' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :air, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :air, :class => 'text_field', :id => 'air' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :arrive, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :arrive, :class => 'text_field', :id => 'arrive' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :leave, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :leave, :class => 'text_field', :id => 'leave' %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <% if can? :index, CountryTimeLimit%>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                country_time_limits_path, :class => 'btn' %>
+    <% end %>
+  </div>
+<% end %>

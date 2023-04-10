@@ -239,6 +239,12 @@ zh-CN:
       message:
         one: 消息
         other: 消息
+      country_time_limit:
+        one: 时限
+        other: 时限
+      receiver_zone:
+        one: 寄达国分区
+        other: 寄达国分区
     attributes:
       user:
         email: "电子邮件"
@@ -327,7 +333,18 @@ zh-CN:
         start_time: "开始日期"
         end_time: "结束日期"
         roles: "可看角色"
-
+      country_time_limit:
+        country: "国家"
+        interchange1: "互换局封车1(小时)"
+        interchange2: "互换局封车2(小时)"
+        air: "航空启运信息(小时)"
+        arrive: "总包到达寄达地(小时)"
+        leave: "离开境外处理中心(小时)"
+      receiver_zone:
+        zone: "地区"
+        country_time_limit_id: "寄达国"
+        start_postcode: "起始邮编"
+        end_postcode: "终止邮编"
   user_navigation:
     update_self: "个人信息"
     show_unit: "单位信息"
