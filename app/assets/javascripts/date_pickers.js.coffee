@@ -26,4 +26,3 @@ ready = ->
     autoclose: true,
     clearBtn: true,
     language: "zh-CN"});
-

@@ -109,6 +109,13 @@ Rails.application.routes.draw do
 
   resources :receiver_zones
 
+  resources :international_expresses do
+    collection do
+      get 'import'
+      post 'import' => 'international_expresses#import'
+    end
+  end
+
   # match "/reports/deliver_market_report" => "reports#deliver_market_report", via: [:get, :post]
   
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

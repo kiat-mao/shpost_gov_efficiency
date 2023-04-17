@@ -1,0 +1,2 @@
+class InternationalExpress < ApplicationRecord
+end

@@ -116,6 +116,19 @@ zh-CN:
           needrole:
             can: :read
             role: :ReceiverZone
+    international_express:
+      name: "国际出口邮件"
+      needrole:
+        can: :read
+        role: :InternationalExpress
+      submenu:
+        import:
+          name: "邮件信息导入"
+          link: "/international_expresses/import"
+          need_count: false
+          needrole:
+            can: :import
+            role: :InternationalExpress
     # receiver_query:
     #   name: "收件人信息查询"
     #   submenu:
