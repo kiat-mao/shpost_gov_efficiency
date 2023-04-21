@@ -129,6 +129,17 @@ zh-CN:
           needrole:
             can: :import
             role: :InternationalExpress
+        import_file:
+          name: "导入文件管理"
+          link: "/import_files"
+          need_count: false
+          needrole:
+            can: :read
+            role: :ImportFile
+        international_express_report:
+          name: "统计报表"
+          link: "/reports/international_express_report"
+          need_count: false
     # receiver_query:
     #   name: "收件人信息查询"
     #   submenu:

@@ -245,6 +245,9 @@ zh-CN:
       receiver_zone:
         one: 寄达国分区
         other: 寄达国分区
+      import_file:
+        one: 导入文件
+        other: 导入文件
     attributes:
       user:
         email: "电子邮件"
@@ -345,6 +348,17 @@ zh-CN:
         country_time_limit_id: "寄达国"
         start_postcode: "起始邮编"
         end_postcode: "终止邮编"
+      import_file:
+        file_name: "文件名"
+        file_path: "原文件存放路径"
+        user_id: "用户"
+        unit_id: "单位"
+        country_time_limit_id: "寄达国"
+        batch_no: "批次号"
+        status: "文件处理状态"
+        desc: "出错信息描述"
+        err_file_path: "出错文件存放路径"
+        created_at: "导入日期"
   user_navigation:
     update_self: "个人信息"
     show_unit: "单位信息"

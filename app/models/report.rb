@@ -1162,4 +1162,12 @@ class Report
     parent_unit_hj = ["小计", total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, waiting_am, waiting_per, return_am, return_per, in_transit_am, delivery_part_am, delay_am, delivered_days_am]
     
   end
+
+  def self.get_international_result(expresses, params)
+    results = {}
+
+
+
+    
+  end
 end
