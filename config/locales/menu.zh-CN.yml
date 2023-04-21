@@ -34,6 +34,9 @@ zh-CN:
             can: :read
             role: :Business
     report:
+      needrole:
+        can: :read
+        role: :Express
       name: "报表管理"
       submenu:
         deliver_market_report:
@@ -49,6 +52,9 @@ zh-CN:
           link: "/reports/deliver_province_report"
           need_count: false
     court_report:
+      needrole:
+        can: :read
+        role: :Express
       name: "法院报表管理"
       submenu:
         court_deliver_market_report:
@@ -60,6 +66,9 @@ zh-CN:
           link: "/reports/court_deliver_unit_report"
           need_count: false
     receipt_report:
+      needrole:
+        can: :read
+        role: :Express
       name: "返单报表管理"
       submenu:
         receipt_report:
@@ -67,6 +76,9 @@ zh-CN:
           link: "/reports/receipt_report"
           need_count: false
     monitor:
+      needrole:
+        can: :read
+        role: :Express
       name: "实时监控"
       submenu:
         deliver_market_monitor_today:
@@ -87,6 +99,9 @@ zh-CN:
           need_count: false
     court_monitor:
       name: "法院实时监控"
+      needrole:
+        can: :read
+        role: :Express
       submenu:
         court_deliver_market_monitor:
           name: "投递监控(市场)"

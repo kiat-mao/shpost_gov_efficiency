@@ -18,10 +18,21 @@ class User < ApplicationRecord
 
   validate :password_complexity
 
-  validates_length_of :username, :is => 8, :message => "请输入8位工号"
-  validates_numericality_of :username, :only_integer => true, :message => "请输入8位数字工号"
+  # validates_with :validates_user_name
 
-  ROLE = { superadmin: '超级管理员', unitadmin: '机构管理员', user: '普通用户' }
+  # def validates_user_name(user)
+  #   if user.user?
+  #     if ! user.username.length.eql?(8) || user.username.is
+  #     record.errors.add :base, "请输入8位工号"
+  #   end
+  # end
+
+  validates_length_of :username, :is => 8, :message => "请输入8位工号", if: :user?
+  validates_numericality_of :username, :only_integer => true, :message => "请输入8位数字工号", if: :user?
+
+  enum role: { superadmin: 'superadmin', unitadmin: 'unitadmin', user: 'user', international: "international" }
+  ROLE = { superadmin: '超级管理员', unitadmin: '机构管理员', user: '普通用户', international: "国际出口件用户" }
+
   STATUS_NAME = { locked: '已停用', unlocked: '已启用'}
 
   def status_name
@@ -32,17 +43,17 @@ class User < ApplicationRecord
     User::ROLE[role.to_sym]
   end
 
-  def superadmin?
-    (role.eql? 'superadmin') ? true : false
-  end
+  # def superadmin?
+  #   (role.eql? 'superadmin') ? true : false
+  # end
 
-  def unitadmin?
-    (role.eql? 'unitadmin') ? true : false
-  end
+  # def unitadmin?
+  #   (role.eql? 'unitadmin') ? true : false
+  # end
 
-  def user?
-    (role.eql? 'user') ? true : false
-  end
+  # def user?
+  #   (role.eql? 'user') ? true : false
+  # end
 
   def company_admin?
     ! self.unit.blank? && (self.unit.no.eql? '20000000')
