@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_20_033307) do
+ActiveRecord::Schema.define(version: 2023_04_10_015032) do
 
   create_table "areas", force: :cascade do |t|
     t.string "code"
@@ -34,6 +34,17 @@ ActiveRecord::Schema.define(version: 2023_03_20_033307) do
     t.boolean "is_init_expresses_midday"
     t.boolean "is_all_visible"
     t.boolean "static_alert"
+    t.boolean "is_international", default: false
+    t.index ["btype"], name: "index_businesses_on_btype"
+  end
+
+  create_table "country_time_limits", force: :cascade do |t|
+    t.string "country", null: false
+    t.integer "interchange1"
+    t.integer "interchange2"
+    t.integer "air"
+    t.integer "arrive"
+    t.integer "leave"
   end
 
   create_table "expresses", force: :cascade do |t|
@@ -88,6 +99,16 @@ ActiveRecord::Schema.define(version: 2023_03_20_033307) do
     t.index ["whereis"], name: "index_expresses_on_whereis"
   end
 
+  create_table "international_expresses", force: :cascade do |t|
+    t.string "express_no"
+    t.integer "country_time_limit_id"
+    t.integer "business_id"
+    t.date "posting_date"
+    t.string "receiver_postcode"
+    t.float "weight"
+    t.integer "zone_id"
+  end
+
   create_table "messages", force: :cascade do |t|
     t.string "title"
     t.text "content"
@@ -96,6 +117,13 @@ ActiveRecord::Schema.define(version: 2023_03_20_033307) do
     t.string "roles"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "receiver_zones", force: :cascade do |t|
+    t.string "zone", null: false
+    t.string "country_time_limit_id", null: false
+    t.string "start_postcode", null: false
+    t.string "end_postcode", null: false
   end
 
   create_table "roles", force: :cascade do |t|

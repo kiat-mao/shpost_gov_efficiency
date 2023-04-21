@@ -12,6 +12,7 @@ class Ability
 			can :manage, Role
 			can :role, :unitadmin
 			can :role, :user
+			can :role, :international
 			cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
 			can :update, User, id: user.id
 			can :manage, UpDownload
@@ -35,13 +36,14 @@ class Ability
 			can [:read, :user], Unit, level: 0
 
 			can :manage, User#, role: ['unitadmin', 'user']
-			cannot :role, User
+			# cannot :role, User
 			cannot :manage, User, role: ['superadmin']
 
 			cannot [:role, :create, :destroy], User, id: user.id
 			# can :update, User, id: user.id
 
 			can :role, :unitadmin
+			can :role, :international
 			can :role, :user
 
 			can :manage, Business
@@ -75,7 +77,7 @@ class Ability
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
 			can [:read, :details], Message
-		else#user
+		elsif user.user?#user
 			can :read, Unit, id: user.unit_id
 			can :read, Unit, parent_id: user.unit.id
 			
@@ -91,7 +93,20 @@ class Ability
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
 			can [:read, :details], Message
+		elsif user.international?
+			# can :read, Unit, id: user.unit.id
+			# can :read, Unit, parent_id: user.unit.id
+
+			can [:update, :show], User, id: user.id
+
+			can :read, CountryTimeLimit
+			can [:read, :import], InternationalExpress
+			can :manage, ReceiverZone
+
+
 		end
+
+
 
 
 
