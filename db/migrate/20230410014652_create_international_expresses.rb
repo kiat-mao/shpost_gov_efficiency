@@ -7,7 +7,7 @@ class CreateInternationalExpresses < ActiveRecord::Migration[6.0]
     	t.date     :posting_date
     	t.string   :receiver_postcode
     	t.float    :weight
-        t.integer  :zone_id
+      t.integer  :zone_id
     end
   end
 end
