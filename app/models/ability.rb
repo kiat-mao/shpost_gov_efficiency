@@ -23,8 +23,9 @@ class Ability
 			can "report", "DeliverMarketReport"
 
 			can "report", "DeliverUnitReport"
+			can "report", "InternationalExpressReport"
 			can :manage, Message
-			can :manage, CountryTimeLimit
+			can :manage, Country
 			can :manage, ReceiverZone
 			can :manage, InternationalExpress
 			can :manage, ImportFile
@@ -52,8 +53,9 @@ class Ability
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
+			can "report", "InternationalExpressReport"
 			can [:read, :details], Message
-			can :manage, CountryTimeLimit
+			can :manage, Country
 			can :manage, ReceiverZone
 			can :manage, InternationalExpress
 			can :manage, ImportFile
@@ -99,10 +101,11 @@ class Ability
 
 			can [:update, :show], User, id: user.id
 
-			can :read, CountryTimeLimit
+			can :read, Country
 			can [:read, :import], InternationalExpress
 			can :manage, ReceiverZone
-
+			can :manage, ImportFile
+			can "report", "InternationalExpressReport"
 
 		end
 

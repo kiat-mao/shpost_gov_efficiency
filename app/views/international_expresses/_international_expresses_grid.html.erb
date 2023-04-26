@@ -1,0 +1,40 @@
+<%- model_class = Express -%>
+<%- model_class_b = Business -%>
+<%- model_class_u = Unit -%>
+
+<%= grid(@international_expresss_grid) do |g|
+  g.column name: model_class.human_attribute_name(:express_no), attribute: 'express_no' do |international_express|
+    [international_express.express_no,{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "二级行业", attribute: 'industry', assoc: :business do |international_express|
+    [international_express.business.try(:industry),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class_b.human_attribute_name(:btype), attribute: 'btype', assoc: :business do |international_express|
+    [international_express.business.try(:btype),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class_b.human_attribute_name(:code), attribute: 'code', assoc: :business do |international_express|
+    [international_express.business.try(:code),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class_b.human_attribute_name(:name), attribute: 'name', assoc: :business do |international_express|
+    [international_express.business.try(:name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:posting_date), attribute: 'posting_date' do |international_express|
+    [(l international_express.posting_date),{style: 'font-size: 12px;'}]
+  end
+
+  # g.column name: model_class.human_attribute_name(:status), attribute: 'status', custom_filter: InternationalExpress::STATUS_NAME.invert do |international_express| 
+  #   [international_express.status_name,{style: 'font-size: 12px;'}]
+  # end
+
+  g.column in_csv: false do |international_express|
+    ActiveSupport::SafeBuffer.new << 
+      (link_to '邮件全过程信息', get_mail_trace_express_path(international_express), :class => 'btn btn-xs btn-primary', target: '_blank' if can? :read, international_express) 
+  end
+
+end
+%>

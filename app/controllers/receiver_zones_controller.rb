@@ -69,6 +69,6 @@ class ReceiverZonesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def receiver_zone_params
-      params.require(:receiver_zone).permit(:zone, :country_time_limit_id, :start_postcode, :end_postcode)
+      params.require(:receiver_zone).permit(:zone, :country_id, :start_postcode, :end_postcode)
     end
 end

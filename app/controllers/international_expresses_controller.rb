@@ -1,6 +1,15 @@
 class InternationalExpressesController < ApplicationController
   load_and_authorize_resource :international_express
-  # require 'roo'
+  
+  def index
+    @international_expresses = Report.get_filter_international_expresses(params).accessible_by(current_ability)
+    @international_expresss_grid = initialize_grid(@international_expresses, :per_page => params[:page_size],
+      name: 'international_expresses',
+      :enable_export_to_csv => true,
+      :csv_file_name => 'international_expresses',
+      :csv_encoding => 'gbk')
+    export_grid_if_requested
+  end
 
   def import
   	unless request.get?
@@ -8,7 +17,7 @@ class InternationalExpressesController < ApplicationController
   			message = "请导入文件"
   			flash[:alert] = message
   		else
-	  		if file = upload_international_express_info(params[:file]['file'])       
+  			if file = upload_international_express_info(params[:file]['file'])       
 	        ActiveRecord::Base.transaction do
 	          begin
 	          	selected_country_id = params[:country].to_i
@@ -17,8 +26,8 @@ class InternationalExpressesController < ApplicationController
 	            rowarr = [] 
 	            instance=nil
 	            current_line = 0
-	            
-	            import_file = ImportFile.create! file_name: file.split("/").last, file_path: file, user_id: current_user.id, unit_id: current_user.unit_id, country_time_limit_id: selected_country_id, batch_no: get_batch_no
+
+	            import_file = ImportFile.create! file_name: file.split("/").last, file_path: file, user_id: current_user.id, unit_id: current_user.unit_id, country_id: selected_country_id, batch_no: get_batch_no
 
 	            if file.include?('.xlsx')
 	              instance= Roo::Excelx.new(file)
@@ -38,6 +47,9 @@ class InternationalExpressesController < ApplicationController
 	            weight_index = title_row.index("重量(克)").blank? ? 18 : title_row.index("重量(克)")
 
 	            2.upto(instance.last_row) do |line|
+	            	# byebug
+	  		
+	            	zone_id = nil
 	              current_line = line
 	              rowarr = instance.row(line)
 	              express_no = rowarr[express_no_index].blank? ? "" : rowarr[express_no_index].to_s.split('.0')[0]
@@ -69,7 +81,7 @@ class InternationalExpressesController < ApplicationController
 	                sheet_error << (rowarr << txt)
 	                next
 	              else
-		              if !(CountryTimeLimit.find(selected_country_id).country.eql?country)
+		              if !(Country.find(selected_country_id).name.eql?country)
 		              	is_error = true
 		                txt = "寄达国（地区）与选择的国家不一致"
 		                sheet_error << (rowarr << txt)
@@ -104,11 +116,19 @@ class InternationalExpressesController < ApplicationController
 	                txt = "缺少收件人邮编"
 	                sheet_error << (rowarr << txt)
 	                next
+	              else
+	              	zone_id = get_zone(receiver_postcode, selected_country_id)
+	              	if zone_id.blank?
+	              		is_error = true
+		                txt = "未找到该地区"
+		                sheet_error << (rowarr << txt)
+		                next
+		              end
 	              end
 
 	              # sheet_error << (rowarr << txt)
 
-	              InternationalExpress.create! express_no: express_no, country_time_limit_id: selected_country_id, business_id: business.id, posting_date: posting_date, receiver_postcode: receiver_postcode, weight: weight, zone_id: get_zone(receiver_postcode, selected_country_id), import_file_id: import_file.id
+	              InternationalExpress.create! express_no: express_no, country_id: selected_country_id, business_id: business.id, posting_date: posting_date, receiver_postcode: receiver_postcode, weight: weight, receiver_zone_id: zone_id, import_file_id: import_file.id
 	            end
 	          rescue Exception => e
 	          	trans_error = true
@@ -174,7 +194,7 @@ class InternationalExpressesController < ApplicationController
   	zone_id = nil
   	code = receiver_postcode.split("-")[0]
 
-  	ReceiverZone.where(country_time_limit_id: selected_country_id).each do |x|
+  	ReceiverZone.where(country_id: selected_country_id).each do |x|
   		if (receiver_postcode.to_i >= x.start_postcode.to_i) && (receiver_postcode.to_i <= x.end_postcode.to_i)
   			zone_id = x.id
   			break

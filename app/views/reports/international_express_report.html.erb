@@ -6,7 +6,7 @@
 <table>
   <tr style="line-height: 40px;height: 40px;"> 
     <td><%= label_tag(:country, "寄达国:") %></td>
-    <td><%= select_tag(:country, options_for_select(CountryTimeLimit.all.map{|c| [c.country,c.id]}.insert(0,""), :selected=> params[:country]), id: "country") %></td>
+    <td><%= select_tag(:country, options_for_select(Country.all.map{|c| [c.name,c.id]}.insert(0,""), :selected=> params[:country]), id: "country") %></td>
   </tr>
   <tr>
     <td><%= label_tag(:posting_date_start, "收寄范围:") %></td>

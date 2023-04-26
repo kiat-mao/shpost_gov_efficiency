@@ -37,6 +37,26 @@
   	  </tr>
     </thead>
     <tbody>
+    	<% @results.each do |k, v| %>
+    	<tr class= 'nowrap'>
+    		<!-- 序号 -->
+    		<% if k.eql?"合计" %>
+        <td><%= k %></td>
+	      <% else %>
+	      <td><u><%= v[0] %></u></td>
+	      <% end %>
+	      <!-- 客户名称 -->
+	      <td><%= k[1] %></td>
+	      <!-- 寄达国 -->
+	      <td><%= k[3] %></td>
+	      <!-- 地区 -->
+	      <td><%= k[5] %></td>
+	      <!-- 业务量 -->
+	      <td><u><%= link_to v[1], get_international_expresses_path("/international_expresses", k[0], k[2], k[4]), target: '_blank' %></u></td>
+	      <!-- 重量（克） -->
+	      <td><%= v[2] %></td>
+    	</tr>
+    	<% end %>
     </tbody>
   </table>
 <% end %>

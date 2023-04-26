@@ -8,8 +8,8 @@
 
     g.column name: model_class.human_attribute_name(:file_name), attribute: 'file_name'
 
-    g.column name: model_class.human_attribute_name(:country_time_limit_id), attribute: 'country', assoc: :country_time_limit do |import_file|
-      import_file.country_time_limit.try :country
+    g.column name: model_class.human_attribute_name(:country_id), attribute: 'name', assoc: :country do |import_file|
+      import_file.country.try :name
     end
 
     g.column name: model_class.human_attribute_name(:unit_id), attribute: 'name', assoc: :unit do |import_file|

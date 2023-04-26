@@ -209,5 +209,30 @@ module ReportHelper
 		# expresses_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: detail_btype, status: status, last_unit_id: last_unit_id, is_court: params[:is_court], detail_business: detail_business, destination: params[:destination], lv2_unit: params[:lv2_unit], search_time: params[:search_time], year: params[:year], month: params[:month], transit_delivery: transit_delivery, product: params[:product], receipt_flag: receipt_flag, receipt_status: receipt_status, distributive_center_no: params[:distributive_center_no], posting_hour_start: params[:posting_hour_start], posting_hour_end: params[:posting_hour_end], delivered_days: delivered_days, receiver_province_no: receiver_province_no, receiver_city_no: receiver_city_no)
 	end
 
-	
+	# 根路径, 客户, 寄达国, 地区
+	def get_international_expresses_path(addr, business_id, country_id, receiver_zone_id)
+	  # addr = "/international_expresses"
+	  sep="?"
+
+	  if !business_id.blank?
+			addr += sep+"business_id=#{business_id}"
+			sep = "&"
+		end
+
+		if !country_id.blank?
+			addr += sep+"country_id=#{country_id}"
+			sep = "&"
+		end
+
+		if !receiver_zone_id.blank?
+			addr += sep+"receiver_zone_id=#{receiver_zone_id}"
+			sep = "&"
+		else
+			# 查询库表中receiver_zone_id=nil的记录
+			addr += sep+"receiver_zone_id=0"
+			sep = "&"
+		end
+
+		addr
+	end
 end

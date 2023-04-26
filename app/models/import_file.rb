@@ -1,5 +1,5 @@
 class ImportFile < ApplicationRecord
-	belongs_to :country_time_limit
+  belongs_to :country
   belongs_to :unit
   belongs_to :user
 
