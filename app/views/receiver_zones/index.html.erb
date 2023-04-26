@@ -14,7 +14,7 @@
 <%= grid(@receiver_zones_grid) do |g|
     g.column name: model_class.human_attribute_name(:zone), attribute: 'zone'
 
-    g.column name: model_class.human_attribute_name(:country_time_limit_id), attribute: 'country_time_limit_id', assoc: :country_time_limit, attribute: 'country'
+    g.column name: model_class.human_attribute_name(:country_id), attribute: 'country_id', assoc: :country, attribute: 'name'
 
     g.column name: model_class.human_attribute_name(:start_postcode), attribute: 'start_postcode'
 

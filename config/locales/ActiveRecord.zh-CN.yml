@@ -239,12 +239,18 @@ zh-CN:
       message:
         one: 消息
         other: 消息
-      country_time_limit:
+      country:
         one: 时限
         other: 时限
       receiver_zone:
         one: 寄达国分区
         other: 寄达国分区
+      import_file:
+        one: 导入文件
+        other: 导入文件
+      international_express:
+        one: 国际邮件
+        other: 国际邮件
     attributes:
       user:
         email: "电子邮件"
@@ -333,8 +339,8 @@ zh-CN:
         start_time: "开始日期"
         end_time: "结束日期"
         roles: "可看角色"
-      country_time_limit:
-        country: "国家"
+      country:
+        name: "国家"
         interchange1: "互换局封车1(小时)"
         interchange2: "互换局封车2(小时)"
         air: "航空启运信息(小时)"
@@ -342,9 +348,28 @@ zh-CN:
         leave: "离开境外处理中心(小时)"
       receiver_zone:
         zone: "地区"
-        country_time_limit_id: "寄达国"
+        country_id: "寄达国"
         start_postcode: "起始邮编"
         end_postcode: "终止邮编"
+      import_file:
+        file_name: "文件名"
+        file_path: "原文件存放路径"
+        user_id: "用户"
+        unit_id: "单位"
+        country_id: "寄达国"
+        batch_no: "批次号"
+        status: "文件处理状态"
+        desc: "出错信息描述"
+        err_file_path: "出错文件存放路径"
+        created_at: "导入日期"
+      international_express:
+        express_no: "邮件号"
+        country_id: "寄达国"
+        business_id: "大客户"
+        posting_date: "收寄日期"
+        receiver_postcode: "收件人邮编"
+        weight: "重量"
+        zone_id: "地区"
   user_navigation:
     update_self: "个人信息"
     show_unit: "单位信息"

@@ -245,6 +245,25 @@ class ReportsController < ApplicationController
     end
   end
 
+  def international_express_report
+		unless request.get?
+			@is_search = "yes"
+
+	    init_international_result
+		end
+	end
+
+  def international_express_report_export
+  	@results = init_international_result
+  	
+  	if @results.blank?
+      flash[:alert] = "无数据"
+      redirect_to request.referer
+    else
+    	send_data(international_express_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "VIP客户时效跟踪报表_#{Time.now.strftime("%Y%m%d")}.xls")  
+    end
+  end
+
   private
   	def deliver_market_report_xls_content_for(params,results)
 	  	xls_report = StringIO.new  
@@ -856,5 +875,98 @@ class ReportsController < ApplicationController
 	    # date = Date.civil(time.split(/-|\//)[0].to_i,time.split(/-|\//)[1].to_i,time.split(/-|\//)[2].to_i)
 	    time.to_time
 	    # return date
+	  end
+
+	  def init_international_result
+  		authorize! "report", "InternationalExpressReport"
+
+	  	@results = nil
+	  		  	
+    	international_expresses = Report.get_filter_international_expresses(params).accessible_by(current_ability)
+	  		  	
+      @results = Report.get_international_result(international_expresses, params)
+    end
+
+	  def international_express_report_xls_content_for(params,results)
+	  	xls_report = StringIO.new  
+	    book = Spreadsheet::Workbook.new  
+	    sheet1 = book.create_worksheet :name => "统计表"  
+	    
+	    report_name = Spreadsheet::Format.new :weight => :bold, :size => 15, :align => :center
+	    filter = Spreadsheet::Format.new :size => 13, :align => :right
+	    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
+	    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
+	    # red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
+	    
+	    sheet1[0,0] = "VIP客户时效跟踪"
+	    sheet1.merge_cells(0, 0, 0, 47)
+	    sheet1.row(0).default_format = report_name
+
+	    sheet1[1,0] = "寄达国: #{params["country_id"]}"
+	    sheet1[1,3] = "收寄日期：#{params["posting_date_start"]}~#{params["posting_date_end"]}"
+	    sheet1.merge_cells(0, 0, 0, 47)
+	    sheet1.row(1).default_format = filter
+	    
+	    sheet1[2,9] = "C=国家+时间"
+	    sheet1.merge_cells(2, 9, 2, 11)
+	    sheet1[2,15] = "D=国家+时间"
+	    sheet1.merge_cells(2, 15, 2, 17)
+	    sheet1[2,27] = "A1=国家+时间1"
+	    sheet1.merge_cells(2, 27, 2, 29)
+	    sheet1[2,30] = "A2=国家+时间2+收寄截止时间"
+	    sheet1.merge_cells(2, 30, 2, 32)
+	    sheet1[2,42] = "B=国家+时间"
+	    sheet1.merge_cells(2, 42, 2, 44)
+	    0.upto(47) do |i|
+	      sheet1.row(2).set_format(i, title)
+	    end
+	    
+	    0.upto(47) do |x|
+	      sheet1.row(3).set_format(x, title)
+	      sheet1.row(4).set_format(x, title)
+	    end
+	    pre_title3 = ["序号", "客户名称", "寄达国", "地区", "业务量", "重量（克）", "退回妥投量", "退回妥投占比", "退回妥投量（安检未过）"]
+	    i = 0
+	    while i<pre_title3.size
+		    sheet1[3,i] = pre_title3[i]
+		    sheet1.merge_cells(3, i, 4, i)
+		    i += 1
+		  end
+
+		  after_title3 = ["总包到达寄达地(T+24)", "总包到达寄达地(>T+24)", "离开境外处理中心(T+48)", "离开境外处理中心(>T+48)", "收寄局已封车(T)", "收寄局未封车(其他)", "互换局封车1(T+12)", "互换局封车2(T+36+18)", "互换局未及时封车", "互换局已封车", "互换局未封车", "航空启运信息(T+24)", "航空启运信息(>T+24)"]
+		  title4 = ["业务量", "重量（克）", "占比"]
+		  j = 9
+		  k = 0
+		  while k<after_title3.size
+			  sheet1[3,j] = after_title3[k]
+		    sheet1.merge_cells(3, j, 3, j+2)
+		    sheet1[4,j] = title4[0]
+		  	sheet1[4,j+1] = title4[1]
+		  	sheet1[4,j+2] = title4[2]
+		    j += 3
+		    k += 1
+		  end
+
+	    count_row = 5
+
+	    results.each do |key, value|
+	      sheet1[count_row,0] = value[0]
+	      sheet1[count_row,1] = key[1]
+	      sheet1[count_row,2] = key[3]
+	      sheet1[count_row,3] = key[5]
+	      sheet1[count_row,4] = value[1]
+	      sheet1[count_row,5] = value[2]
+	      
+	      
+	      0.upto(47) do |i|
+		      sheet1.row(count_row).set_format(i, body)
+		    end
+		    
+	      count_row += 1
+	    end
+
+	    book.write xls_report  
+	    xls_report.string
+
 	  end
 end

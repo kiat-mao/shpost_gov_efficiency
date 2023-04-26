@@ -23,10 +23,12 @@ class Ability
 			can "report", "DeliverMarketReport"
 
 			can "report", "DeliverUnitReport"
+			can "report", "InternationalExpressReport"
 			can :manage, Message
-			can :manage, CountryTimeLimit
+			can :manage, Country
 			can :manage, ReceiverZone
 			can :manage, InternationalExpress
+			can :manage, ImportFile
 			#can :manage, User
 		elsif user.company_admin?
 			can :manage, Unit
@@ -51,10 +53,12 @@ class Ability
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
+			can "report", "InternationalExpressReport"
 			can [:read, :details], Message
-			can :manage, CountryTimeLimit
+			can :manage, Country
 			can :manage, ReceiverZone
 			can :manage, InternationalExpress
+			can :manage, ImportFile
 		elsif user.unitadmin?
 			can [:read, :user], Unit, id: user.unit.id
 			can :read, Unit, parent_id: user.unit.id
@@ -97,10 +101,11 @@ class Ability
 
 			can [:update, :show], User, id: user.id
 
-			can :read, CountryTimeLimit
+			can :read, Country
 			can [:read, :import], InternationalExpress
 			can :manage, ReceiverZone
-
+			can :manage, ImportFile
+			can "report", "InternationalExpressReport"
 
 		end
 

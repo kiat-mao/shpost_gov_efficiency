@@ -1162,4 +1162,92 @@ class Report
     parent_unit_hj = ["小计", total_am, deliver_am, deliver_own_am, deliver_other_am, deliver_unit_am, deliver_per, waiting_am, waiting_per, return_am, return_per, in_transit_am, delivery_part_am, delay_am, delivered_days_am]
     
   end
+
+  def self.get_filter_international_expresses(params)
+    where_sql = ""
+    is_and = false
+    
+    # 寄达国
+    if !params[:country].blank?
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.country_id = #{params[:country].to_i}"
+      is_and = true
+    end
+
+    # 收寄日期开始
+    if !params[:posting_date_start].blank?
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "posting_date >= #{params[:posting_date_start].to_date}"
+      is_and = true
+    end
+
+    # 收寄日期结束
+    if !params[:posting_date_end].blank?
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "posting_date <= #{params[:posting_date_end].to_date+1.day}"
+      is_and = true
+    end
+
+    # 客户
+    if !params[:business_id].blank?
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.business_id = #{params[:business_id]}"
+      is_and = true
+    end
+
+    # 寄达国
+    if !params[:country_id].blank?
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.country_id = #{params[:country_id]}"
+      is_and = true
+    end
+
+    # 地区
+    if !params[:receiver_zone_id].blank?
+      if is_and
+        where_sql += " and "
+      end
+      # 查询库表中receiver_zone_id=nil的记录
+      if params[:receiver_zone_id].eql?"0"
+        where_sql += "international_expresses.receiver_zone_id is null"
+      else
+        where_sql += "international_expresses.receiver_zone_id = #{params[:receiver_zone_id]}"
+      end
+      is_and = true
+    end
+
+    if where_sql.blank?
+      international_expresses = InternationalExpress.all
+    else
+      international_expresses = InternationalExpress.where(where_sql)
+    end
+
+    return international_expresses
+  end
+
+  def self.get_international_result(international_expresses, params)
+    results = {}
+    i = 1
+
+    amounts = international_expresses.left_outer_joins(:business).left_outer_joins(:country).left_outer_joins(:receiver_zone).group("international_expresses.business_id", "businesses.name", "international_expresses.country_id", "countries.name", "international_expresses.receiver_zone_id", "receiver_zones.zone").count
+    
+    weights = international_expresses.left_outer_joins(:business).left_outer_joins(:country).left_outer_joins(:receiver_zone).group("international_expresses.business_id", "businesses.name", "international_expresses.country_id", "countries.name", "international_expresses.receiver_zone_id", "receiver_zones.zone").sum(:weight)
+
+    amounts.each do |k, v|
+      results[k] = [i, v, weights[k]]
+      i += 1
+    end
+    
+    return results
+  end
 end

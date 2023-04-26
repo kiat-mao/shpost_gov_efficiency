@@ -1,0 +1,62 @@
+<% if !@results.blank? %>
+  <table data-toggle="table" 
+  data-height="700">
+    <thead>
+      <tr class= 'nowrap'>
+        <th rowspan="2"><b>序号</b></th>
+        <th rowspan="2"><b>客户名称</b></th>
+        <th rowspan="2"><b>寄达国</b></th>
+        <th rowspan="2"><b>地区</b></th>
+        <th rowspan="2"><b>业务量</b></th>
+        <th rowspan="2"><b>重量（克）</b></th>
+        <th rowspan="2"><b>退回妥投量</b></th>
+        <th rowspan="2"><b>退回妥投占比</b></th>
+        <th rowspan="2"><b>退回妥投量（安检未过）</b></th>
+        <th colspan="3"><b>总包到达寄达地(T+24)</b></th>
+        <th colspan="3"><b>总包到达寄达地(>T+24)</b></th>
+        <th colspan="3"><b>离开境外处理中心(T+48)</b></th>
+        <th colspan="3"><b>离开境外处理中心(>T+48)</b></th>
+        <th colspan="3"><b>收寄局已封车(T)</b></th>
+        <th colspan="3"><b>收寄局未封车(其他)</b></th>
+        <th colspan="3"><b>互换局封车1(T+12)</b></th>
+        <th colspan="3"><b>互换局封车2(T+36+18)</b></th>
+        <th colspan="3"><b>互换局未及时封车</b></th>
+        <th colspan="3"><b>互换局已封车</b></th>
+        <th colspan="3"><b>互换局未封车</b></th>
+        <th colspan="3"><b>航空启运信息(T+24)</b></th>
+        <th colspan="3"><b>航空启运信息(>T+24)</b></th>
+      </tr>
+      <tr>
+      	<% i=0
+      		 while i<13 %>
+      	<th><b>业务量</b></th>
+      	<th><b>重量（克）</b></th>
+      	<th><b>占比</b></th>
+      	<% i +=1 
+      	   end %>
+  	  </tr>
+    </thead>
+    <tbody>
+    	<% @results.each do |k, v| %>
+    	<tr class= 'nowrap'>
+    		<!-- 序号 -->
+    		<% if k.eql?"合计" %>
+        <td><%= k %></td>
+	      <% else %>
+	      <td><u><%= v[0] %></u></td>
+	      <% end %>
+	      <!-- 客户名称 -->
+	      <td><%= k[1] %></td>
+	      <!-- 寄达国 -->
+	      <td><%= k[3] %></td>
+	      <!-- 地区 -->
+	      <td><%= k[5] %></td>
+	      <!-- 业务量 -->
+	      <td><u><%= link_to v[1], get_international_expresses_path("/international_expresses", k[0], k[2], k[4]), target: '_blank' %></u></td>
+	      <!-- 重量（克） -->
+	      <td><%= v[2] %></td>
+    	</tr>
+    	<% end %>
+    </tbody>
+  </table>
+<% end %>
