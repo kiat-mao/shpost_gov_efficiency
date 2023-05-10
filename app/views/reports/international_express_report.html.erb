@@ -5,8 +5,12 @@
 <%= hidden_field_tag('is_search', @is_search) %> 
 <table>
   <tr style="line-height: 40px;height: 40px;"> 
-    <td><%= label_tag(:country, "寄达国:") %></td>
-    <td><%= select_tag(:country, options_for_select(Country.all.map{|c| [c.name,c.id]}.insert(0,""), :selected=> params[:country]), id: "country") %></td>
+    <td><%= label_tag(:country_id, "寄达国:") %></td>
+    <td><%= select_tag(:country_id, options_for_select(Country.all.map{|c| [c.name,c.id]}, :selected=> params[:country_id]), id: "country_id") %></td>
+  </tr>
+  <tr style="line-height: 40px;height: 40px;"> 
+    <td><%= label_tag(:business_id, "客户:") %></td>
+    <td><%= select_tag(:business_id, options_for_select(Business.where(is_international: true).map{|b| [b.name,b.id]}.insert(0,""), :selected=> params[:business_id]), id: "business_id") %></td>
   </tr>
   <tr>
     <td><%= label_tag(:posting_date_start, "收寄范围:") %></td>
@@ -25,7 +29,7 @@
       </td>
       <td>
         <div id="export">
-          <%= link_to "报表导出", "/reports/international_express_report_export", :class => 'btn btn-primary', method: :post%>
+          <%= link_to "报表导出", get_international_expresses_path("/reports/international_express_report_export/", nil, nil, "all", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary', method: :post%>
         </div>
       </td>
     </tr>

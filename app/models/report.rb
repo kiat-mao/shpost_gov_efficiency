@@ -1166,13 +1166,14 @@ class Report
   def self.get_filter_international_expresses(params)
     where_sql = ""
     is_and = false
-    
+ # byebug   
     # 寄达国
-    if !params[:country].blank?
+    if !params[:country_id].blank?
+      country = Country.find(params[:country_id].to_i)
       if is_and
         where_sql += " and "
       end
-      where_sql += "international_expresses.country_id = #{params[:country].to_i}"
+      where_sql += "international_expresses.country_id = #{params[:country_id].to_i}"
       is_and = true
     end
 
@@ -1181,7 +1182,7 @@ class Report
       if is_and
         where_sql += " and "
       end
-      where_sql += "posting_date >= #{params[:posting_date_start].to_date}"
+      where_sql += "posting_date >= '#{params[:posting_date_start]}'"
       is_and = true
     end
 
@@ -1190,7 +1191,7 @@ class Report
       if is_and
         where_sql += " and "
       end
-      where_sql += "posting_date <= #{params[:posting_date_end].to_date+1.day}"
+      where_sql += "posting_date <= '#{params[:posting_date_end].to_date+1.day}'"
       is_and = true
     end
 
@@ -1204,13 +1205,14 @@ class Report
     end
 
     # 寄达国
-    if !params[:country_id].blank?
-      if is_and
-        where_sql += " and "
-      end
-      where_sql += "international_expresses.country_id = #{params[:country_id]}"
-      is_and = true
-    end
+    # if !params[:country_id].blank?
+    #   country = Country.find(params[:country_id].to_i)
+    #   if is_and
+    #     where_sql += " and "
+    #   end
+    #   where_sql += "international_expresses.country_id = #{params[:country_id]}"
+    #   is_and = true
+    # end
 
     # 地区
     if !params[:receiver_zone_id].blank?
@@ -1226,6 +1228,114 @@ class Report
       is_and = true
     end
 
+    # 状态
+    if !params[:status].blank?
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.status = '#{params[:status]}'"
+      is_and = true
+    end
+
+    # 是否收寄局已封车
+    if !params[:is_leaved_orig].blank?
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.is_leaved_orig = #{params[:is_leaved_orig]}"
+      is_and = true
+    end
+
+    # 是否互换局已封车
+    if !params[:is_leaved_center].blank?
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.is_leaved_center = #{params[:is_leaved_center]}"
+      is_and = true
+
+      # 是否互换局封车1(T+12)
+      if !params[:is_interchange1].blank? && (params[:is_interchange1].eql?"true")
+        if is_and
+          where_sql += " and "
+        end
+        where_sql += "international_expresses.leaved_center_hours <= #{country.interchange1} and international_expresses.leaved_orig_after_18 = false"
+        is_and = true
+      end
+
+      # 是否互换局封车2(T+36+18)
+      if !params[:is_interchange2].blank? && (params[:is_interchange2].eql?"true")
+        if is_and
+          where_sql += " and "
+        end
+        where_sql += "international_expresses.leaved_center_hours <= #{country.interchange2} and international_expresses.leaved_orig_after_18 = true"
+        is_and = true
+      end
+    end
+
+    # 是否互换局未及时封车
+    if !params[:is_leaved_center_delay].blank? && (params[:is_leaved_center_delay].eql?"true")
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "((international_expresses.leaved_center_hours > #{country.interchange1}) and international_expresses.leaved_orig_after_18 = false) or ((international_expresses.leaved_center_hours > #{country.interchange2}) and international_expresses.leaved_orig_after_18 = true) or (international_expresses.is_leaved_orig = true and international_expresses.leaved_center_hours is null)" 
+      is_and = true
+    end
+
+    # 是否航空启运信息(T+24)
+    if !params[:is_takeoff_less].blank? && (params[:is_takeoff_less].eql?"true")
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.is_takeoff = true and international_expresses.takeoff_hours <= #{country.air}" 
+      is_and = true
+    end
+
+    # 是否航空启运信息(>T+24)
+    if !params[:is_takeoff_more].blank? && (params[:is_takeoff_more].eql?"true")
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "(international_expresses.is_takeoff = true and international_expresses.takeoff_hours > #{country.air}) or (international_expresses.is_leaved_center = true and international_expresses.takeoff_hours is null)" 
+      is_and = true
+    end
+
+    # 是否总包到达寄达地(T+24)
+    if !params[:is_arrived_less].blank? && (params[:is_arrived_less].eql?"true")
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.is_arrived = true and international_expresses.arrived_hours <= #{country.arrive}" 
+      is_and = true
+    end
+
+    # 是否总包到达寄达地(>T+24)
+    if !params[:is_arrived_more].blank? && (params[:is_arrived_more].eql?"true")
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "(international_expresses.is_arrived = true and international_expresses.arrived_hours > #{country.arrive}) or (international_expresses.is_takeoff = true and international_expresses.arrived_hours is null)" 
+      is_and = true
+    end
+
+    # 是否离开境外处理中心(T+48)
+    if !params[:is_leaved_less].blank? && (params[:is_leaved_less].eql?"true")
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "international_expresses.is_leaved = true and international_expresses.leaved_hours <= #{country.leave}" 
+      is_and = true
+    end
+
+    # 是否离开境外处理中心(>T+48)
+    if !params[:is_leaved_more].blank? && (params[:is_leaved_more].eql?"true")
+      if is_and
+        where_sql += " and "
+      end
+      where_sql += "(international_expresses.is_leaved = true and international_expresses.leaved_hours > #{country.leave}) or (international_expresses.is_arrived = true and international_expresses.leaved_hours is null)" 
+      is_and = true
+    end
+
     if where_sql.blank?
       international_expresses = InternationalExpress.all
     else
@@ -1238,16 +1348,223 @@ class Report
   def self.get_international_result(international_expresses, params)
     results = {}
     i = 1
+    country_id = params[:country_id].to_i
+    country = Country.find(country_id)
+    amount_all_hj = 0
+    weight_all_hj = 0
+    amount_returns_hj = 0
+    amount_leaved_orig_yes_hj = 0
+    weight_leaved_orig_yes_hj = 0
+    amount_leaved_orig_no_hj = 0
+    weight_leaved_orig_no_hj = 0
+    amount_leaved_center1_hj = 0
+    weight_leaved_center1_hj = 0 
+    amount_leaved_center2_hj = 0
+    weight_leaved_center2_hj = 0
+    amount_leaved_center_delay_hj = 0
+    weight_leaved_center_delay_hj = 0
+    amount_leaved_center_yes_hj = 0
+    weight_leaved_center_yes_hj = 0
+    amount_leaved_center_no_hj = 0
+    weight_leaved_center_no_hj = 0
+    amount_takeoff_less_hj = 0
+    weight_takeoff_less_hj = 0
+    amount_takeoff_more_hj = 0
+    weight_takeoff_more_hj = 0
+    amount_arrived_less_hj = 0
+    weight_arrived_less_hj = 0
+    amount_arrived_more_hj = 0
+    weight_arrived_more_hj = 0
+    amount_leaved_less_hj = 0
+    weight_leaved_less_hj = 0
+    amount_leaved_more_hj = 0
+    weight_leaved_more_hj = 0
 
-    amounts = international_expresses.left_outer_joins(:business).left_outer_joins(:country).left_outer_joins(:receiver_zone).group("international_expresses.business_id", "businesses.name", "international_expresses.country_id", "countries.name", "international_expresses.receiver_zone_id", "receiver_zones.zone").count
-    
-    weights = international_expresses.left_outer_joins(:business).left_outer_joins(:country).left_outer_joins(:receiver_zone).group("international_expresses.business_id", "businesses.name", "international_expresses.country_id", "countries.name", "international_expresses.receiver_zone_id", "receiver_zones.zone").sum(:weight)
+    if !international_expresses.blank?
+      # 总业务量
+      amounts = international_expresses.group(:business_id, :receiver_zone_id, :status).count
+      # 总重量
+      weights = international_expresses.group(:business_id, :receiver_zone_id).sum(:weight)
+      # 收寄局已封车业务量
+      amounts_leaved_orig = international_expresses.where(is_leaved_orig: true).group(:business_id, :receiver_zone_id).count
+      # 收寄局已封车重量
+      weights_leaved_orig = international_expresses.where(is_leaved_orig: true).group(:business_id, :receiver_zone_id).sum(:weight)
+      # 互换局封车1(T+12)业务量
+      amounts_leaved_center1 = international_expresses.where("leaved_center_hours <= ?", country.interchange1).where(is_leaved_center: true, leaved_orig_after_18: false).group(:business_id, :receiver_zone_id).count
+      # 互换局封车1(T+12)重量
+      weights_leaved_center1 = international_expresses.where("leaved_center_hours <= ?", country.interchange1).where(is_leaved_center: true, leaved_orig_after_18: false).group(:business_id, :receiver_zone_id).sum(:weight)
+      # 互换局封车2(T+36+18)业务量
+      amounts_leaved_center2 = international_expresses.where("leaved_center_hours <= ?", country.interchange2).where(is_leaved_center: true, leaved_orig_after_18: true).group(:business_id, :receiver_zone_id).count
+      # 互换局封车2(T+36+18)重量
+      weights_leaved_center2 = international_expresses.where("leaved_center_hours <= ?", country.interchange2).where(is_leaved_center: true, leaved_orig_after_18: true).group(:business_id, :receiver_zone_id).sum(:weight)
+      # 互换局已未封车业务量
+      amounts_leaved_center = international_expresses.group(:business_id, :receiver_zone_id, :is_leaved_center).count
+      # 互换局已未封车重量
+      weights_leaved_center = international_expresses.group(:business_id, :receiver_zone_id, :is_leaved_center).sum(:weight)
+      # 航空启运信息(T+24)业务量
+      amounts_takeoff = international_expresses.where("takeoff_hours <= ?", country.air).where(is_takeoff: true).group(:business_id, :receiver_zone_id).count
+      # 航空启运信息(T+24)重量
+      weights_takeoff = international_expresses.where("takeoff_hours <= ?", country.air).where(is_takeoff: true).group(:business_id, :receiver_zone_id).sum(:weight)
+      # 有航空启运信息业务量
+      amounts_is_takeoff = international_expresses.where(is_takeoff: true).group(:business_id, :receiver_zone_id).count
+      # 有航空启运信息重量
+      weights_is_takeoff = international_expresses.where(is_takeoff: true).group(:business_id, :receiver_zone_id).sum(:weight)
+      # 总包到达寄达地(T+24)业务量
+      amounts_arrived = international_expresses.where("arrived_hours <= ?", country.arrive).where(is_arrived: true).group(:business_id, :receiver_zone_id).count
+      # 总包到达寄达地(T+24)重量
+      weights_arrived = international_expresses.where("arrived_hours <= ?", country.arrive).where(is_arrived: true).group(:business_id, :receiver_zone_id).sum(:weight)
+      # 有总包到达寄达地业务量
+      amounts_is_arrived = international_expresses.where(is_arrived: true).group(:business_id, :receiver_zone_id).count
+      # 有总包到达寄达地重量
+      weights_is_arrived = international_expresses.where(is_arrived: true).group(:business_id, :receiver_zone_id).sum(:weight)
+      # 离开境外处理中心(T+48)业务量
+      amounts_leaved = international_expresses.where("leaved_hours <= ?", country.leave).where(is_leaved: true).group(:business_id, :receiver_zone_id).count
+      # 离开境外处理中心(T+48)重量
+      weights_leaved = international_expresses.where("leaved_hours <= ?", country.leave).where(is_leaved: true).group(:business_id, :receiver_zone_id).sum(:weight)
+      
+      business_id = weights.first[0][0]
+      receiver_zone_id = weights.first[0][1]
+      business_name = Business.find(business_id).name
+      receiver_zone_name = ReceiverZone.find(receiver_zone_id).blank? ? "" : ReceiverZone.find(receiver_zone_id).zone
 
-    amounts.each do |k, v|
-      results[k] = [i, v, weights[k]]
-      i += 1
+      weights.each do |k, v|   
+        # 未妥投量
+        amount_waiting = amounts[k+["waiting"]].blank? ? 0 : amounts[k+["waiting"]]
+        # 退回妥投量
+        amount_returns = amounts[k+["returns"]].blank? ? 0 : amounts[k+["returns"]]
+        amount_returns_hj += amount_returns
+        # 业务量
+        amount_all = amount_waiting + amount_returns
+        amount_all_hj += amount_all
+        # 重量（克）合计
+        weight_all_hj += v
+        # 退回妥投占比
+        per_returns = amount_all>0 ? (amount_returns/amount_all.to_f*100).round(2) : 0
+        # 收寄局已封车业务量
+        amount_leaved_orig_yes = amounts_leaved_orig[k].blank? ? 0 : amounts_leaved_orig[k]
+        amount_leaved_orig_yes_hj += amount_leaved_orig_yes
+        # 收寄局已封车重量
+        weight_leaved_orig_yes = weights_leaved_orig[k].blank? ? 0 : weights_leaved_orig[k]
+        weight_leaved_orig_yes_hj += weight_leaved_orig_yes
+        # 收寄局已封车占比
+        per_leaved_orig_yes = amount_all>0 ? (amount_leaved_orig_yes/amount_all.to_f*100).round(2) : 0
+        # 收寄局未封车业务量
+        amount_leaved_orig_no = amount_all-amount_leaved_orig_yes
+        amount_leaved_orig_no_hj += amount_leaved_orig_no
+        # 收寄局未封车重量
+        weight_leaved_orig_no = v-weight_leaved_orig_yes
+        weight_leaved_orig_no_hj += weight_leaved_orig_no
+        # 收寄局未封车占比
+        per_leaved_orig_no = amount_all>0 ? (amount_leaved_orig_no/amount_all.to_f*100).round(2) : 0
+        # 互换局封车1(T+12)业务量
+        amount_leaved_center1 = amounts_leaved_center1[k].blank? ? 0 : amounts_leaved_center1[k]
+        amount_leaved_center1_hj += amount_leaved_center1
+        # 互换局封车1(T+12)重量
+        weight_leaved_center1 = weights_leaved_center1[k].blank? ? 0 : weights_leaved_center1[k]
+        weight_leaved_center1_hj += weight_leaved_center1
+        # 互换局封车1(T+12)占比
+        per_leaved_center1 = amount_all>0 ? (amount_leaved_center1/amount_all.to_f*100).round(2) : 0
+        # 互换局封车2(T+36+18)业务量
+        amount_leaved_center2 = amounts_leaved_center2[k].blank? ? 0 : amounts_leaved_center2[k]
+        amount_leaved_center2_hj += amount_leaved_center2
+        # 互换局封车2(T+36+18)重量
+        weight_leaved_center2 = weights_leaved_center2[k].blank? ? 0 : weights_leaved_center2[k]
+        weight_leaved_center2_hj += weight_leaved_center2
+        # 互换局封车2(T+36+18)占比
+        per_leaved_center2 = amount_all>0 ? (amount_leaved_center2/amount_all.to_f*100).round(2) : 0
+        # 互换局未及时封车业务量
+        amount_leaved_center_delay = amount_leaved_orig_yes-amount_leaved_center1-amount_leaved_center2
+        amount_leaved_center_delay_hj += amount_leaved_center_delay
+        # 互换局未及时封车重量
+        weight_leaved_center_delay = weight_leaved_orig_yes-weight_leaved_center1-weight_leaved_center2
+        weight_leaved_center_delay_hj += weight_leaved_center_delay
+        # 互换局未及时封车占比
+        per_leaved_center_delay = amount_all>0 ? (amount_leaved_center_delay/amount_all.to_f*100).round(2) : 0
+        # 互换局已封车业务量
+        amount_leaved_center_yes = amounts_leaved_center[k+[true]].blank? ? 0 : amounts_leaved_center[k+[true]]
+        amount_leaved_center_yes_hj += amount_leaved_center_yes
+        # 互换局已封车重量
+        weight_leaved_center_yes = weights_leaved_center[k+[true]].blank? ? 0 : weights_leaved_center[k+[true]]
+        weight_leaved_center_yes_hj += weight_leaved_center_yes
+        # 互换局已封车占比
+        per_leaved_center_yes = amount_all>0 ? (amount_leaved_center_yes/amount_all.to_f*100).round(2) : 0
+        # 互换局未封车业务量
+        amount_leaved_center_no = amounts_leaved_center[k+[false]].blank? ? 0 : amounts_leaved_center[k+[false]]
+        amount_leaved_center_no_hj += amount_leaved_center_no
+        # 互换局未封车重量
+        weight_leaved_center_no = weights_leaved_center[k+[false]].blank? ? 0 : weights_leaved_center[k+[false]]
+        weight_leaved_center_no_hj += weight_leaved_center_no
+        # 互换局未封车占比
+        per_leaved_center_no = amount_all>0 ? (amount_leaved_center_yes/amount_all.to_f*100).round(2) : 0
+        # 航空启运信息(T+24)业务量
+        amount_takeoff_less = amounts_takeoff[k].blank? ? 0 : amounts_takeoff[k]
+        amount_takeoff_less_hj += amount_takeoff_less
+        # 航空启运信息(T+24)重量
+        weight_takeoff_less = weights_takeoff[k].blank? ? 0 : weights_takeoff[k]
+        weight_takeoff_less_hj += weight_takeoff_less
+        # 航空启运信息(T+24)占比
+        per_takeoff_less = amount_all>0 ? (amount_takeoff_less/amount_all.to_f*100).round(2) : 0
+        # 航空启运信息(>T+24)业务量
+        amount_takeoff_more = amount_leaved_center_yes - amount_takeoff_less
+        amount_takeoff_more_hj += amount_takeoff_more
+        # 航空启运信息(>T+24)重量
+        weight_takeoff_more = weight_leaved_center_yes - weight_takeoff_less
+        weight_takeoff_more_hj += weight_takeoff_more
+        # 航空启运信息(>T+24)占比
+        per_takeoff_more = amount_all>0 ? (amount_takeoff_more/amount_all.to_f*100).round(2) : 0
+        # 总包到达寄达地(T+24)业务量
+        amount_arrived_less = amounts_arrived[k].blank? ? 0 : amounts_arrived[k]
+        amount_arrived_less_hj += amount_arrived_less
+        # 总包到达寄达地(T+24)重量
+        weight_arrived_less = weights_arrived[k].blank? ? 0 : weights_arrived[k]
+        weight_arrived_less_hj += weight_arrived_less
+        # 总包到达寄达地(T+24)占比
+        per_arrived_less = amount_all>0 ? (amount_arrived_less/amount_all.to_f*100).round(2) : 0
+        # 总包到达寄达地(>T+24)业务量
+        amount_arrived_more = (amounts_is_takeoff[k].blank? ? 0 : amounts_is_takeoff[k]) - amount_arrived_less
+        amount_arrived_more_hj += amount_arrived_more
+        # 总包到达寄达地(>T+24)重量
+        weight_arrived_more = (weights_is_takeoff[k].blank? ? 0 : weights_is_takeoff[k]) - weight_arrived_less
+        weight_arrived_more_hj += weight_arrived_more
+        # 总包到达寄达地(>T+24)占比
+        per_arrived_more = amount_all>0 ? (amount_arrived_more/amount_all.to_f*100).round(2) : 0
+        # 离开境外处理中心(T+48)业务量
+        amount_leaved_less = amounts_leaved[k].blank? ? 0 : amounts_leaved[k]
+        amount_leaved_less_hj += amount_leaved_less
+        # 离开境外处理中心(T+48)重量
+        weight_leaved_less = weights_leaved[k].blank? ? 0 : weights_leaved[k]
+        weight_leaved_less_hj += weight_leaved_less
+        # 离开境外处理中心(T+48)占比
+        per_leaved_less = amount_all>0 ? (amount_leaved_less/amount_all.to_f*100).round(2) : 0
+        # 离开境外处理中心(>T+48)业务量
+        amount_leaved_more = (amounts_is_arrived[k].blank? ? 0 : amounts_is_arrived[k]) - amount_leaved_less
+        amount_leaved_more_hj += amount_leaved_more
+        # 离开境外处理中心(>T+48)重量
+        weight_leaved_more = (weights_is_arrived[k].blank? ? 0 : weights_is_arrived[k]) - weight_leaved_less
+        weight_leaved_more_hj += weight_leaved_more
+        # 离开境外处理中心(>T+48)占比
+        per_leaved_more = amount_all>0 ? (amount_leaved_more/amount_all.to_f*100).round(2) : 0
+
+        if k[0]!=business_id
+          business_name = Business.find(k[0]).name
+          business_id = k[0]
+        end
+        if k[1]!=receiver_zone_id
+          receiver_zone_name = ReceiverZone.find(k[1]).blank? ? "" : ReceiverZone.find(k[1]).zone
+          receiver_zone_id = k[1]
+        end
+        # results[客户id,地区id] = [0序号, 1客户名称, 2寄达国id, 3寄达国name, 4地区, 5业务量, 6重量（克）, 7退回妥投量, 8退回妥投占比, 9收寄局已封车业务量, 10收寄局已封车重量, 11收寄局已封车占比, 12收寄局未封车业务量, 13收寄局未封车重量, 14收寄局未封车占比, 15互换局封车1(T+12)业务量, 16互换局封车1(T+12)重量, 17互换局封车1(T+12)占比, 18互换局封车2(T+36+18)业务量, 19互换局封车2(T+36+18)重量, 20互换局封车2(T+36+18)占比, 21互换局未及时封车业务量, 22互换局未及时封车重量, 23互换局未及时封车占比, 24互换局已封车业务量, 25互换局已封车重量, 26互换局已封车占比, 27互换局未封车业务量, 28互换局未封车重量, 29互换局未封车占比, 30航空启运信息(T+24)业务量, 31航空启运信息(T+24)重量, 32航空启运信息(T+24)占比, 33航空启运信息(>T+24)业务量, 34航空启运信息(>T+24)重量, 35航空启运信息(>T+24)占比, 36总包到达寄达地(T+24)业务量, 37总包到达寄达地(T+24)重量, 38总包到达寄达地(T+24)占比, 39总包到达寄达地(>T+24)业务量, 40总包到达寄达地(>T+24)重量, 41总包到达寄达地(>T+24)占比, 42离开境外处理中心(T+48)业务量, 43离开境外处理中心(T+48)重量, 44离开境外处理中心(T+48)占比, 45离开境外处理中心(>T+48)业务量, 46离开境外处理中心(>T+48)重量, 47离开境外处理中心(>T+48)占比]
+        results[k] = [i, business_name, country_id, country.name, receiver_zone_name, amount_all, v, amount_returns, per_returns, amount_leaved_orig_yes, weight_leaved_orig_yes, per_leaved_orig_yes, amount_leaved_orig_no, weight_leaved_orig_no, per_leaved_orig_no, amount_leaved_center1, weight_leaved_center1, per_leaved_center1, amount_leaved_center2, weight_leaved_center2, per_leaved_center2, amount_leaved_center_delay, weight_leaved_center_delay, per_leaved_center_delay, amount_leaved_center_yes, weight_leaved_center_yes, per_leaved_center_yes, amount_leaved_center_no, weight_leaved_center_no, per_leaved_center_no, amount_takeoff_less, weight_takeoff_less, per_takeoff_less, amount_takeoff_more, weight_takeoff_more, per_takeoff_more, amount_arrived_less, weight_arrived_less, per_arrived_less, amount_arrived_more, weight_arrived_more, per_arrived_more, amount_leaved_less, weight_leaved_less, per_leaved_less, amount_leaved_more, weight_leaved_more, per_leaved_more]
+        i += 1
+      end
+
+      results[["all", "all"]] = ["合计", "", nil, "", "", amount_all_hj, weight_all_hj, amount_returns_hj, get_per(amount_returns_hj, amount_all_hj), amount_leaved_orig_yes_hj, weight_leaved_orig_yes_hj, get_per(amount_leaved_orig_yes_hj, amount_all_hj), amount_leaved_orig_no_hj, weight_leaved_orig_no_hj, get_per(amount_leaved_orig_no_hj, amount_all_hj), amount_leaved_center1_hj, weight_leaved_center1_hj, get_per(amount_leaved_center1_hj, amount_all_hj), amount_leaved_center2_hj, weight_leaved_center2_hj, get_per(amount_leaved_center2_hj, amount_all_hj), amount_leaved_center_delay_hj, weight_leaved_center_delay_hj, get_per(amount_leaved_center_delay_hj, amount_all_hj), amount_leaved_center_yes_hj, weight_leaved_center_yes_hj, get_per(amount_leaved_center_yes_hj, amount_all_hj), amount_leaved_center_no_hj, weight_leaved_center_no_hj, get_per(amount_leaved_center_no_hj, amount_all_hj), amount_takeoff_less_hj, weight_takeoff_less_hj, get_per(amount_takeoff_less_hj, amount_all_hj), amount_takeoff_more_hj, weight_takeoff_more_hj, get_per(amount_takeoff_more_hj, amount_all_hj), amount_arrived_less_hj, weight_arrived_less_hj, get_per(amount_arrived_less_hj, amount_all_hj), amount_arrived_more_hj, weight_arrived_more_hj, get_per(amount_arrived_more_hj, amount_all_hj), amount_leaved_less_hj, weight_leaved_less_hj, get_per(amount_leaved_less_hj, amount_all_hj), amount_leaved_more_hj, weight_leaved_more_hj, get_per(amount_leaved_more_hj, amount_all_hj)]
     end
-    
     return results
+  end
+
+
+  def self.get_per(amount, amount_all)
+    amount_all>0 ? (amount/amount_all.to_f*100).round(2) : 0
   end
 end

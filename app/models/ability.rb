@@ -47,7 +47,7 @@ class Ability
 			can :role, :international
 			can :role, :user
 
-			can :manage, Business
+			can :manage, Business, is_international: false
 
 			can [:read, :get_mail_trace], Express
 
@@ -55,10 +55,6 @@ class Ability
 			can "report", "DeliverUnitReport"
 			can "report", "InternationalExpressReport"
 			can [:read, :details], Message
-			can :manage, Country
-			can :manage, ReceiverZone
-			can :manage, InternationalExpress
-			can :manage, ImportFile
 		elsif user.unitadmin?
 			can [:read, :user], Unit, id: user.unit.id
 			can :read, Unit, parent_id: user.unit.id
@@ -68,7 +64,7 @@ class Ability
 			cannot :destroy, User, id: user.id
 			can :role, :user
 
-			can :read, Business
+			can :read, Business, is_international: false
 
 			can [:read, :get_mail_trace], Express, post_unit_id: user.unit_id
 			# can [:read, :get_mail_trace], Express, post_unit: {parent_id: user.unit_id}
@@ -99,10 +95,10 @@ class Ability
 			# can :read, Unit, id: user.unit.id
 			# can :read, Unit, parent_id: user.unit.id
 
-			can [:update, :show], User, id: user.id
-
-			can :read, Country
-			can [:read, :import], InternationalExpress
+			can [:read, :update, :show], User, id: user.id
+			can :manage, Business, is_international: true
+			can :manage, Country
+			can [:read, :import, :get_mail_trace], InternationalExpress
 			can :manage, ReceiverZone
 			can :manage, ImportFile
 			can "report", "InternationalExpressReport"

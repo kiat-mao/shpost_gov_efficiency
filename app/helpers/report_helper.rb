@@ -209,27 +209,123 @@ module ReportHelper
 		# expresses_path(industry: params[:industry], btype: params[:btype], business: params[:business], posting_date_start: params[:posting_date_start], posting_date_end: params[:posting_date_end], detail_btype: detail_btype, status: status, last_unit_id: last_unit_id, is_court: params[:is_court], detail_business: detail_business, destination: params[:destination], lv2_unit: params[:lv2_unit], search_time: params[:search_time], year: params[:year], month: params[:month], transit_delivery: transit_delivery, product: params[:product], receipt_flag: receipt_flag, receipt_status: receipt_status, distributive_center_no: params[:distributive_center_no], posting_hour_start: params[:posting_hour_start], posting_hour_end: params[:posting_hour_end], delivered_days: delivered_days, receiver_province_no: receiver_province_no, receiver_city_no: receiver_city_no)
 	end
 
-	# 根路径, 客户, 寄达国, 地区
-	def get_international_expresses_path(addr, business_id, country_id, receiver_zone_id)
+	# 根路径, 客户, 寄达国, 地区, 状态, 是否收寄局已封车, 是否互换局封车, 是否互换局封车1(T+12), 是否互换局封车2(T+36+18), 是否互换局未及时封车, 是否航空启运信息(T+24), 是否航空启运信息(>T+24), 是否总包到达寄达地(T+24), 是否总包到达寄达地(>T+24), 是否离开境外处理中心(T+48), 是否离开境外处理中心(>T+48)
+	def get_international_expresses_path(addr, business_id, country_id, receiver_zone_id, status, is_leaved_orig, is_leaved_center, is_interchange1, is_interchange2, is_leaved_center_delay, is_takeoff_less, is_takeoff_more, is_arrived_less, is_arrived_more, is_leaved_less, is_leaved_more)
 	  # addr = "/international_expresses"
 	  sep="?"
+	  # 页面选择条件寄达国，非链接
+	  if !params[:country_id].blank?
+			addr += sep+"country_id=#{params[:country_id].to_i}"
+			sep = "&"
+		end
 
-	  if !business_id.blank?
+		# 页面选择条件客户，非链接
+	  if !params[:business_id].blank?
+			addr += sep+"business_id=#{params[:business_id].to_i}"
+			sep = "&"
+		end
+
+		# 页面选择条件收寄日期开始
+		if !params[:posting_date_start].blank?
+			addr += sep+"posting_date_start=#{params[:posting_date_start].to_date}"
+			sep = "&"
+		end
+
+		# 页面选择条件收寄日期结束
+		if !params[:posting_date_end].blank?
+			addr += sep+"posting_date_end=#{params[:posting_date_end].to_date+1.day}"
+			sep = "&"
+		end
+
+
+	  if !business_id.blank? && !(business_id.eql?"all")
 			addr += sep+"business_id=#{business_id}"
 			sep = "&"
 		end
 
 		if !country_id.blank?
+			country = Country.find(country_id)
 			addr += sep+"country_id=#{country_id}"
 			sep = "&"
 		end
 
-		if !receiver_zone_id.blank?
-			addr += sep+"receiver_zone_id=#{receiver_zone_id}"
-			sep = "&"
-		else
+		if receiver_zone_id.blank?
 			# 查询库表中receiver_zone_id=nil的记录
 			addr += sep+"receiver_zone_id=0"
+			sep = "&"
+		else
+			if !(receiver_zone_id.eql?"all")
+				addr += sep+"receiver_zone_id=#{receiver_zone_id}"
+				sep = "&"
+			end
+		end
+
+		if !status.blank?
+			addr += sep+"status=#{status}"
+			sep = "&"
+		end
+
+		if !is_leaved_orig.blank?
+			is_leaved_orig = (is_leaved_orig.eql?"true") ? true : false
+			addr += sep+"is_leaved_orig=#{is_leaved_orig}"
+			sep = "&"
+		end
+
+		if !is_leaved_center.blank?
+			is_leaved_center = (is_leaved_center.eql?"true") ? true : false
+			addr += sep+"is_leaved_center=#{is_leaved_center}"
+			sep = "&"
+			if !is_interchange1.blank?
+				is_interchange1 = (is_interchange1.eql?"true") ? true : false
+				addr += sep+"is_interchange1=#{is_interchange1}"
+				sep = "&"
+			end
+			if !is_interchange2.blank?
+				is_interchange2 = (is_interchange2.eql?"true") ? true : false
+				addr += sep+"is_interchange2=#{is_interchange2}"
+				sep = "&"
+			end
+		end
+
+		if !is_leaved_center_delay.blank?
+			is_leaved_center_delay = (is_leaved_center_delay.eql?"true") ? true : false
+			addr += sep+"is_leaved_center_delay=#{is_leaved_center_delay}"
+			sep = "&"
+		end
+
+		if !is_takeoff_less.blank?
+			is_takeoff_less = (is_takeoff_less.eql?"true") ? true : false
+			addr += sep+"is_takeoff_less=#{is_takeoff_less}"
+			sep = "&"
+		end
+
+		if !is_takeoff_more.blank?
+			is_takeoff_more = (is_takeoff_more.eql?"true") ? true : false
+			addr += sep+"is_takeoff_more=#{is_takeoff_more}"
+			sep = "&"
+		end
+
+		if !is_arrived_less.blank?
+			is_arrived_less = (is_arrived_less.eql?"true") ? true : false
+			addr += sep+"is_arrived_less=#{is_arrived_less}"
+			sep = "&"
+		end
+
+		if !is_arrived_more.blank?
+			is_arrived_more = (is_arrived_more.eql?"true") ? true : false
+			addr += sep+"is_arrived_more=#{is_arrived_more}"
+			sep = "&"
+		end
+
+		if !is_leaved_less.blank?
+			is_leaved_less = (is_leaved_less.eql?"true") ? true : false
+			addr += sep+"is_leaved_less=#{is_leaved_less}"
+			sep = "&"
+		end
+
+		if !is_leaved_more.blank?
+			is_leaved_more = (is_leaved_more.eql?"true") ? true : false
+			addr += sep+"is_leaved_more=#{is_leaved_more}"
 			sep = "&"
 		end
 

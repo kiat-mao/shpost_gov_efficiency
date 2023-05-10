@@ -26,6 +26,9 @@ class BusinessesController < ApplicationController
   # POST /businesses.json
   def create
     respond_to do |format|
+      if current_user.international?
+        @business.is_international = true 
+      end
       if @business.save
         format.html { redirect_to @business, notice: I18n.t('controller.create_success_notice', model: '商户')}
         format.json { render action: 'show', status: :created, location: @business }

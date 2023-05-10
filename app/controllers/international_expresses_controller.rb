@@ -3,6 +3,7 @@ class InternationalExpressesController < ApplicationController
   
   def index
     @international_expresses = Report.get_filter_international_expresses(params).accessible_by(current_ability)
+
     @international_expresss_grid = initialize_grid(@international_expresses, :per_page => params[:page_size],
       name: 'international_expresses',
       :enable_export_to_csv => true,
@@ -95,7 +96,7 @@ class InternationalExpressesController < ApplicationController
 	                sheet_error << (rowarr << txt)
 	                next
 	              else
-	              	business = Business.find_by(code: business_code)
+	              	business = Business.find_by(code: business_code, is_international: true)
 	              	if business.blank?
 	              		is_error = true
 		                txt = "未找到该大宗客户"
@@ -120,7 +121,7 @@ class InternationalExpressesController < ApplicationController
 	              	zone_id = get_zone(receiver_postcode, selected_country_id)
 	              	if zone_id.blank?
 	              		is_error = true
-		                txt = "未找到该地区"
+		                txt = "未找到收件人邮编对应地区"
 		                sheet_error << (rowarr << txt)
 		                next
 		              end
@@ -128,7 +129,7 @@ class InternationalExpressesController < ApplicationController
 
 	              # sheet_error << (rowarr << txt)
 
-	              InternationalExpress.create! express_no: express_no, country_id: selected_country_id, business_id: business.id, posting_date: posting_date, receiver_postcode: receiver_postcode, weight: weight, receiver_zone_id: zone_id, import_file_id: import_file.id
+	              InternationalExpress.create! express_no: express_no, country_id: selected_country_id, business_id: business.id, posting_date: posting_date, receiver_postcode: receiver_postcode, weight: weight, receiver_zone_id: zone_id, import_file_id: import_file.id, status: "waiting", is_arrived: false, is_leaved: false, is_leaved_orig: false, is_leaved_center: false, is_takeoff: false
 	            end
 	          rescue Exception => e
 	          	trans_error = true
@@ -202,6 +203,14 @@ class InternationalExpressesController < ApplicationController
   	end
 
   	return zone_id
+  end
+
+  def get_mail_trace
+    @traces = []
+    mailtrace = MailTrace.find_by(mail_no: @international_express.express_no)
+    if !mailtrace.blank?
+      @traces = mailtrace.traces.split(/\n/)
+    end
   end
 
   private

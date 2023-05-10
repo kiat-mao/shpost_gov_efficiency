@@ -1,18 +1,10 @@
-<%- model_class = Express -%>
+<%- model_class = InternationalExpress -%>
 <%- model_class_b = Business -%>
 <%- model_class_u = Unit -%>
 
 <%= grid(@international_expresss_grid) do |g|
   g.column name: model_class.human_attribute_name(:express_no), attribute: 'express_no' do |international_express|
     [international_express.express_no,{style: 'font-size: 12px;'}]
-  end
-
-  g.column name: "二级行业", attribute: 'industry', assoc: :business do |international_express|
-    [international_express.business.try(:industry),{style: 'font-size: 12px;'}]
-  end
-
-  g.column name: model_class_b.human_attribute_name(:btype), attribute: 'btype', assoc: :business do |international_express|
-    [international_express.business.try(:btype),{style: 'font-size: 12px;'}]
   end
 
   g.column name: model_class_b.human_attribute_name(:code), attribute: 'code', assoc: :business do |international_express|
@@ -23,17 +15,85 @@
     [international_express.business.try(:name),{style: 'font-size: 12px;'}]
   end
 
+  g.column name: model_class.human_attribute_name(:country_id), attribute: 'name', assoc: :country do |international_express|
+    [international_express.country.try(:name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:receiver_zone_id), attribute: 'zone', assoc: :receiver_zone do |international_express|
+    [international_express.receiver_zone.try(:zone),{style: 'font-size: 12px;'}]
+  end
+
   g.column name: model_class.human_attribute_name(:posting_date), attribute: 'posting_date' do |international_express|
     [(l international_express.posting_date),{style: 'font-size: 12px;'}]
   end
 
-  # g.column name: model_class.human_attribute_name(:status), attribute: 'status', custom_filter: InternationalExpress::STATUS_NAME.invert do |international_express| 
-  #   [international_express.status_name,{style: 'font-size: 12px;'}]
-  # end
+  g.column name: model_class.human_attribute_name(:receiver_postcode), attribute: 'receiver_postcode' do |international_express|
+    [international_express.receiver_postcode,{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:weight), attribute: 'weight' do |international_express|
+    [international_express.weight,{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:status), attribute: 'status', custom_filter: InternationalExpress::STATUS_NAME.invert do |international_express| 
+    [international_express.status_name,{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:is_arrived), attribute: 'is_arrived' do |international_express|
+    [international_express.is_arrived ? '是' : '否',{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:arrived_at), attribute: 'arrived_at' do |international_express|
+    [international_express.arrived_at.blank? ? "" : (l international_express.arrived_at),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:is_leaved), attribute: 'is_leaved' do |international_express|
+    [international_express.is_leaved ? '是' : '否',{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:leaved_at), attribute: 'leaved_at' do |international_express|
+    [international_express.leaved_at.blank? ? "" : (l international_express.leaved_at),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:is_leaved_orig), attribute: 'is_leaved_orig' do |international_express|
+    [international_express.is_leaved_orig ? '是' : '否',{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:leaved_orig_at), attribute: 'leaved_orig_at' do |international_express|
+    [international_express.leaved_orig_at.blank? ? "" : (l international_express.leaved_orig_at),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:is_leaved_center), attribute: 'is_leaved_center' do |international_express|
+    [international_express.is_leaved_center ? '是' : '否',{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:leaved_center_at), attribute: 'leaved_center_at' do |international_express|
+    [international_express.leaved_center_at.blank? ? "" : (l international_express.leaved_center_at),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:is_takeoff), attribute: 'is_takeoff' do |international_express|
+    [international_express.is_takeoff ? '是' : '否',{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:takeoff_at), attribute: 'takeoff_at' do |international_express|
+    [international_express.takeoff_at.blank? ? "" : (l international_express.takeoff_at),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:last_op_at), attribute: 'last_op_at' do |international_express|
+    [(international_express.last_op_at.blank? ? "" : (l expreinternational_expressss.last_op_at)), {style: 'font-size: 12px;'}]
+  end
+
+  g.column name: model_class.human_attribute_name(:last_op_desc), attribute: 'last_op_desc' do |international_express|  
+    [international_express.last_op_desc.try(:truncate, 35), {title: international_express.last_op_desc}]
+  end
+
+  g.column name: model_class.human_attribute_name(:last_unit_name), attribute: 'last_unit_name' do |international_express|
+    [international_express.last_unit_name,{style: 'font-size: 12px;'}]
+  end
 
   g.column in_csv: false do |international_express|
     ActiveSupport::SafeBuffer.new << 
-      (link_to '邮件全过程信息', get_mail_trace_express_path(international_express), :class => 'btn btn-xs btn-primary', target: '_blank' if can? :read, international_express) 
+      (link_to '邮件全过程信息', get_mail_trace_international_express_path(international_express), :class => 'btn btn-xs btn-primary', target: '_blank' if can? :read, international_express) 
   end
 
 end

@@ -1,6 +1,7 @@
 <% if !@results.blank? %>
+<% country = Country.find(@country_id) %>
   <table data-toggle="table" 
-  data-height="700">
+  data-height="380">
     <thead>
       <tr class= 'nowrap'>
         <th rowspan="2"><b>序号</b></th>
@@ -12,19 +13,19 @@
         <th rowspan="2"><b>退回妥投量</b></th>
         <th rowspan="2"><b>退回妥投占比</b></th>
         <th rowspan="2"><b>退回妥投量（安检未过）</b></th>
-        <th colspan="3"><b>总包到达寄达地(T+24)</b></th>
-        <th colspan="3"><b>总包到达寄达地(>T+24)</b></th>
-        <th colspan="3"><b>离开境外处理中心(T+48)</b></th>
-        <th colspan="3"><b>离开境外处理中心(>T+48)</b></th>
+        <th colspan="3"><b>总包到达寄达地(T+<%= country.arrive.blank? ? '24' : country.arrive %>)</b></th>
+        <th colspan="3"><b>总包到达寄达地(>T+<%= country.arrive.blank? ? '24' : country.arrive %>)</b></th>
+        <th colspan="3"><b>离开境外处理中心(T+<%= country.leave.blank? ? '48' : country.leave %>)</b></th>
+        <th colspan="3"><b>离开境外处理中心(>T+<%= country.leave.blank? ? '48' : country.leave %>)</b></th>
         <th colspan="3"><b>收寄局已封车(T)</b></th>
         <th colspan="3"><b>收寄局未封车(其他)</b></th>
-        <th colspan="3"><b>互换局封车1(T+12)</b></th>
-        <th colspan="3"><b>互换局封车2(T+36+18)</b></th>
+        <th colspan="3"><b>互换局封车1(T+<%= country.interchange1.blank? ? '12' : country.interchange1 %>)</b></th>
+        <th colspan="3"><b>互换局封车2(T+<%= country.interchange2.blank? ? '36' : country.interchange2 %>+18)</b></th>
         <th colspan="3"><b>互换局未及时封车</b></th>
         <th colspan="3"><b>互换局已封车</b></th>
         <th colspan="3"><b>互换局未封车</b></th>
-        <th colspan="3"><b>航空启运信息(T+24)</b></th>
-        <th colspan="3"><b>航空启运信息(>T+24)</b></th>
+        <th colspan="3"><b>航空启运信息(T+<%= country.air.blank? ? '24' : country.air %>)</b></th>
+        <th colspan="3"><b>航空启运信息(>T+<%= country.air.blank? ? '24' : country.air %>)</b></th>
       </tr>
       <tr>
       	<% i=0
@@ -40,21 +41,101 @@
     	<% @results.each do |k, v| %>
     	<tr class= 'nowrap'>
     		<!-- 序号 -->
-    		<% if k.eql?"合计" %>
-        <td><%= k %></td>
-	      <% else %>
-	      <td><u><%= v[0] %></u></td>
-	      <% end %>
+    		<td><%= v[0] %></td>
 	      <!-- 客户名称 -->
-	      <td><%= k[1] %></td>
+	      <td><%= v[1] %></td>
 	      <!-- 寄达国 -->
-	      <td><%= k[3] %></td>
+	      <td><%= v[3] %></td>
 	      <!-- 地区 -->
-	      <td><%= k[5] %></td>
+	      <td><%= v[4] %></td>
 	      <!-- 业务量 -->
-	      <td><u><%= link_to v[1], get_international_expresses_path("/international_expresses", k[0], k[2], k[4]), target: '_blank' %></u></td>
+	      <td><u><%= link_to v[5], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
 	      <!-- 重量（克） -->
-	      <td><%= v[2] %></td>
+	      <td><%= v[6] %></td>
+        <!-- 退回妥投量 -->
+        <td><u><%= link_to v[7], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], "returns", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 退回妥投占比 -->
+        <td><%= v[8].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 退回妥投量（安检未过） -->
+        <td></td>
+        <!-- 总包到达寄达地(T+24)业务量 -->
+        <td><u><%= link_to v[36], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, nil, nil, nil, nil, nil, nil, "true", nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 总包到达寄达地(T+24)重量（克） -->
+        <td><%= v[37] %></td>
+        <!-- 总包到达寄达地(T+24)占比 -->
+        <td><%= v[38].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 总包到达寄达地(>T+24)业务量 -->
+        <td><u><%= link_to v[39], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, nil, nil, nil, nil, nil, nil, nil, "true", nil, nil), target: '_blank' %></u></td>
+        <!-- 总包到达寄达地(>T+24)重量（克） -->
+        <td><%= v[40] %></td>
+        <!-- 总包到达寄达地(>T+24)占比 -->
+        <td><%= v[41].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 离开境外处理中心(T+48)业务量 -->
+        <td><u><%= link_to v[42], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "true", nil), target: '_blank' %></u></td>
+        <!-- 离开境外处理中心(T+48)重量（克） -->
+        <td><%= v[43] %></td>
+        <!-- 离开境外处理中心(T+48)占比 -->
+        <td><%= v[44].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 离开境外处理中心(>T+48)业务量 -->
+        <td><u><%= link_to v[45], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "true"), target: '_blank' %></u></td>
+        <!-- 离开境外处理中心(>T+48)重量（克） -->
+        <td><%= v[46] %></td>
+        <!-- 离开境外处理中心(>T+48)占比 -->
+        <td><%= v[47].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 收寄局已封车(T)业务量 -->
+        <td><u><%= link_to v[9], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, "true", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 收寄局已封车(T)重量 -->
+        <td><%= v[10] %></td>
+        <!-- 收寄局已封车(T)占比 -->
+        <td><%= v[11].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 收寄局未封车(其他)业务量 -->
+        <td><u><%= link_to v[12], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, "false", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 收寄局未封车(其他)重量（克） -->
+        <td><%= v[13] %></td>
+        <!-- 收寄局未封车(其他)占比 -->
+        <td><%= v[14].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 互换局封车1(T+12)业务量 -->
+        <td><u><%= link_to v[15], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, "true", "true", nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 互换局封车1(T+12)重量（克） -->
+        <td><%= v[16] %></td>
+        <!-- 互换局封车1(T+12)占比 -->
+        <td><%= v[17].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 互换局封车2(T+36+18)业务量 -->
+        <td><u><%= link_to v[18], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, "true", nil, "true", nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 互换局封车2(T+36+18)重量（克） -->
+        <td><%= v[19] %></td>
+        <!-- 互换局封车2(T+36+18)占比 -->
+        <td><%= v[20].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 互换局未及时封车业务量 -->
+        <td><u><%= link_to v[21], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, nil, nil, nil, "true", nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 互换局未及时封车重量（克） -->
+        <td><%= v[22] %></td>
+        <!-- 互换局未及时封车占比 -->
+        <td><%= v[23].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 互换局已封车业务量 -->
+        <td><u><%= link_to v[24], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, "true", nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 互换局已封车重量（克） -->
+        <td><%= v[25] %></td>
+        <!-- 互换局已封车占比 -->
+        <td><%= v[26].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 互换局未封车业务量 -->
+        <td><u><%= link_to v[27], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, "false", nil, nil, nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 互换局未封车重量（克） -->
+        <td><%= v[28] %></td>
+        <!-- 互换局未封车占比 -->
+        <td><%= v[29].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 航空启运信息(T+24)业务量 -->
+        <td><u><%= link_to v[30], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, nil, nil, nil, nil, "true", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 航空启运信息(T+24)重量（克） -->
+        <td><%= v[31] %></td>
+        <!-- 航空启运信息(T+24)占比 -->
+        <td><%= v[32].to_s(:rounded, precision: 2)+"%" %></td>
+        <!-- 航空启运信息(>T+24)业务量 -->
+        <td><u><%= link_to v[33], get_international_expresses_path("/international_expresses", k[0], v[2], k[1], nil, nil, nil, nil, nil, nil, nil, "true", nil, nil, nil, nil), target: '_blank' %></u></td>
+        <!-- 航空启运信息(>T+24)重量（克） -->
+        <td><%= v[34] %></td>
+        <!-- 航空启运信息(>T+24)占比 -->
+        <td><%= v[35].to_s(:rounded, precision: 2)+"%" %></td>
     	</tr>
     	<% end %>
     </tbody>

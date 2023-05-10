@@ -248,6 +248,7 @@ class ReportsController < ApplicationController
   def international_express_report
 		unless request.get?
 			@is_search = "yes"
+			@country_id = params[:country_id].to_i
 
 	    init_international_result
 		end
@@ -881,10 +882,13 @@ class ReportsController < ApplicationController
   		authorize! "report", "InternationalExpressReport"
 
 	  	@results = nil
-	  		  	
+ 		  	
     	international_expresses = Report.get_filter_international_expresses(params).accessible_by(current_ability)
-	  		  	
-      @results = Report.get_international_result(international_expresses, params)
+    	if international_expresses.blank?
+      	flash[:alert] = "无数据"
+      else	  	
+      	@results = Report.get_international_result(international_expresses, params)
+      end
     end
 
 	  def international_express_report_xls_content_for(params,results)
@@ -892,21 +896,23 @@ class ReportsController < ApplicationController
 	    book = Spreadsheet::Workbook.new  
 	    sheet1 = book.create_worksheet :name => "统计表"  
 	    
-	    report_name = Spreadsheet::Format.new :weight => :bold, :size => 15, :align => :center
-	    filter = Spreadsheet::Format.new :size => 13, :align => :right
-	    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
-	    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center
+	    report_name = Spreadsheet::Format.new :weight => :bold, :size => 20, :align => :center, :name => "宋体"
+	    filter = Spreadsheet::Format.new :size => 16, :align => :left, :name => "宋体"
+	    body = Spreadsheet::Format.new :size => 14, :border => :thin, :align => :center, :name => "宋体"
+	    hj = Spreadsheet::Format.new :weight => :bold, :size => 14, :border => :thin, :align => :center, :name => "宋体"
 	    # red = Spreadsheet::Format.new :color => :red, :size => 11, :border => :thin, :align => :center
-	    
+	    country = Country.find(params["country_id"].to_i)
+	    business = params["business_id"].blank? ? nil : Business.find(params["business_id"].to_i) 
 	    sheet1[0,0] = "VIP客户时效跟踪"
 	    sheet1.merge_cells(0, 0, 0, 47)
 	    sheet1.row(0).default_format = report_name
 
-	    sheet1[1,0] = "寄达国: #{params["country_id"]}"
-	    sheet1[1,3] = "收寄日期：#{params["posting_date_start"]}~#{params["posting_date_end"]}"
+	    sheet1[1,0] = "寄达国: #{country.name}"
+	    sheet1[1,3] = "客户: #{business.blank? ? '' : business.name}"
+	    sheet1[1,8] = "收寄日期：#{params["posting_date_start"]}~#{params["posting_date_end"]}"
 	    sheet1.merge_cells(0, 0, 0, 47)
 	    sheet1.row(1).default_format = filter
-	    
+    
 	    sheet1[2,9] = "C=国家+时间"
 	    sheet1.merge_cells(2, 9, 2, 11)
 	    sheet1[2,15] = "D=国家+时间"
@@ -918,12 +924,12 @@ class ReportsController < ApplicationController
 	    sheet1[2,42] = "B=国家+时间"
 	    sheet1.merge_cells(2, 42, 2, 44)
 	    0.upto(47) do |i|
-	      sheet1.row(2).set_format(i, title)
+	      sheet1.row(2).set_format(i, body)
 	    end
 	    
 	    0.upto(47) do |x|
-	      sheet1.row(3).set_format(x, title)
-	      sheet1.row(4).set_format(x, title)
+	      sheet1.row(3).set_format(x, body)
+	      sheet1.row(4).set_format(x, body)
 	    end
 	    pre_title3 = ["序号", "客户名称", "寄达国", "地区", "业务量", "重量（克）", "退回妥投量", "退回妥投占比", "退回妥投量（安检未过）"]
 	    i = 0
@@ -933,7 +939,7 @@ class ReportsController < ApplicationController
 		    i += 1
 		  end
 
-		  after_title3 = ["总包到达寄达地(T+24)", "总包到达寄达地(>T+24)", "离开境外处理中心(T+48)", "离开境外处理中心(>T+48)", "收寄局已封车(T)", "收寄局未封车(其他)", "互换局封车1(T+12)", "互换局封车2(T+36+18)", "互换局未及时封车", "互换局已封车", "互换局未封车", "航空启运信息(T+24)", "航空启运信息(>T+24)"]
+		  after_title3 = ["总包到达寄达地(T+#{country.arrive.blank? ? '24' : country.arrive})", "总包到达寄达地(>T+#{country.arrive.blank? ? '24' : country.arrive})", "离开境外处理中心(T+#{country.leave.blank? ? '48' : country.leave})", "离开境外处理中心(>T+#{country.leave.blank? ? '48' : country.leave})", "收寄局已封车(T)", "收寄局未封车(其他)", "互换局封车1(T+#{country.interchange1.blank? ? '12' : country.interchange1})", "互换局封车2(T+#{country.interchange2.blank? ? '36' : country.interchange2}+18)", "互换局未及时封车", "互换局已封车", "互换局未封车", "航空启运信息(T+#{country.air.blank? ? '24' : country.air})", "航空启运信息(>T+#{country.air.blank? ? '24' : country.air})"]
 		  title4 = ["业务量", "重量（克）", "占比"]
 		  j = 9
 		  k = 0
@@ -950,19 +956,65 @@ class ReportsController < ApplicationController
 	    count_row = 5
 
 	    results.each do |key, value|
-	      sheet1[count_row,0] = value[0]
-	      sheet1[count_row,1] = key[1]
-	      sheet1[count_row,2] = key[3]
-	      sheet1[count_row,3] = key[5]
-	      sheet1[count_row,4] = value[1]
-	      sheet1[count_row,5] = value[2]
-	      
+	    	sheet1[count_row,0] = value[0]    #序号
+	      sheet1[count_row,1] = value[1]    #客户名称
+	      sheet1[count_row,2] = value[3]    #寄达国
+	      sheet1[count_row,3] = value[4]    #地区
+	      sheet1[count_row,4] = value[5]    #业务量
+	      sheet1[count_row,5] = value[6]    #重量（克）
+	      sheet1[count_row,6] = value[7]    #退回妥投量
+	      sheet1[count_row,7] = value[8].to_s(:rounded, precision: 2)+"%"    #退回妥投占比
+	      sheet1[count_row,8] = ""          #退回妥投量（安检未过）
+	      sheet1[count_row,9] = value[36]    #总包到达寄达地(T+24)业务量
+	      sheet1[count_row,10] = value[37]    #总包到达寄达地(T+24)重量（克）
+	      sheet1[count_row,11] = value[38].to_s(:rounded, precision: 2)+"%"    #总包到达寄达地(T+24)占比
+	      sheet1[count_row,12] = value[39]    #总包到达寄达地(>T+24)业务量
+	      sheet1[count_row,13] = value[40]    #总包到达寄达地(>T+24)重量（克）
+	      sheet1[count_row,14] = value[41].to_s(:rounded, precision: 2)+"%"    #总包到达寄达地(>T+24)占比
+	      sheet1[count_row,15] = value[42]    #离开境外处理中心(T+48)业务量
+	      sheet1[count_row,16] = value[43]    #离开境外处理中心(T+48)重量（克）
+	      sheet1[count_row,17] = value[44].to_s(:rounded, precision: 2)+"%"    #离开境外处理中心(T+48)占比
+	      sheet1[count_row,18] = value[45]    #离开境外处理中心(>T+48)业务量
+	      sheet1[count_row,19] = value[46]    #离开境外处理中心(>T+48)重量（克）
+	      sheet1[count_row,20] = value[47].to_s(:rounded, precision: 2)+"%"    #离开境外处理中心(>T+48)占比
+	      sheet1[count_row,21] = value[9]    #收寄局已封车(T)业务量
+	      sheet1[count_row,22] = value[10]    #收寄局已封车(T)重量（克）
+	      sheet1[count_row,23] = value[11].to_s(:rounded, precision: 2)+"%"    #收寄局已封车(T)占比
+	      sheet1[count_row,24] = value[12]    #收寄局未封车(其他)业务量
+	      sheet1[count_row,25] = value[13]    #收寄局未封车(其他)重量（克）
+	      sheet1[count_row,26] = value[14].to_s(:rounded, precision: 2)+"%"    #收寄局未封车(其他)占比
+	      sheet1[count_row,27] = value[15]    #互换局封车1(T+12)业务量
+	      sheet1[count_row,28] = value[16]    #互换局封车1(T+12)重量（克）
+	      sheet1[count_row,29] = value[17].to_s(:rounded, precision: 2)+"%"    #互换局封车1(T+12)占比
+	      sheet1[count_row,30] = value[18]    #互换局封车2(T+36+18)业务量
+	      sheet1[count_row,31] = value[19]    #互换局封车2(T+36+18)重量（克）
+	      sheet1[count_row,32] = value[20].to_s(:rounded, precision: 2)+"%"    #互换局封车2(T+36+18)占比
+	      sheet1[count_row,33] = value[21]    #互换局未及时封车业务量
+	      sheet1[count_row,34] = value[22]    #互换局未及时封车重量（克）
+	      sheet1[count_row,35] = value[23].to_s(:rounded, precision: 2)+"%"    #互换局未及时封车占比
+	      sheet1[count_row,36] = value[24]    #互换局已封车业务量
+	      sheet1[count_row,37] = value[25]    #互换局已封车重量（克）
+	      sheet1[count_row,38] = value[26].to_s(:rounded, precision: 2)+"%"    #互换局已封车占比
+	      sheet1[count_row,39] = value[27]    #互换局未封车业务量
+	      sheet1[count_row,40] = value[28]    #互换局未封车重量（克）
+	      sheet1[count_row,41] = value[29].to_s(:rounded, precision: 2)+"%"    #互换局未封车占比
+	      sheet1[count_row,42] = value[30]    #航空启运信息(T+24)业务量
+	      sheet1[count_row,43] = value[31]    #航空启运信息(T+24)重量（克）
+	      sheet1[count_row,44] = value[32].to_s(:rounded, precision: 2)+"%"    #航空启运信息(T+24)占比
+	      sheet1[count_row,45] = value[33]    #航空启运信息(>T+24)业务量
+	      sheet1[count_row,46] = value[34]    #航空启运信息(>T+24)重量（克）
+	      sheet1[count_row,47] = value[35].to_s(:rounded, precision: 2)+"%"    #航空启运信息(>T+24)占比
+
 	      
 	      0.upto(47) do |i|
 		      sheet1.row(count_row).set_format(i, body)
 		    end
 		    
 	      count_row += 1
+	    end
+
+	    0.upto(47) do |i|
+	      sheet1.row(count_row-1).set_format(i, hj)
 	    end
 
 	    book.write xls_report  

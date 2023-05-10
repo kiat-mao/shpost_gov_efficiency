@@ -61,7 +61,7 @@
 
               while i <= params[:delivered_days_show].to_f-1
         %>
-                <td><%= (@parent_unit_results[last_pid][14][i]/@parent_unit_results[last_pid][1]).to_s(:rounded, precision: 2)+"%" %></td>
+                <td><%= (@parent_unit_results[last_pid][14][i]/@parent_unit_results[last_pid][1].to_f*100).to_s(:rounded, precision: 2)+"%" %></td>
         <%
                 i += 0.5
               end

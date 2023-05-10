@@ -5,4 +5,8 @@ class InternationalExpress < ApplicationRecord
   
   enum status: {waiting: 'waiting', returns: 'returns'}
   STATUS_NAME = { waiting: '未妥投', returns: '退回'}
+
+  def status_name
+    status.blank? ? "" : InternationalExpress::STATUS_NAME["#{status}".to_sym]
+  end
 end
