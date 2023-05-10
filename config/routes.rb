@@ -90,6 +90,9 @@ Rails.application.routes.draw do
       post 'deliver_province_report'
       post 'deliver_prov_city_report_export'
       get 'deliver_city_report'
+      get 'international_express_report'
+      post 'international_express_report'
+      post 'international_express_report_export'
     end
   end
 
@@ -105,7 +108,7 @@ Rails.application.routes.draw do
     end
   end
   
-  resources :country_time_limits
+  resources :countries
 
   resources :receiver_zones
 
@@ -113,6 +116,20 @@ Rails.application.routes.draw do
     collection do
       get 'import'
       post 'import' => 'international_expresses#import'
+    end
+
+    member do
+      get 'get_mail_trace'
+      post 'get_mail_trace'
+    end
+  end
+
+  resources :import_files do
+    member do 
+      get 'download'
+      post 'download' => 'import_files#download'
+      get 'err_download'
+      post 'err_download' => 'import_files#err_download'
     end
   end
 

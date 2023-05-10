@@ -129,7 +129,8 @@ class InternationalExpressesController < ApplicationController
 
 	              # sheet_error << (rowarr << txt)
 
-	              InternationalExpress.create! express_no: express_no, country_id: selected_country_id, business_id: business.id, posting_date: posting_date, receiver_postcode: receiver_postcode, weight: weight, receiver_zone_id: zone_id, import_file_id: import_file.id, status: "waiting", is_arrived: false, is_leaved: false, is_leaved_orig: false, is_leaved_center: false, is_takeoff: false
+	              international_express = InternationalExpress.create! express_no: express_no, country_id: selected_country_id, business_id: business.id, posting_date: posting_date, receiver_postcode: receiver_postcode, weight: weight, receiver_zone_id: zone_id, import_file_id: import_file.id, status: "waiting", is_arrived: false, is_leaved: false, is_leaved_orig: false, is_leaved_center: false, is_takeoff: false
+	              international_express.refresh_traces_by_mail_trace!
 	            end
 	          rescue Exception => e
 	          	trans_error = true
