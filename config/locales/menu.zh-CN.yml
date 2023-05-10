@@ -19,7 +19,7 @@ zh-CN:
           need_count: false
           needrole:
             can: :read
-            role: :User
+            role: :Unit
     business:
       name: "商户管理"
       needrole:
