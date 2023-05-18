@@ -118,7 +118,7 @@ class Express < ApplicationRecord
     start_date = start_date.to_date
     end_date = end_date.to_date
     puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
-    businesses = Business.all
+    businesses = Business.where(is_international: false)
     businesses.each do |business|
       Express.init_expresses_by_business(business, start_date, end_date)
     end
@@ -128,7 +128,7 @@ class Express < ApplicationRecord
     start_date = Date.today
     end_date = start_date + 1.day
     puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
-    businesses = Business.where(is_init_expresses_midday: true)
+    businesses = Business.where(is_init_expresses_midday: true).where(is_international: false)
     businesses.each do |business|
       Express.init_expresses_by_business(business, start_date, end_date)
     end
