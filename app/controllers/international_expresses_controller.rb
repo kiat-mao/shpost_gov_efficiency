@@ -203,7 +203,7 @@ class InternationalExpressesController < ApplicationController
   	code = receiver_postcode[0,3]
 
   	zones.each do |x|
-  		if (receiver_postcode.to_i >= x[1].to_i) && (receiver_postcode.to_i <= x[2].to_i)
+  		if (code.to_i >= x[1].to_i) && (code.to_i <= x[2].to_i)
   			zone_id = x[0]
   			break
   		end
