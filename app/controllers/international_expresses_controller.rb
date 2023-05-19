@@ -129,20 +129,20 @@ class InternationalExpressesController < ApplicationController
 	              end
 
 	              # sheet_error << (rowarr << txt)
-
+		    #  Rails.logger.error express_no
 	              international_express = InternationalExpress.create! express_no: express_no, country_id: selected_country_id, business_id: business.id, posting_date: posting_date, receiver_postcode: receiver_postcode, weight: weight, receiver_zone_id: zone_id, import_file_id: import_file.id, status: "waiting", is_arrived: false, is_leaved: false, is_leaved_orig: false, is_leaved_center: false, is_takeoff: false
 	              international_express.refresh_traces_by_mail_trace!
 	            end
 	          rescue Exception => e
-	          	trans_error = true
+	            trans_error = true
 	            message = e.message + "(第" + current_line.to_s + "行)"
-	            Rails.logger.error e.message
-	            Rails.logger.error e.backtrace
 
 	            puts e.message
 	            puts e.backtrace
-	            raise ActiveRecord::Rollback
-	            # puts e.backtrace
+					    Rails.logger.error("#{e.class.name} #{e.message}")
+					    e.backtrace.each{|x| Rails.logger.error(x)}    
+		    
+		    			raise ActiveRecord::Rollback
 	          end
 
 	          if trans_error
