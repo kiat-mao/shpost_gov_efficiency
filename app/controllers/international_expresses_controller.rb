@@ -118,7 +118,8 @@ class InternationalExpressesController < ApplicationController
 	                sheet_error << (rowarr << txt)
 	                next
 	              else
-	              	zone_id = get_zone(receiver_postcode, selected_country_id)
+	              	zones = ReceiverZone.where(country_id: selected_country_id).map{|z| [z.id, z.start_postcode, z.end_postcode]}
+	              	zone_id = get_zone(receiver_postcode, zones)
 	              	if zone_id.blank?
 	              		is_error = true
 		                txt = "未找到收件人邮编对应地区"
@@ -135,8 +136,13 @@ class InternationalExpressesController < ApplicationController
 	          rescue Exception => e
 	          	trans_error = true
 	            message = e.message + "(第" + current_line.to_s + "行)"
+	            Rails.logger.error e.message
 	            Rails.logger.error e.backtrace
+
+	            puts e.message
+	            puts e.backtrace
 	            raise ActiveRecord::Rollback
+	            # puts e.backtrace
 	          end
 
 	          if trans_error
@@ -192,13 +198,13 @@ class InternationalExpressesController < ApplicationController
     book.write file_path  
   end
 
-  def get_zone(receiver_postcode, selected_country_id)
+  def get_zone(receiver_postcode, zones)
   	zone_id = nil
-  	code = receiver_postcode.split("-")[0]
+  	code = receiver_postcode[0,3]
 
-  	ReceiverZone.where(country_id: selected_country_id).each do |x|
-  		if (receiver_postcode.to_i >= x.start_postcode.to_i) && (receiver_postcode.to_i <= x.end_postcode.to_i)
-  			zone_id = x.id
+  	zones.each do |x|
+  		if (receiver_postcode.to_i >= x[1].to_i) && (receiver_postcode.to_i <= x[2].to_i)
+  			zone_id = x[0]
   			break
   		end
   	end
