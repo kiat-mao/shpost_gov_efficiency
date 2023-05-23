@@ -1278,7 +1278,7 @@ class Report
       if is_and
         where_sql += " and "
       end
-      where_sql += "((international_expresses.leaved_center_hours > #{country.interchange1}) and international_expresses.leaved_orig_after_18 = 0) or ((international_expresses.leaved_center_hours > #{country.interchange2}) and international_expresses.leaved_orig_after_18 = 1) or (international_expresses.is_leaved_orig = 1 and international_expresses.leaved_center_hours is null)" 
+      where_sql += "(((international_expresses.leaved_center_hours > #{country.interchange1}) and international_expresses.leaved_orig_after_18 = 0) or ((international_expresses.leaved_center_hours > #{country.interchange2}) and international_expresses.leaved_orig_after_18 = 1) or (international_expresses.is_leaved_orig = 1 and international_expresses.leaved_center_hours is null))" 
       is_and = true
     end
 
@@ -1296,7 +1296,7 @@ class Report
       if is_and
         where_sql += " and "
       end
-      where_sql += "(international_expresses.is_takeoff = 1 and international_expresses.takeoff_hours > #{country.air}) or (international_expresses.is_leaved_center = 1 and international_expresses.takeoff_hours is null)" 
+      where_sql += "((international_expresses.is_takeoff = 1 and international_expresses.takeoff_hours > #{country.air}) or (international_expresses.is_leaved_center = 1 and international_expresses.takeoff_hours is null))" 
       is_and = true
     end
 
@@ -1314,7 +1314,7 @@ class Report
       if is_and
         where_sql += " and "
       end
-      where_sql += "(international_expresses.is_arrived = 1 and international_expresses.arrived_hours > #{country.arrive}) or (international_expresses.is_takeoff = 1 and international_expresses.arrived_hours is null)" 
+      where_sql += "((international_expresses.is_arrived = 1 and international_expresses.arrived_hours > #{country.arrive}) or (international_expresses.is_takeoff = 1 and international_expresses.arrived_hours is null))" 
       is_and = true
     end
 
@@ -1332,7 +1332,7 @@ class Report
       if is_and
         where_sql += " and "
       end
-      where_sql += "(international_expresses.is_leaved = 1 and international_expresses.leaved_hours > #{country.leave}) or (international_expresses.is_arrived = 1 and international_expresses.leaved_hours is null)" 
+      where_sql += "((international_expresses.is_leaved = 1 and international_expresses.leaved_hours > #{country.leave}) or (international_expresses.is_arrived = 1 and international_expresses.leaved_hours is null))" 
       is_and = true
     end
 

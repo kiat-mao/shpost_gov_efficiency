@@ -266,13 +266,13 @@ module ReportHelper
 		end
 
 		if !is_leaved_orig.blank?
-			is_leaved_orig = (is_leaved_orig.eql?"true") ? true : false
+			is_leaved_orig = (is_leaved_orig.eql?"true") ? 1 : 0
 			addr += sep+"is_leaved_orig=#{is_leaved_orig}"
 			sep = "&"
 		end
 
 		if !is_leaved_center.blank?
-			is_leaved_center = (is_leaved_center.eql?"true") ? true : false
+			is_leaved_center = (is_leaved_center.eql?"true") ? 1 : 0
 			addr += sep+"is_leaved_center=#{is_leaved_center}"
 			sep = "&"
 			if !is_interchange1.blank?
