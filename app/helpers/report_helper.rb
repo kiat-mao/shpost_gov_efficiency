@@ -227,13 +227,13 @@ module ReportHelper
 
 		# 页面选择条件收寄日期开始
 		if !params[:posting_date_start].blank?
-			addr += sep+"posting_date_start=#{params[:posting_date_start].to_date}"
+			addr += sep+"posting_date_start=#{params[:posting_date_start]}"
 			sep = "&"
 		end
 
 		# 页面选择条件收寄日期结束
 		if !params[:posting_date_end].blank?
-			addr += sep+"posting_date_end=#{params[:posting_date_end].to_date+1.day}"
+			addr += sep+"posting_date_end=#{params[:posting_date_end]}"
 			sep = "&"
 		end
 
