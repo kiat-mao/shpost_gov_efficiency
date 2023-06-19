@@ -1191,7 +1191,7 @@ class Report
       if is_and
         where_sql += " and "
       end
-      where_sql += "posting_date <= '#{params[:posting_date_end].to_date+1.day}'"
+      where_sql += "posting_date < '#{params[:posting_date_end].to_date+1.day}'"
       is_and = true
     end
 
