@@ -131,7 +131,7 @@ class InternationalExpressesController < ApplicationController
 	              # sheet_error << (rowarr << txt)
 		    #  Rails.logger.error express_no
 	              international_express = InternationalExpress.create! express_no: express_no, country_id: selected_country_id, business_id: business.id, posting_date: posting_date, receiver_postcode: receiver_postcode, weight: weight, receiver_zone_id: zone_id, import_file_id: import_file.id, status: "waiting", is_arrived: false, is_leaved: false, is_leaved_orig: false, is_leaved_center: false, is_takeoff: false
-	              international_express.refresh_traces_by_mail_trace!
+	              # international_express.refresh_traces_by_mail_trace!
 	            end
 	          rescue Exception => e
 	            trans_error = true
@@ -200,14 +200,30 @@ class InternationalExpressesController < ApplicationController
 
   def get_zone(receiver_postcode, zones)
   	zone_id = nil
-  	code = receiver_postcode[0,3]
 
-  	zones.each do |x|
-  		if (code.to_i >= x[1].to_i) && (code.to_i <= x[2].to_i)
-  			zone_id = x[0]
-  			break
-  		end
-  	end
+  	# 邮编以数字开头.48 is ASCII code of 0, 57 is ASCII code of 9
+  	if (receiver_postcode[0].ord>=48) && (receiver_postcode[0].ord<=57)
+	  	code = receiver_postcode[0,3]
+
+	  	zones.each do |x|
+	  		if (code.to_i >= x[1].to_i) && (code.to_i <= x[2].to_i)
+	  			zone_id = x[0]
+	  			break
+	  		end
+	  	end
+	  else
+	  	# 邮编以字母开头
+	  	code = receiver_postcode[0].upcase
+
+	  	zones.each do |x|
+	  		if ((("A".."Z").include?x[1]) || (("a".."z").include?x[1])) && ((("A".."Z").include?x[2]) || (("a".."z").include?x[2]))
+		  		if (code >= x[1].upcase) && (code <= x[2].upcase)
+		  			zone_id = x[0]
+		  			break
+		  		end
+		  	end
+	  	end
+	  end
 
   	return zone_id
   end
