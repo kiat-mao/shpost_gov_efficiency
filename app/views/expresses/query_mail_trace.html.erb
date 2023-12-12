@@ -1,0 +1,23 @@
+<br>
+<font face="微软雅黑" color='#006030' size=6>轨迹查询</font>   
+<%= form_tag(query_mail_trace_expresses_path, name: 'form', method: 'post') do %>
+<table>
+  <tr style="line-height: 60px;height: 60px;"> 
+    <td><%= label_tag(:mail_no, "邮件号:") %></td>
+    <td><%= text_field_tag(:mail_no, params[:mail_no]) %></td> 
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td>
+      <div>
+        <%= submit_tag "查询", :class => 'btn btn-primary', method: :post %>
+      </div>
+    </td>
+  </tr>
+</table>
+<% end -%>   
+
+<br>
+<%= render :partial => 'mail_trace_result' %>

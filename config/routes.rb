@@ -4,6 +4,8 @@ Rails.application.routes.draw do
     collection do
       get 'deliver_market_detail'
       post 'deliver_market_detail'
+      get 'query_mail_trace'
+      post 'query_mail_trace'
       # get 'receiver_query'
     end
     member do

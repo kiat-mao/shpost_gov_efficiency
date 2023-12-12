@@ -1,0 +1,22 @@
+<% if !@traces.blank? %>
+<table data-toggle="table" 
+    data-height="700">
+  <thead>
+    <tr class= 'nowrap'>
+      <th><b>邮件全过程信息</b></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @traces.each do |x| %>
+      <tr>
+          <td>
+            <%= x %>
+          </td>
+      </tr>
+   <% end %>
+  </tbody>
+</table>
+<% end %>
+
+
+

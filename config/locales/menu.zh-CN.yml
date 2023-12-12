@@ -111,6 +111,19 @@ zh-CN:
           name: "投递监控(投递)"
           link: "/reports/court_deliver_unit_monitor"
           need_count: false
+    mail_trace:
+      name: "轨迹查询"
+      needrole:
+        can: :read
+        role: :Express
+      submenu:
+        message:
+          name: "轨迹查询"
+          link: "/expresses/query_mail_trace"
+          need_count: false
+          needrole:
+            can: :read
+            role: :Express
     base_info:
       name: "基础信息维护"
       needrole:

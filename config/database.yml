@@ -32,3 +32,11 @@ pkp_data_source_development:
 pkp_data_source_production:
   <<: *default
   database: ../shpost_mail_message_rails6/db/production.sqlite3
+
+pkp_data_source_his_development:
+  <<: *default
+  database: ../shpost_mail_message_rails6/db/development.sqlite3
+
+pkp_data_source_his_production:
+  <<: *default
+  database: ../mailmessage/Shp0stBCL/db/production.sqlite3
