@@ -114,7 +114,7 @@ zh-CN:
     mail_trace:
       name: "轨迹查询"
       needrole:
-        can: :read
+        can: :query_mail_trace
         role: :Express
       submenu:
         message:
@@ -122,7 +122,7 @@ zh-CN:
           link: "/expresses/query_mail_trace"
           need_count: false
           needrole:
-            can: :read
+            can: :query_mail_trace
             role: :Express
     base_info:
       name: "基础信息维护"

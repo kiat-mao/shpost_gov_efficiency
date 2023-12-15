@@ -66,11 +66,11 @@ class Ability
 
 			can :read, Business, is_international: false
 
-			can [:read, :get_mail_trace, :query_mail_trace], Express, post_unit_id: user.unit_id
+			can [:read, :get_mail_trace], Express, post_unit_id: user.unit_id
 			# can [:read, :get_mail_trace], Express, post_unit: {parent_id: user.unit_id}
-			can [:read, :get_mail_trace, :query_mail_trace], Express, post_unit_id: user.unit.child_unit_ids
+			can [:read, :get_mail_trace], Express, post_unit_id: user.unit.child_unit_ids
 
-			can [:read, :get_mail_trace, :query_mail_trace], Express, business_id: Business.where(is_all_visible: true).ids
+			can [:read, :get_mail_trace], Express, business_id: Business.where(is_all_visible: true).ids
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
@@ -82,11 +82,11 @@ class Ability
 			can [:update, :show], User, id: user.id
 			can :read, Business
 
-			can [:read, :get_mail_trace, :query_mail_trace], Express, post_unit_id: user.unit_id
+			can [:read, :get_mail_trace], Express, post_unit_id: user.unit_id
 			# can [:read, :get_mail_trace], Express, post_unit: {parent_id: user.unit_id}
-			can [:read, :get_mail_trace, :query_mail_trace], Express, post_unit_id: user.unit.child_unit_ids
+			can [:read, :get_mail_trace], Express, post_unit_id: user.unit.child_unit_ids
 
-			can [:read, :get_mail_trace, :query_mail_trace], Express, business_id: Business.where(is_all_visible: true).ids
+			can [:read, :get_mail_trace], Express, business_id: Business.where(is_all_visible: true).ids
 
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
