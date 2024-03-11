@@ -72,6 +72,8 @@ class Ability
 
 			can [:read, :get_mail_trace], Express, business_id: Business.where(is_all_visible: true).ids
 
+			can :query_mail_trace, Express
+
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
 			can [:read, :details], Message
