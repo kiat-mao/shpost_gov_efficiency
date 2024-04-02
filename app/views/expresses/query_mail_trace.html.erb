@@ -6,6 +6,10 @@
     <td><%= label_tag(:mail_no, "邮件号:") %></td>
     <td><%= text_field_tag(:mail_no, params[:mail_no]) %></td> 
   </tr>
+  <tr style="line-height: 60px;height: 60px;"> 
+    <td><%= label_tag(:year, "邮件日期:") %></td>
+    <td><%= select_tag(:year, options_for_select(MailTraceHis.select_year, :selected=> params[:year]), id: "year") %></td>
+  </tr>
 </table>
 
 <table>

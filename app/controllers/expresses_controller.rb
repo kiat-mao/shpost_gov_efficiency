@@ -86,16 +86,19 @@ class ExpressesController < ApplicationController
   # 单个轨迹信息查询
   def query_mail_trace
     @traces = []
-      
+   
     if !params[:mail_no].blank?
       # 查当前库
       mailtrace = MailTrace.find_by(mail_no: params[:mail_no])
-      if mailtrace.blank?
-        # 查历史库
-        mailtrace = MailTraceHis.find_by(mail_no: params[:mail_no])
-      end
       if !mailtrace.blank?
         @traces = mailtrace.traces.split(/\n/)
+        return
+      end
+      # 查历史库
+      year = (params[:year].start_with?"2023") ? "2023" : params[:year]
+      mailtrace = MailTraceHis.find_by_year(year, params[:mail_no])
+      if !mailtrace.blank?
+        @traces = MailTraceHis.traces(year, mailtrace.id).split(/\n/)
       else
         flash[:alert] = "无信息!"
       end
