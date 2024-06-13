@@ -118,8 +118,8 @@ class Express < ApplicationRecord
     start_date = start_date.to_date
     end_date = end_date.to_date
     puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
-    businesses = Business.where(is_international: false)
-    businesses.each do |business|
+    businesses = Business.where(is_international: false).order(:id)
+    businesses.each do |business, i|
       Express.init_expresses_by_business(business, start_date, end_date)
     end
   end
@@ -128,7 +128,7 @@ class Express < ApplicationRecord
     start_date = Date.today
     end_date = start_date + 1.day
     puts("#{Time.now}, init_expresses, start_date: #{start_date}, end_date: #{end_date}")
-    businesses = Business.where(is_init_expresses_midday: true).where(is_international: false)
+    businesses = Business.where(is_init_expresses_midday: true).where(is_international: false).order(:id)
     businesses.each do |business|
       Express.init_expresses_by_business(business, start_date, end_date)
     end
@@ -143,7 +143,7 @@ class Express < ApplicationRecord
     puts("#{Time.now}, refresh_traces, start_date: #{start_date}, end_date: #{end_date}")
     #businesses = Business.all.order(is_init_expresses_midday: :desc)
     
-    businesses = Business.where(is_init_expresses_midday: only_midday)
+    businesses = Business.where(is_init_expresses_midday: only_midday).order(:id)
     
     businesses.each do |business|
       Express.refresh_traces_by_business(business, start_date, end_date)
@@ -157,7 +157,7 @@ class Express < ApplicationRecord
       return
     end
 
-    puts("#{Time.now}, refresh_traces_by_business, #{business.name},  start")
+    puts("#{Time.now}, refresh_traces_by_business, #{business.id} #{business.name},  start")
 
     
     expresses = Express.includes(:mail_trace).where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).waiting
@@ -168,14 +168,14 @@ class Express < ApplicationRecord
       end
     end
 
-    puts("#{Time.now}, refresh_traces_by_business, #{business.name}, count: #{expresses.size}, end")
+    puts("#{Time.now}, refresh_traces_by_business, #{business.id} #{business.name}, count: #{expresses.size}, end")
   end
 
   def self.init_expresses_by_business(business, start_date, end_date)
     if business.blank? || start_date.blank? || end_date.blank?
       return
     end
-    puts("#{Time.now}  init_expresses_by_business, #{business.name}, start")
+    puts("#{Time.now}  init_expresses_by_business, #{business.id} #{business.name}, start")
 
     pkp_waybill_bases = PkpWaybillBase.includes(:pkp_waybill_biz, :post_unit, :mail_trace).where(sender_no: business.code).where("biz_occur_date >= ? and biz_occur_date < ?", start_date, end_date)
     if end_date - start_date <= 1
@@ -190,7 +190,7 @@ class Express < ApplicationRecord
       end
     end
 
-    puts("#{Time.now}, init_expresses_by_business, #{business.name}, count: #{pkp_waybill_bases.size}, end")
+    puts("#{Time.now}, init_expresses_by_business, #{business.id} #{business.name}, count: #{pkp_waybill_bases.size}, end")
   end
 
 	def self.init_express(pkp_waybill_base, business = nil)
@@ -277,7 +277,8 @@ class Express < ApplicationRecord
 
   def refresh_trace mail_trace = nil
     mail_trace ||= self.mail_trace
-    mail_trace ||= MailTrace.find_by mail_no: self.express_no
+    # mail_trace ||= MailTrace.find_by mail_no: self.express_no
+    mail_trace ||= MailTraceHis.find_by_year(self.posting_date.year, self.express_no)
 
     if ! mail_trace.blank?
       self.status = Express.to_status (mail_trace.status) || Express::statuses[:waiting]
@@ -317,7 +318,7 @@ class Express < ApplicationRecord
       return
     end
 
-    puts("#{Time.now}, init_receipts_by_business, #{business.name},  start")
+    puts("#{Time.now}, init_receipts_by_business, #{business.id} #{business.name},  start")
 
     
     expresses = Express.where(business: business).where("posting_date >= ? and posting_date < ?", start_date, end_date).forward.delivered.no_receipt_receive
@@ -328,7 +329,7 @@ class Express < ApplicationRecord
       end
     end
 
-    puts("#{Time.now}, init_receipts_by_business, #{business.name}, count: #{expresses.size}, end")
+    puts("#{Time.now}, init_receipts_by_business, #{business.id} #{business.name}, count: #{expresses.size}, end")
   end
 
   def init_receipt(receipt_waybill_no, business)
