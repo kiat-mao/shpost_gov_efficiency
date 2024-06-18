@@ -175,23 +175,29 @@ class Express < ApplicationRecord
     if business.blank? || start_date.blank? || end_date.blank?
       return
     end
-    puts("#{Time.now}  init_expresses_by_business, #{business.id} #{business.name}, start")
+   
 
-    pkp_waybill_bases = PkpWaybillBase.includes(:pkp_waybill_biz, :post_unit, :mail_trace).where(sender_no: business.code).where("biz_occur_date >= ? and biz_occur_date < ?", start_date, end_date)
-    if end_date - start_date <= 1
-      pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
-    else
-      days = (start_date...end_date).to_a.map{|x| x.strftime("%d")}
-      pkp_waybill_bases = pkp_waybill_bases.where(created_day: days)
-    end
-    ActiveRecord::Base.transaction do
-      pkp_waybill_bases.find_each(batch_size: 2000) do |pkp_waybill_base|
-        Express.init_express(pkp_waybill_base, business)
+   
+    # if end_date - start_date <= 1
+    #   pkp_waybill_bases = pkp_waybill_bases.where(created_day: start_date.strftime("%d"))
+    # else
+    days = (start_date...end_date).to_a.map{|x| x.strftime("%d")}
+   
+    # end
+
+    days.each do |day|
+      puts("#{Time.now}  init_expresses_by_business, #{business.id} #{business.name}  day: #{day}, start")
+      
+      pkp_waybill_bases = PkpWaybillBase.includes(:pkp_waybill_biz, :post_unit, :mail_trace).where(sender_no: business.code).where("biz_occur_date >= ? and biz_occur_date < ?", start_date, end_date).where(created_day: day)
+      ActiveRecord::Base.transaction do
+        pkp_waybill_bases.find_each(batch_size: 2000) do |pkp_waybill_base|
+          Express.init_express(pkp_waybill_base, business)
+        end
       end
+      puts("#{Time.now}, init_expresses_by_business, #{business.id} #{business.name}  day: #{day}, count: #{pkp_waybill_bases.size}, end")
     end
 
-    puts("#{Time.now}, init_expresses_by_business, #{business.id} #{business.name}, count: #{pkp_waybill_bases.size}, end")
-  end
+    end
 
 	def self.init_express(pkp_waybill_base, business = nil)
     business ||= Business.find_by code: pkp_waybill_base.sender_no
