@@ -25,3 +25,36 @@
 
 // var ready;
 
+//显示遮罩层
+function showMask(){     
+  document.getElementById('mid').style.display="block";  //打开遮罩层；
+  // $('#mid').show(0,setTimeout(function(){
+    // hideMask();
+  // },50000));
+}
+
+//隐藏遮罩层  
+function hideMask(){
+  document.getElementById('mid').style.display="none";    //关闭遮罩层；
+}
+
+var ready;
+ready = function() {
+	$("a.showmask").click(function(event) {
+    showMask();
+  });
+
+	$("input.showmask").click(function(event) {
+		showMask();
+	});
+
+	$("button.wg-external-submit-button").click(function(event) {
+		showMask();
+	});
+
+	$("button.wg-external-reset-button").click(function(event) {
+		showMask();
+	});
+}
+
+$(document).on('turbolinks:load', ready);
