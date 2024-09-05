@@ -371,7 +371,7 @@ class Express < ApplicationRecord
     if delivered? || returns?
       if ! posting_date.blank? && ! last_op_at.blank?
          self.delivered_hour = last_op_at.hour
-         self.delivered_days = last_op_at.to_date - posting_date.to_date - ((delivered_hour < 12) ? 0.5 : 0)
+         self.delivered_days = last_op_at.to_date - posting_date.to_date - ((delivered_hour < 13) ? 0.5 : 0)
          return 
       end
     end

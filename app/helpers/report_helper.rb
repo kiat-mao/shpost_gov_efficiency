@@ -1,6 +1,6 @@
 module ReportHelper
-	# 根路径, 行业市场, 状态, 网点(投递维度),客户名称(返单),是否在途,是否正向(返单),返单状态,妥投天数,收寄省,收寄市,妥投状态,显示预警邮件,是否统计未及时妥投,单位(投递维度)
-	def get_expresses_path(addr, detail_btype, status, last_unit_id, detail_business, transit_delivery, receipt_flag, receipt_status, delivered_days, receiver_province_no, receiver_city_no, delivered_status, need_alert, is_delay, parent_unit_id)
+	# 根路径, 行业市场, 状态, 网点(投递维度),客户名称(返单),是否在途,是否正向(返单),返单状态,妥投天数,收寄省,收寄市,妥投状态,显示预警邮件,是否统计未及时妥投,单位(投递维度),次日上午未妥投
+	def get_expresses_path(addr, detail_btype, status, last_unit_id, detail_business, transit_delivery, receipt_flag, receipt_status, delivered_days, receiver_province_no, receiver_city_no, delivered_status, need_alert, is_delay, parent_unit_id, undelivered_nextday)
 	  # addr = "/expresses"
 	  sep="?"
 	  industry = nil
@@ -201,6 +201,16 @@ module ReportHelper
 
 		if !parent_unit_id.blank?
 			addr += sep+"parent_unit_id=#{parent_unit_id}"
+			sep = "&"
+		end
+
+		if !undelivered_nextday.blank? && undelivered_nextday
+			addr += sep+"undelivered_nextday=#{undelivered_nextday}"
+			sep = "&"
+		end
+
+		if !params[:checkbox].blank? && (!params[:checkbox][:undelivered_nextday].blank?) && (params[:checkbox][:undelivered_nextday].eql?"1")
+		  	addr += sep+"undelivered_nextday=#{params[:checkbox][:undelivered_nextday]}"
 			sep = "&"
 		end
 		

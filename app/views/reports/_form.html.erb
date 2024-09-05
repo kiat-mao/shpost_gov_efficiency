@@ -77,6 +77,7 @@
         <td><%= text_field_tag(:delivered_date_end, params[:delivered_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:delivered_date_end]) %></td>
       </tr>
     </table>
+    <%= check_box("checkbox","undelivered_nextday", checked: @undelivered_nextday) %><b>次日上午未妥投</b></br>
   <% else %>
     <!-- 监控当日递 -->
     <% if !@day.blank? && (@day.eql?"today") %>

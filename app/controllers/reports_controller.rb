@@ -7,6 +7,11 @@ class ReportsController < ApplicationController
 		@is_market = true
 		@is_monitor = false
 		@bf_free_tax = false
+		@undelivered_nextday = false
+
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -41,6 +46,11 @@ class ReportsController < ApplicationController
   	@is_market = false
   	@is_monitor = false
   	@bf_free_tax = false
+  	@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -71,6 +81,11 @@ class ReportsController < ApplicationController
   	@is_monitor = true
   	@day = params[:day]
   	@bf_free_tax = false
+  	@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -88,6 +103,11 @@ class ReportsController < ApplicationController
 		@is_monitor = true
 		@day = params[:day]
 		@bf_free_tax = false
+		@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -105,6 +125,11 @@ class ReportsController < ApplicationController
 		@is_market = true
 		@is_monitor = false
 		@bf_free_tax = false
+		@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -123,6 +148,11 @@ class ReportsController < ApplicationController
   	@is_market = false
   	@is_monitor = false
   	@bf_free_tax = false
+  	@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -140,6 +170,11 @@ class ReportsController < ApplicationController
   	@is_market = true
   	@is_monitor = true
   	@bf_free_tax = false
+  	@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -156,6 +191,11 @@ class ReportsController < ApplicationController
 		@is_market = false
 		@is_monitor = true
 		@bf_free_tax = false
+		@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -189,6 +229,12 @@ class ReportsController < ApplicationController
   	@is_monitor = false
   	@bf_free_tax = false
   	@is_receipt = true
+  	@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
+
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -219,6 +265,11 @@ class ReportsController < ApplicationController
   	@is_monitor = false
   	@is_province = true
   	@bf_free_tax = false
+  	@undelivered_nextday = false
+		
+		if !params[:checkbox].blank? && (params[:checkbox][:undelivered_nextday].eql?"1")
+			@undelivered_nextday = true
+		end
 		if !params[:checkbox].blank? && (params[:checkbox][:bf_free_tax].eql?"1")
 			@bf_free_tax = true
 		end
@@ -298,6 +349,7 @@ class ReportsController < ApplicationController
 	    	sheet1[2,6] = "展示几日妥投率:#{params[:delivered_days_show]}"
 	    end
 	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[3,2] = "次日上午未妥投:#{(!params["undelivered_nextday"].blank? && (params["undelivered_nextday"].eql?'1')) ? '是' : ''}"
 	    
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -435,6 +487,7 @@ class ReportsController < ApplicationController
 	    	sheet1[2,6] = "展示几日妥投率:#{params[:delivered_days_show]}"
 	    end
 	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[3,2] = "次日上午未妥投:#{(!params["undelivered_nextday"].blank? && (params["undelivered_nextday"].eql?'1')) ? '是' : ''}"
 
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -602,6 +655,7 @@ class ReportsController < ApplicationController
 	    	sheet1[2,6] = "展示几日妥投率:#{params[:delivered_days_show]}"
 	    end
 	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[3,2] = "次日上午未妥投:#{(!params["undelivered_nextday"].blank? && (params["undelivered_nextday"].eql?'1')) ? '是' : ''}"
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
 	    		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
@@ -707,6 +761,7 @@ class ReportsController < ApplicationController
 	    sheet1[2,0] = "按收寄时间点:#{params["posting_hour_start"]} - #{params["posting_hour_end"]}"
 	    sheet1[2,2] = "运输方式:#{Report.get_transfer_type_name(params["transfer_type"])}"
 	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[3,2] = "次日上午未妥投:#{(!params["undelivered_nextday"].blank? && (params["undelivered_nextday"].eql?'1')) ? '是' : ''}"
 
 	    if !params[:is_monitor].eql?"true"
 	    	if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
@@ -796,6 +851,7 @@ class ReportsController < ApplicationController
 	    sheet1[2,6] = "运输方式:#{Report.get_transfer_type_name(params["transfer_type"])}"
 	    sheet1[2,8] = "展示几日妥投率:#{params[:delivered_days_show]}"
 	    sheet1[3,0] = "是否保税仓邮件:#{(!params["bf_free_tax"].blank? && (params["bf_free_tax"].eql?'1')) ? '是' : ''}"
+	    sheet1[3,2] = "次日上午未妥投:#{(!params["undelivered_nextday"].blank? && (params["undelivered_nextday"].eql?'1')) ? '是' : ''}"
 	    if !params[:search_time].blank? && (params[:search_time].eql?"by_m")
     		start_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.at_beginning_of_month.strftime("%Y-%m-%d")
       	end_date = (params[:year] + params[:month].rjust(2, '0')+"01").to_date.end_of_month.strftime("%Y-%m-%d")

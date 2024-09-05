@@ -4,6 +4,9 @@ class ExpressesController < ApplicationController
   # GET /expresses
   # GET /expresses.json
   def index
+    @need_alert = params[:need_alert]
+    @undelivered_nextday = params[:undelivered_nextday]
+
     if (params[:industry].is_a?String) && (params[:industry].include?",")
       params[:industry] = params[:industry].split(",")
     end

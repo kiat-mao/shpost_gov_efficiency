@@ -496,6 +496,14 @@ class Report
       expresses = expresses.where(last_unit_id: last_unit_ids)
     end
 
+    if !params[:checkbox].blank? && (!params[:checkbox][:undelivered_nextday].blank?) && (params[:checkbox][:undelivered_nextday].eql?"1")
+      expresses = expresses.where.not(status: "delivered").or(expresses.where("status=? and delivered_days>?", "delivered", 0.5))
+    end
+    # from link
+    if !params[:undelivered_nextday].blank? && (params[:undelivered_nextday].eql?"1")
+      expresses = expresses.where.not(status: "delivered").or(expresses.where("status=? and delivered_days>?", "delivered", 0.5))
+    end
+
     return expresses
   end
 
