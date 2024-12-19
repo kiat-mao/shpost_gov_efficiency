@@ -10,7 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_04_10_015032) do
+ActiveRecord::Schema.define(version: 2024_12_10_063353) do
+
+  create_table "air_mails", force: :cascade do |t|
+    t.string "mail_no"
+    t.string "sender_province_name"
+    t.string "sender_city_name"
+    t.string "sender_county_name"
+    t.decimal "real_weight"
+    t.decimal "fee_weight"
+    t.decimal "order_weight"
+    t.decimal "postage_paid"
+    t.decimal "postage_total"
+    t.datetime "posting_date"
+    t.string "transfer_type"
+    t.datetime "flight_date"
+    t.string "last_unit_name"
+    t.datetime "last_op_at"
+    t.string "last_op_desc"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "arrive_jm_at"
+    t.string "flight_number"
+    t.string "direction"
+    t.index ["direction"], name: "index_air_mails_on_direction"
+    t.index ["flight_number"], name: "index_air_mails_on_flight_number"
+    t.index ["mail_no"], name: "index_air_mails_on_mail_no"
+  end
 
   create_table "areas", force: :cascade do |t|
     t.string "code"
@@ -38,8 +64,8 @@ ActiveRecord::Schema.define(version: 2023_04_10_015032) do
     t.index ["btype"], name: "index_businesses_on_btype"
   end
 
-  create_table "country_time_limits", force: :cascade do |t|
-    t.string "country", null: false
+  create_table "countries", force: :cascade do |t|
+    t.string "name", null: false
     t.integer "interchange1"
     t.integer "interchange2"
     t.integer "air"
@@ -99,14 +125,55 @@ ActiveRecord::Schema.define(version: 2023_04_10_015032) do
     t.index ["whereis"], name: "index_expresses_on_whereis"
   end
 
+  create_table "import_files", force: :cascade do |t|
+    t.string "file_name", null: false
+    t.string "file_path", default: "", null: false
+    t.integer "user_id"
+    t.integer "unit_id"
+    t.integer "country_id"
+    t.string "batch_no"
+    t.string "status"
+    t.string "desc"
+    t.string "err_file_path"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "international_expresses", force: :cascade do |t|
     t.string "express_no"
-    t.integer "country_time_limit_id"
+    t.integer "country_id"
     t.integer "business_id"
-    t.date "posting_date"
+    t.datetime "posting_date"
     t.string "receiver_postcode"
     t.float "weight"
-    t.integer "zone_id"
+    t.integer "receiver_zone_id"
+    t.integer "import_file_id"
+    t.string "status"
+    t.boolean "is_arrived"
+    t.datetime "arrived_at"
+    t.integer "arrived_hours"
+    t.boolean "is_leaved"
+    t.datetime "leaved_at"
+    t.integer "leaved_hours"
+    t.boolean "is_leaved_orig"
+    t.datetime "leaved_orig_at"
+    t.boolean "leaved_orig_after_18"
+    t.boolean "is_leaved_center"
+    t.datetime "leaved_center_at"
+    t.integer "leaved_center_hours"
+    t.boolean "is_takeoff"
+    t.datetime "takeoff_at"
+    t.integer "takeoff_hours"
+    t.datetime "last_op_at"
+    t.string "last_op_desc"
+    t.string "last_unit_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["business_id"], name: "index_international_expresses_on_business_id"
+    t.index ["country_id"], name: "index_international_expresses_on_country_id"
+    t.index ["is_leaved_center"], name: "index_international_expresses_on_is_leaved_center"
+    t.index ["receiver_zone_id"], name: "index_international_expresses_on_receiver_zone_id"
+    t.index ["status"], name: "index_international_expresses_on_status"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -121,7 +188,7 @@ ActiveRecord::Schema.define(version: 2023_04_10_015032) do
 
   create_table "receiver_zones", force: :cascade do |t|
     t.string "zone", null: false
-    t.string "country_time_limit_id", null: false
+    t.integer "country_id", null: false
     t.string "start_postcode", null: false
     t.string "end_postcode", null: false
   end
