@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_12_10_063353) do
+ActiveRecord::Schema.define(version: 2024_12_20_025457) do
 
   create_table "air_mails", force: :cascade do |t|
     t.string "mail_no"
@@ -33,9 +33,16 @@ ActiveRecord::Schema.define(version: 2024_12_10_063353) do
     t.datetime "arrive_jm_at"
     t.string "flight_number"
     t.string "direction"
+    t.integer "post_unit_id"
+    t.integer "last_unit_id"
+    t.string "post_unit_no"
+    t.string "post_unit_name"
+    t.string "last_unit_no"
     t.index ["direction"], name: "index_air_mails_on_direction"
     t.index ["flight_number"], name: "index_air_mails_on_flight_number"
+    t.index ["last_unit_id"], name: "index_air_mails_on_last_unit_id"
     t.index ["mail_no"], name: "index_air_mails_on_mail_no"
+    t.index ["post_unit_id"], name: "index_air_mails_on_post_unit_id"
   end
 
   create_table "areas", force: :cascade do |t|
