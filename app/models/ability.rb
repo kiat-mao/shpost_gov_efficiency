@@ -29,6 +29,7 @@ class Ability
 			can :manage, ReceiverZone
 			can :manage, InternationalExpress
 			can :manage, ImportFile
+			can :manage, AirMail
 			#can :manage, User
 		elsif user.company_admin?
 			can :manage, Unit
@@ -55,6 +56,7 @@ class Ability
 			can "report", "DeliverUnitReport"
 			can "report", "InternationalExpressReport"
 			can [:read, :details], Message
+			can :manage, AirMail
 		elsif user.unitadmin?
 			can [:read, :user], Unit, id: user.unit.id
 			can :read, Unit, parent_id: user.unit.id

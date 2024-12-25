@@ -171,6 +171,19 @@ zh-CN:
           needrole:
             can: :read
             role: :InternationalExpress
+    air_mail:
+      name: "邮航进出口邮件导出"
+      needrole:
+        can: :read
+        role: :AirMail
+      submenu:
+        message:
+          name: "邮航进出口邮件导出"
+          link: "/air_mails/export"
+          need_count: false
+          needrole:
+            can: :read
+            role: :AirMail
     # receiver_query:
     #   name: "收件人信息查询"
     #   submenu:
@@ -191,6 +204,7 @@ zh-CN:
           needrole:
             can: :read
             role: :Message
+    
     # up_downloads:
     #   name: "模板管理"
     #   needrole:

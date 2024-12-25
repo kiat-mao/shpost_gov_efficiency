@@ -1,0 +1,26 @@
+
+<br>
+<font face="微软雅黑" color='#006030' size=6>邮航进出口邮件导出</font>   
+<%= form_tag(export_air_mails_path, name: 'form1', method: 'post') do %>
+<table>
+	<tr style="line-height: 40px;height: 40px;">
+    <td><%= label_tag(:flight_date_start, "起飞时间:") %></td>
+    <td><%= text_field_tag(:flight_date_start, params[
+      :flight_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:flight_date_start].blank? ? Date.today : params[:flight_date_start]) %></td>
+    <td><%= label_tag(:flight_date_end, "-") %></td>
+    <td><%= text_field_tag(:flight_date_end, params[:flight_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:flight_date_end].blank? ? Date.today : params[:flight_date_end]) %></td>
+  </tr>
+  <tr style="line-height: 40px;height: 40px;">
+  	<td><%= label_tag(:direction, "进口/出口:") %></td>
+    <td><%= select_tag(:direction, options_for_select(AirMail::DIRECTION.invert.to_a, :selected=>params[:direction])) %></td> 
+  </tr>
+  <tr>
+    <td>
+    	<%= submit_tag "导出", :class => 'btn btn-primary' %>
+  	</td>
+  </tr>
+</table>
+<table>
+<% end -%>    
+  
+<br>

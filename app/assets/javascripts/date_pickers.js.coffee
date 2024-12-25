@@ -26,3 +26,11 @@ ready = ->
     autoclose: true,
     clearBtn: true,
     language: "zh-CN"});
+  $('#flight_date_start').datepicker({
+    autoclose: true,
+    clearBtn: true,
+    language: "zh-CN"});
+  $('#flight_date_end').datepicker({
+    autoclose: true,
+    clearBtn: true,
+    language: "zh-CN"});
