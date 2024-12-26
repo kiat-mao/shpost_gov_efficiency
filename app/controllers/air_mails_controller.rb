@@ -4,7 +4,7 @@ class AirMailsController < ApplicationController
 		unless request.get?
 			# byebug
 			flight_date_start = params[:flight_date_start].blank? ? Date.today : params[:flight_date_start].to_date
-			flight_date_end = params[:flight_date_end].blank? ? Date.today+1.day : params[:flight_date_end].to_date+1.day
+			flight_date_end = params[:flight_date_end].blank? ? Date.today+10.hours : params[:flight_date_end].to_date+10.hours
 			direction = params[:direction]
 
 			results = AirMail.where("air_mails.flight_date >= ? and air_mails.flight_date < ? and air_mails.direction = ?",flight_date_start, flight_date_end, direction)
@@ -26,7 +26,7 @@ class AirMailsController < ApplicationController
     title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体", :weight => :bold
     body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体"
 
-    sheet1[0,0] = "起飞时间:#{params["flight_date_start"]}~#{params["flight_date_end"]}"
+    sheet1[0,0] = "起飞时间:#{params["flight_date_start"]} 00:00:00 ~ #{params["flight_date_end"]} 10:00:00"
     sheet1[1,0] = "进口/出口: #{AirMail::DIRECTION["#{params[:direction]}".to_sym]}"
     sheet1.row(0).default_format = filter
     sheet1.row(1).default_format = filter
