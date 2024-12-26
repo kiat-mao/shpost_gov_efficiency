@@ -135,6 +135,13 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :air_mails do
+    collection do
+      get 'export'
+      post 'export'
+    end
+  end
+
   # match "/reports/deliver_market_report" => "reports#deliver_market_report", via: [:get, :post]
   
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
