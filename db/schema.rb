@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_12_20_025457) do
+ActiveRecord::Schema.define(version: 2025_01_07_022336) do
 
   create_table "air_mails", force: :cascade do |t|
     t.string "mail_no"
@@ -38,6 +38,20 @@ ActiveRecord::Schema.define(version: 2024_12_20_025457) do
     t.string "post_unit_no"
     t.string "post_unit_name"
     t.string "last_unit_no"
+    t.string "status"
+    t.string "whereis"
+    t.datetime "leave_jm_at"
+    t.string "transfer_center_unit_no"
+    t.datetime "arrive_center_at"
+    t.datetime "leave_center_at"
+    t.boolean "is_arrive_jm"
+    t.boolean "is_leave_jm"
+    t.boolean "is_arrive_center"
+    t.boolean "is_leave_center"
+    t.boolean "is_leave_center_in_time"
+    t.boolean "is_arrive_sub"
+    t.boolean "is_in_delivery"
+    t.boolean "is_delivered_in_time"
     t.index ["direction"], name: "index_air_mails_on_direction"
     t.index ["flight_number"], name: "index_air_mails_on_flight_number"
     t.index ["last_unit_id"], name: "index_air_mails_on_last_unit_id"
