@@ -1,9 +1,6 @@
 class AddColumnsToAirMails < ActiveRecord::Migration[6.0]
   def change
-    add_column :air_mails, :leave_jm_at, :datetime
     add_column :air_mails, :transfer_center_unit_no, :string
-    add_column :air_mails, :arrive_center_at, :datetime
-    add_column :air_mails, :leave_center_at, :datetime
     add_column :air_mails, :is_arrive_jm, :boolean
     add_column :air_mails, :is_leave_jm, :boolean
     add_column :air_mails, :is_arrive_center, :boolean
