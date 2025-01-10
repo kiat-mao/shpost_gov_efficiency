@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_07_022336) do
+ActiveRecord::Schema.define(version: 2025_01_07_062452) do
 
   create_table "air_mails", force: :cascade do |t|
     t.string "mail_no"
@@ -52,11 +52,14 @@ ActiveRecord::Schema.define(version: 2025_01_07_022336) do
     t.boolean "is_arrive_sub"
     t.boolean "is_in_delivery"
     t.boolean "is_delivered_in_time"
+    t.index "\"last_unit\", \"is_arrive_sub\", \"is_in_delivery\", \"is_delivered_in_time\"", name: "index_air_mail_delivery_report"
     t.index ["direction"], name: "index_air_mails_on_direction"
     t.index ["flight_number"], name: "index_air_mails_on_flight_number"
+    t.index ["is_arrive_jm", "is_leave_jm"], name: "index_air_mail_jm_report"
     t.index ["last_unit_id"], name: "index_air_mails_on_last_unit_id"
     t.index ["mail_no"], name: "index_air_mails_on_mail_no"
     t.index ["post_unit_id"], name: "index_air_mails_on_post_unit_id"
+    t.index ["transfer_center_unit_no", "is_arrive_center", "is_leave_center", "is_leave_center_in_time"], name: "index_air_mail_center_report"
   end
 
   create_table "areas", force: :cascade do |t|
