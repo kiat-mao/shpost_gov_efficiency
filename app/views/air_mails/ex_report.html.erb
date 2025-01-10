@@ -1,0 +1,30 @@
+<br>
+<font face="微软雅黑" color='#006030' size=6>邮航出口邮件报表</font>   
+<%= form_tag(ex_report_air_mails_path, name: 'form', method: 'post') do %>
+<table>
+  <tr style="line-height: 40px;height: 40px;"> 
+  	<td><%= label_tag(:posting_date_start, "收寄时间:") %></td>
+    <td><%= text_field_tag(:posting_date_start, params[
+      :posting_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:posting_date_start].blank? ? Date.yesterday : params[:posting_date_start]) %></td>
+    <td><%= label_tag(:posting_date_end, "-") %></td>
+    <td><%= text_field_tag(:posting_date_end, params[:posting_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:posting_date_end].blank? ? Date.yesterday : params[:posting_date_end]) %></td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td>
+      <div id="search">
+        <%= submit_tag "查询", :class => 'btn btn-primary showmask', method: :post %>
+      </div>
+    </td>
+    <td>
+      <div id="export">
+        <%= link_to "导出", ex_report_export_air_mails_path(posting_date_start: @posting_date_start, posting_date_end: @posting_date_end), :class => 'btn btn-primary' , method: :post%>
+      </div>
+    </td>
+  </tr>
+</table>
+<%= hidden_field_tag('is_search', @is_search) %> 
+<% end -%>    
+<br>
+<%= render :partial => 'ex_report_result' %>

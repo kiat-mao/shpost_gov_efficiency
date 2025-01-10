@@ -172,14 +172,28 @@ zh-CN:
             can: :read
             role: :InternationalExpress
     air_mail:
-      name: "邮航进出口邮件导出"
+      name: "邮航进出口邮件管理"
       needrole:
         can: :read
         role: :AirMail
       submenu:
-        message:
+        export:
           name: "邮航进出口邮件导出"
           link: "/air_mails/export"
+          need_count: false
+          needrole:
+            can: :read
+            role: :AirMail
+        ex_report:
+          name: "邮航出口邮件报表"
+          link: "/air_mails/ex_report"
+          need_count: false
+          needrole:
+            can: :read
+            role: :AirMail
+        imp_report:
+          name: "邮航进口邮件报表"
+          link: "/air_mails/imp_report"
           need_count: false
           needrole:
             can: :read

@@ -1,0 +1,55 @@
+<% if !@results.blank? %>
+  <table data-toggle="table" 
+  data-height="700">
+    <thead>
+      <tr class= 'nowrap'>
+        <th><b>所属上级机构</b></th>
+        <th><b>收寄机构名称</b></th>
+        <th><b>计数</b></th>
+        <th><b>重量(g)</b></th>
+        <th><b>邮资</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 收寄机构: @results[0][收寄机构id] = [0上级单位id, 1上级单位名称, 2单位名称, 3计数, 4重量, 5邮资] -->
+      <!-- 上级单位小计: @results[1][上级单位id] = [0"小计", 1计数, 2重量, 3邮资] -->
+      <!-- 合计: @results[2] = [0计数, 1重量, 2邮资] -->
+      <% last_pid = @results[0].values[0] %>
+      <% @results[0].each do |k, v| %>
+        <!-- 上级单位不同，加小计 -->
+        <% if (v[0] != last_pid) && !@results[1][last_pid].blank? %>
+          <tr class= 'nowrap'>
+            <td><%= @results[1][last_pid][0] %></td>
+            <td></td>
+            <td><u><%= link_to @results[1][last_pid][1], air_mails_path(direction: "export", posting_date_start: @posting_date_start, posting_date_end: @posting_date_end, parent_unit_id: last_pid), target: '_blank' %></u></td>
+            <td><%= @results[1][last_pid][2] %></td>
+            <td><%= @results[1][last_pid][3] %></td>
+          </tr>
+        <% end %>
+        <!-- 收寄机构 -->
+        <tr class= 'nowrap'>
+          <td><%= k.blank? ? "" : ((v[0] == last_pid) ? "" : v[1]) %></td>
+          <td><%= k.blank? ? "其他" : v[2] %></td>
+          <td><u><%= link_to v[3], air_mails_path(direction: "export", posting_date_start: @posting_date_start, posting_date_end: @posting_date_end, post_unit_id: k), target: '_blank' %></u></td>
+          <td><%= v[4] %></td>
+          <td><%= v[5] %></td>
+          <% last_pid = v[0] %>
+        </tr>
+      <% end %>
+      <tr class= 'nowrap'>
+        <td><%= @results[1][last_pid][0] %></td>
+        <td></td>
+        <td><u><%= link_to @results[1][last_pid][1], air_mails_path(direction: "export", posting_date_start: @posting_date_start, posting_date_end: @posting_date_end, parent_unit_id: last_pid), target: '_blank' %></u></td>
+        <td><%= @results[1][last_pid][2] %></td>
+        <td><%= @results[1][last_pid][3] %></td>
+      </tr>
+      <tr class= 'nowrap'>
+        <td>合计</td>
+        <td></td>
+        <td><u><%= link_to @results[2][0], air_mails_path(direction: "export", posting_date_start: @posting_date_start, posting_date_end: @posting_date_end), target: '_blank' %></u></td>
+        <td><%= @results[2][1] %></td>
+        <td><%= @results[2][2] %></td>
+      </tr>
+    </tbody>
+  </table>
+<% end %>

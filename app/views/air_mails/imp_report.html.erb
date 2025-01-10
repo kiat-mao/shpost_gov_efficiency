@@ -1,0 +1,36 @@
+<br>
+<font face="微软雅黑" color='#006030' size=6>邮航进口邮件报表</font>   
+<%= form_tag(imp_report_air_mails_path, name: 'form', method: 'post') do %>
+<table>
+  <tr style="line-height: 40px;height: 40px;"> 
+  	<td><%= label_tag(:flight_date_start, "航班降落日期:") %></td>
+    <td><%= text_field_tag(:flight_date_start, params[
+      :flight_date_start], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:flight_date_start].blank? ? Date.today : params[:flight_date_start]) %></td>
+    <td><%= label_tag(:flight_date_end, "-") %></td>
+    <td><%= text_field_tag(:flight_date_end, params[:flight_date_end], class: 'datepicker', 'data-date-format' => 'yyyy-mm-dd', value: params[:flight_date_end].blank? ? Date.today : params[:flight_date_end]) %></td>
+  </tr>
+  <tr style="line-height: 40px;height: 40px;">
+    <td><%= label_tag(:flight_number, "航班号:") %></td>
+    <td><%= check_box_tag 'fno1', 'fno1', @fno1.blank? ? false : @fno1 %>CF9025</td>
+    <td><%= check_box_tag 'fno2', 'fno2', @fno2.blank? ? false : @fno2 %>CF9115</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td>
+      <div id="search">
+        <%= submit_tag "查询", :class => 'btn btn-primary showmask', method: :post %>
+      </div>
+    </td>
+    <td>
+      <div id="export">
+        <%= link_to "导出", get_air_mails_path("/air_mails/imp_report_export", nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary' , method: :post %>
+      </div>
+    </td>
+  </tr>
+</table>
+<%= hidden_field_tag('is_search', @is_search) %> 
+<%= hidden_field_tag('direction', "import") %>
+<% end -%>    
+<br>
+<%= render :partial => 'imp_report_result' %>
