@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_07_062452) do
+ActiveRecord::Schema.define(version: 2025_01_08_064303) do
 
   create_table "air_mails", force: :cascade do |t|
     t.string "mail_no"
@@ -30,7 +30,6 @@ ActiveRecord::Schema.define(version: 2025_01_07_062452) do
     t.string "last_op_desc"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.datetime "arrive_jm_at"
     t.string "flight_number"
     t.string "direction"
     t.integer "post_unit_id"
@@ -40,18 +39,23 @@ ActiveRecord::Schema.define(version: 2025_01_07_062452) do
     t.string "last_unit_no"
     t.string "status"
     t.string "whereis"
-    t.datetime "leave_jm_at"
     t.string "transfer_center_unit_no"
+    t.boolean "is_arrive_jm", default: false
+    t.boolean "is_leave_jm", default: false
+    t.boolean "is_arrive_center", default: false
+    t.boolean "is_leave_center", default: false
+    t.boolean "is_leave_center_in_time", default: false
+    t.boolean "is_arrive_sub", default: false
+    t.boolean "is_in_delivery", default: false
+    t.boolean "is_delivered_in_time", default: false
+    t.datetime "arrive_jm_at"
+    t.datetime "leave_jm_at"
     t.datetime "arrive_center_at"
     t.datetime "leave_center_at"
-    t.boolean "is_arrive_jm"
-    t.boolean "is_leave_jm"
-    t.boolean "is_arrive_center"
-    t.boolean "is_leave_center"
-    t.boolean "is_leave_center_in_time"
-    t.boolean "is_arrive_sub"
-    t.boolean "is_in_delivery"
-    t.boolean "is_delivered_in_time"
+    t.datetime "arrive_sub_at"
+    t.datetime "leave_sub_at"
+    t.datetime "in_delivery_at"
+    t.datetime "delivered_at"
     t.index "\"last_unit\", \"is_arrive_sub\", \"is_in_delivery\", \"is_delivered_in_time\"", name: "index_air_mail_delivery_report"
     t.index ["direction"], name: "index_air_mails_on_direction"
     t.index ["flight_number"], name: "index_air_mails_on_flight_number"
