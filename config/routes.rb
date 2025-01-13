@@ -137,8 +137,14 @@ Rails.application.routes.draw do
 
   resources :air_mails do
     collection do
-      get 'export'
+      get 'export'           #邮航进出口邮件导出
       post 'export'
+      get 'ex_report'    #邮航出口邮件报表
+      post 'ex_report'
+      post 'ex_report_export' => 'air_mails#ex_report_export' #邮航出口邮件报表导出  
+      get 'imp_report'    #邮航进口邮件报表
+      post 'imp_report'
+      post 'imp_report_export' => 'air_mails#imp_report_export' #邮航进口邮件报表导出 
     end
   end
 

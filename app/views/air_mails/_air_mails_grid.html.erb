@@ -1,0 +1,39 @@
+<%- model_class = AirMail -%>
+
+<%= grid(@air_mails_grid) do |g|
+    g.column name: model_class.human_attribute_name(:mail_no), attribute: 'mail_no'
+
+    g.column name: model_class.human_attribute_name(:sender_province_name), attribute: 'sender_province_name'
+
+    g.column name: model_class.human_attribute_name(:sender_city_name), attribute: 'sender_city_name'
+
+    g.column name: model_class.human_attribute_name(:sender_county_name), attribute: 'sender_county_name'
+
+    g.column name: model_class.human_attribute_name(:fee_weight), attribute: 'fee_weight'
+
+    g.column name: model_class.human_attribute_name(:postage_total), attribute: 'postage_total'
+
+    g.column name: model_class.human_attribute_name(:posting_date), attribute: 'posting_date' do |air_mail|
+      l air_mail.posting_date
+    end
+
+    g.column name: model_class.human_attribute_name(:flight_date), attribute: 'flight_date' do |air_mail|
+      l air_mail.flight_date
+    end
+
+    g.column name: model_class.human_attribute_name(:flight_number), attribute: 'flight_number'
+
+    g.column name: model_class.human_attribute_name(:direction), attribute: 'direction' do |air_mail|
+    	AirMail::DIRECTION["#{air_mail.direction}".to_sym]
+    end
+
+    g.column name: model_class.human_attribute_name(:post_unit_no), attribute: 'post_unit_no'
+
+    g.column name: model_class.human_attribute_name(:post_unit_name), attribute: 'post_unit_name'
+
+    g.column name: '收寄区分公司', attribute: 'name', assoc: :post_parent_unit, table_alias: 'post_parent_units_air_mails' do |air_mail|
+      air_mail.post_parent_unit.try(:name)
+  end
+
+end 
+%>

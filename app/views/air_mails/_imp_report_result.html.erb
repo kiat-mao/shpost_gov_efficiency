@@ -1,0 +1,91 @@
+<% if !@results.blank? %>
+  <b>到沪（嘉民）</b>
+</br></br>
+  <table data-toggle="table">
+    <thead>
+      <tr class= 'nowrap'>
+        <th><b>A航班</b></th>
+        <th><b>B航班件数</b></th>
+        <th><b>C嘉民接收</b></th>
+        <th><b>D差异（B-C）</b></th>
+        <th><b>E嘉民发出</b></th>
+        <th><b>H总差异(C-E)</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- @results[0]=t1_results[a航班号] = [b航班件数, c嘉民接收, d差异(航班件数-嘉民接收), e嘉民发出, h总差异(嘉民接收-嘉民发出)] -->
+      <% @results[0].each do |k, v| %>
+        <tr class= 'nowrap'>
+          <td><%= k %></td>
+          <td><u><%= link_to v[0], get_air_mails_path("/air_mails", k, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+          <td><u><%= link_to v[1], get_air_mails_path("/air_mails", k, "true", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+          <td><u><%= link_to v[2], get_air_mails_path("/air_mails", k, "false", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+          <td><u><%= link_to v[3], get_air_mails_path("/air_mails", k, nil, "true", nil, nil, nil, nil), target: '_blank' %></u></td>
+          <td><u><%= link_to v[4], get_air_mails_path("/air_mails", k, "true", "false", nil, nil, nil, nil), target: '_blank' %></u></td>
+        </tr>
+      <% end %>
+      <!-- 合计 -->
+      <tr class= 'nowrap'>
+        <td><%= @results[1][0] %></td>
+        <td><u><%= link_to @results[1][1], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[1][2], get_air_mails_path("/air_mails", nil, "true", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[1][3], get_air_mails_path("/air_mails", nil, "false", nil, nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[1][4], get_air_mails_path("/air_mails", nil, nil, "true", nil, nil, nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[1][5], get_air_mails_path("/air_mails", nil, "true", "false", nil, nil, nil, nil), target: '_blank' %></u></td>
+      </tr>
+    </tbody>
+  </table>
+
+  </br>
+
+  <table data-toggle="table">
+    <thead>
+      <tr class= 'nowrap'>
+        <th><b>A航班</b></th>
+        <th><b>B处理中心</b></th>
+        <th><b>C处理中心到达</b></th>
+        <th><b>D处理中心发往下一站(实时)</b></th>
+        <th><b>E实时差异(C-D)</b></th>
+        <th><b>F处理中心发往下一站(15点前)</b></th>
+        <th><b>截止15点前差异(C-F)</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- @results[2] = t2_results[a航班号, b处理中心] = [c处理中心到达, d处理中心发往下一站(实时), e实时差异(处理中心到达-处理中心发往下一站), f处理中心发往下一站(15点前), g截止15点前差异(处理中心到达-处理中心发往下一站(15点前))] -->
+      <% last_flight_no = @results[2].keys[0][0] %>
+      <% @results[2].each do |k, v| %>
+      <!-- 航班号不同，加小计 -->
+        <% if (k[0] != last_flight_no) && !@results[3][last_flight_no].blank? %>
+          <tr class= 'nowrap'>
+            <td></td>
+            <td><%= @results[3][last_flight_no][0] %></td>
+            <td><u><%= link_to @results[3][last_flight_no][1], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, "true", nil, nil), target: '_blank' %></u></td>
+            <td><u><%= link_to @results[3][last_flight_no][2], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, nil, "true", nil), target: '_blank, nil' %></u></td>
+            <td><u><%= link_to @results[3][last_flight_no][3], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, "true", "false", nil), target: '_blank' %></u></td>
+            <td><u><%= link_to @results[3][last_flight_no][4], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, nil, nil, "true"), target: '_blank' %></u></td>
+            <td><u><%= link_to @results[3][last_flight_no][5], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, "true", nil, "false"), target: '_blank' %></u></td>
+          </tr>
+        <% end %>
+        <tr class= 'nowrap'>
+          <td><%= (k.eql?@results[2].keys[0]) ? k[0] : ((k[0].eql?last_flight_no) ? "" : k[0]) %></td>
+          <td><%= v[5] %></td>
+          <td><u><%= link_to v[0], get_air_mails_path("/air_mails", k[0], nil, nil, k[1], "true", nil, nil), target: '_blank' %></u></td>
+          <td><u><%= link_to v[1], get_air_mails_path("/air_mails", k[0], nil, nil, k[1], nil, "true", nil), target: '_blank, nil' %></u></td>
+          <td><u><%= link_to v[2], get_air_mails_path("/air_mails", k[0], nil, nil, k[1], "true", "false", nil), target: '_blank' %></u></td>
+          <td><u><%= link_to v[3], get_air_mails_path("/air_mails", k[0], nil, nil, k[1], nil, nil, "true"), target: '_blank' %></u></td>
+          <td><u><%= link_to v[4], get_air_mails_path("/air_mails", k[0], nil, nil, k[1], "true", nil, "false"), target: '_blank' %></u></td>
+        </tr>
+        <% last_flight_no = k[0] %>
+      <% end %>
+      <tr class= 'nowrap'>
+        <td></td>
+        <td><%= @results[3][last_flight_no][0] %></td>
+        <td><u><%= link_to @results[3][last_flight_no][1], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, "true", nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[3][last_flight_no][2], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, nil, "true", nil), target: '_blank, nil' %></u></td>
+        <td><u><%= link_to @results[3][last_flight_no][3], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, "true", "false", nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[3][last_flight_no][4], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, nil, nil, "true"), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[3][last_flight_no][5], get_air_mails_path("/air_mails", last_flight_no, nil, nil, nil, "true", nil, "false"), target: '_blank' %></u></td>
+      </tr>
+    </tbody>
+  </table>
+<% end %>

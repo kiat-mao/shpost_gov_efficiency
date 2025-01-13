@@ -251,6 +251,9 @@ zh-CN:
       international_express:
         one: 国际邮件
         other: 国际邮件
+      air_mail:
+        one: 邮航进出口邮件
+        other: 邮航进出口邮件
     attributes:
       user:
         email: "电子邮件"
@@ -384,6 +387,19 @@ zh-CN:
         last_op_at: "最后操作时间"
         last_op_desc: "最后操作信息"
         last_unit_name: "最后所在单位"
+      air_mail:
+        mail_no: "运单号"
+        sender_province_name: "寄件省份名称"
+        sender_city_name: "寄件城市名称"
+        sender_county_name: "寄件区县名称"
+        fee_weight: "重量"
+        postage_total: "邮资"
+        posting_date: "收寄时间"
+        flight_date: "起飞时间"
+        flight_number: "航班号"
+        direction: "进口/出口"
+        post_unit_no: "收寄机构号"
+        post_unit_name: "收寄机构名称"
   user_navigation:
     update_self: "个人信息"
     show_unit: "单位信息"
