@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2025_01_08_064303) do
     t.string "last_op_desc"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "arrive_jm_at"
     t.string "flight_number"
     t.string "direction"
     t.integer "post_unit_id"
@@ -48,7 +49,6 @@ ActiveRecord::Schema.define(version: 2025_01_08_064303) do
     t.boolean "is_arrive_sub", default: false
     t.boolean "is_in_delivery", default: false
     t.boolean "is_delivered_in_time", default: false
-    t.datetime "arrive_jm_at"
     t.datetime "leave_jm_at"
     t.datetime "arrive_center_at"
     t.datetime "leave_center_at"
