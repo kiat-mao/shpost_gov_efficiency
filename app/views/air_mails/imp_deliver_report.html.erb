@@ -1,6 +1,6 @@
 <br>
-<font face="微软雅黑" color='#006030' size=6>邮航进口邮件报表</font>   
-<%= form_tag(imp_report_air_mails_path, name: 'form', method: 'post') do %>
+<font face="微软雅黑" color='#006030' size=6>邮航进口投递报表</font>   
+<%= form_tag(imp_deliver_report_air_mails_path, name: 'form', method: 'post') do %>
 <table>
   <tr style="line-height: 40px;height: 40px;"> 
   	<td><%= label_tag(:flight_date_start, "航班降落日期:") %></td>
@@ -24,7 +24,7 @@
     </td>
     <td>
       <div id="export">
-        <%= link_to "导出", get_air_mails_path("/air_mails/imp_report_export", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary' , method: :post %>
+        <%= link_to "导出", get_air_mails_path("/air_mails/imp_deliver_report_export", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), :class => 'btn btn-primary' , method: :post %>
       </div>
     </td>
   </tr>
@@ -33,4 +33,4 @@
 <%= hidden_field_tag('direction', "import") %>
 <% end -%>    
 <br>
-<%= render :partial => 'imp_report_result' %>
+<%= render :partial => 'imp_deliver_report_result' %>

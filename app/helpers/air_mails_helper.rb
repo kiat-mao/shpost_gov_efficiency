@@ -1,5 +1,5 @@
 module AirMailsHelper
-	def get_air_mails_path(addr, flight_num, is_arrive_jm, is_leave_jm, transfer_center_unit_no, is_arrive_center, is_leave_center, is_leave_center_in_time)
+	def get_air_mails_path(addr, flight_num, is_arrive_jm, is_leave_jm, transfer_center_unit_no, is_arrive_center, is_leave_center, is_leave_center_in_time, last_unit_id, parent_last_unit_id, is_arrive_sub, is_in_delivery, is_delivered_in_time)
 		sep="?"
 
 		if !params[:flight_date_start].blank?
@@ -59,6 +59,31 @@ module AirMailsHelper
 
 		if !is_leave_center_in_time.blank?
 			addr += sep+"is_leave_center_in_time=#{is_leave_center_in_time}"
+			sep = "&"
+		end
+
+		if !last_unit_id.blank?
+			addr += sep+"last_unit_id=#{last_unit_id}"
+			sep = "&"
+		end
+
+		if !parent_last_unit_id.blank?
+			addr += sep+"parent_last_unit_id=#{parent_last_unit_id}"
+			sep = "&"
+		end
+
+		if !is_arrive_sub.blank?
+			addr += sep+"is_arrive_sub=#{is_arrive_sub}"
+			sep = "&"
+		end
+
+		if !is_in_delivery.blank?
+			addr += sep+"is_in_delivery=#{is_in_delivery}"
+			sep = "&"
+		end
+
+		if !is_delivered_in_time.blank?
+			addr += sep+"is_delivered_in_time=#{is_delivered_in_time}"
 			sep = "&"
 		end
 

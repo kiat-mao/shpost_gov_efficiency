@@ -145,6 +145,13 @@ Rails.application.routes.draw do
       get 'imp_report'    #邮航进口邮件报表
       post 'imp_report'
       post 'imp_report_export' => 'air_mails#imp_report_export' #邮航进口邮件报表导出 
+      get 'imp_deliver_report'    #邮航进口投递报表
+      post 'imp_deliver_report'
+      post 'imp_deliver_report_export' => 'air_mails#imp_deliver_report_export' #邮航进口邮件报表导出 
+    end
+    member do
+      get 'get_mail_trace'
+      post 'get_mail_trace'
     end
   end
 
