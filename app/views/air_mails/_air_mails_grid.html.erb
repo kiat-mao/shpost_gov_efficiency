@@ -23,17 +23,21 @@
 
     g.column name: model_class.human_attribute_name(:flight_number), attribute: 'flight_number'
 
-    g.column name: model_class.human_attribute_name(:direction), attribute: 'direction' do |air_mail|
-    	AirMail::DIRECTION["#{air_mail.direction}".to_sym]
-    end
+    # g.column name: model_class.human_attribute_name(:direction), attribute: 'direction' do |air_mail|
+    # 	AirMail::DIRECTION["#{air_mail.direction}".to_sym]
+    # end
 
     g.column name: model_class.human_attribute_name(:post_unit_no), attribute: 'post_unit_no'
 
     g.column name: model_class.human_attribute_name(:post_unit_name), attribute: 'post_unit_name'
 
-    g.column name: '收寄区分公司', attribute: 'name', assoc: :post_parent_unit, table_alias: 'post_parent_units_air_mails' do |air_mail|
-      air_mail.post_parent_unit.try(:name)
-  end
+    # g.column name: '收寄区分公司', attribute: 'name', assoc: :post_parent_unit, table_alias: 'post_parent_units_air_mails' do |air_mail|
+    #   air_mail.post_parent_unit.try(:name)
+    # end
 
-end 
+    g.column in_csv: false do |air_mail|
+    ActiveSupport::SafeBuffer.new << 
+      (link_to '邮件全过程信息', get_mail_trace_air_mail_path(air_mail), :class => 'btn btn-xs btn-primary', target: '_blank' if can? :read, air_mail) 
+    end
+  end 
 %>

@@ -198,6 +198,13 @@ zh-CN:
           needrole:
             can: :read
             role: :AirMail
+        imp_deliver_report:
+          name: "邮航进口投递报表"
+          link: "/air_mails/imp_deliver_report"
+          need_count: false
+          needrole:
+            can: :read
+            role: :AirMail
     # receiver_query:
     #   name: "收件人信息查询"
     #   submenu:

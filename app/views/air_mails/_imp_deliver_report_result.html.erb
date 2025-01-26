@@ -1,0 +1,88 @@
+<% if !@results.blank? %>
+	<div style="float:right">
+	  <table>
+	  	<tr><td>处理中心发出数：<%= @is_leave_center_amount %></td></tr>
+	  	<tr><td>到达差异数：<%= @arrive_diff_amount %></td></tr>
+	  </table>
+	</div>
+  <table data-toggle="table" data-height="700">
+    <thead>
+      <tr class= 'nowrap'>
+        <th><b>A投递区局</b></th>
+        <th><b>B投递网点</b></th>
+        <th><b>C到达</b></th>
+        <th><b>D下段</b></th>
+        <th><b>E差异(C-D)</b></th>
+        <th><b>F当日妥投</b></th>
+        <th><b>G当日未妥投(C-F)</b></th>
+        <th><b>H妥投率(F/D)</b></th>
+      </tr>
+    </thead>
+    <tbody>
+    	<!-- 投递网点:@results[0][投递网点id] = [投递区局id, 投递区局名称, 投递网点名称, C到达, D下段, E差异(C-D), F当日妥投, G当日未妥投(C-F), H妥投率(F/D)] -->
+    	<!-- 投递区局小计:@results[1][投递区局id] = ["小计", C到达, D下段, E差异(C-D), F当日妥投, G当日未妥投(C-F), H妥投率(F/D)] -->
+    	<!-- 总计:@results[2] = ["总计", C到达, D下段, E差异(C-D), F当日妥投, G当日未妥投(C-F), H妥投率(F/D)] -->
+    	<!-- 其他: @results[3] = ["其他", C到达, D下段, E差异(C-D), F当日妥投, G当日未妥投(C-F), H妥投率(F/D)] -->
+    	<% last_pid = @results[0].values[0] %>
+    	<% @results[0].each do |k, v| %>
+        <!-- 上级单位不同，加小计 -->
+        <% if (v[0] != last_pid) && !@results[1][last_pid].blank? %>
+          <tr class= 'nowrap'>
+          	<td></td>
+            <td><%= @results[1][last_pid][0] %></td>
+            <td><u><%= link_to @results[1][last_pid][1], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, "true", nil, nil), target: '_blank' %></u></td>
+            <td><u><%= link_to @results[1][last_pid][2], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, nil, "true", nil), target: '_blank' %></u></td>
+            <td><u><%= link_to @results[1][last_pid][3], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, "true", "false", nil), target: '_blank' %></u></td>
+            <td><u><%= link_to @results[1][last_pid][4], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, nil, nil, "true"), target: '_blank' %></u></td>
+            <td><u><%= link_to @results[1][last_pid][5], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, "true", nil, "false"), target: '_blank' %></u></td>
+            <td><%= @results[1][last_pid][6].to_s(:rounded, precision: 2)+"%" %></td>
+          </tr>
+        <% end %>
+        <!-- 投递网点 -->
+        <tr class= 'nowrap'>
+          <td><%= (v[0] == last_pid) ? "" : v[1] %></td>
+          <td><%= k.blank? ? "" : v[2] %></td>
+          <td><u><%= link_to @results[0][k][3], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, k, nil, "true", nil, nil), target: '_blank' %></u></td>  
+          <td><u><%= link_to @results[0][k][4], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, k, nil, nil, "true", nil), target: '_blank' %></u></td>
+          <td><u><%= link_to @results[0][k][5], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, k, nil, "true", "false", nil), target: '_blank' %></u></td>
+          <td><u><%= link_to @results[0][k][6], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, k, nil, nil, nil, "true"), target: '_blank' %></u></td>
+          <td><u><%= link_to @results[0][k][7], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, k, nil, "true", nil, "false"), target: '_blank' %></u></td>
+          <td><%= @results[0][k][8].to_s(:rounded, precision: 2)+"%" %></td>
+          <% last_pid = v[0] %>
+        </tr>
+      <% end %>
+      <tr class= 'nowrap'>
+      	<td></td>
+        <td><%= @results[1][last_pid][0] %></td>
+        <td><u><%= link_to @results[1][last_pid][1], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, "true", nil, nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[1][last_pid][2], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, nil, "true", nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[1][last_pid][3], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, "true", "false", nil), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[1][last_pid][4], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, nil, nil, "true"), target: '_blank' %></u></td>
+        <td><u><%= link_to @results[1][last_pid][5], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, last_pid, "true", nil, "false"), target: '_blank' %></u></td>
+        <td><%= @results[1][last_pid][6].to_s(:rounded, precision: 2)+"%" %></td>
+      </tr>
+      <!-- 其他 -->
+      <tr class= 'nowrap'>
+      	<td><%= @results[3][0] %></td>
+      	<td></td>
+      	<td><u><%= link_to @results[3][1], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, "nil", "true", nil, nil), target: '_blank' %></u></td>
+      	<td><u><%= link_to @results[3][2], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, "nil", nil, "true", nil), target: '_blank' %></u></td>
+      	<td><u><%= link_to @results[3][3], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, "nil", "true", "false", nil), target: '_blank' %></u></td>
+      	<td><u><%= link_to @results[3][4], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, "nil", nil, nil, "true"), target: '_blank' %></u></td>
+      	<td><u><%= link_to @results[3][5], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, "nil", "true", nil, "false"), target: '_blank' %></u></td>
+      	<td><%= @results[3][6].to_s(:rounded, precision: 2)+"%" %></td>
+      </tr>
+      <!-- 总计 -->
+      <tr class= 'nowrap'>
+      	<td></td>
+      	<td><%= @results[2][0] %></td>
+      	<td><u><%= link_to @results[2][1], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, nil, "true", nil, nil), target: '_blank' %></u></td>
+      	<td><u><%= link_to @results[2][2], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "true", nil), target: '_blank' %></u></td>
+      	<td><u><%= link_to @results[2][3], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, nil, "true", "false", nil), target: '_blank' %></u></td>
+      	<td><u><%= link_to @results[2][4], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "true"), target: '_blank' %></u></td>
+      	<td><u><%= link_to @results[2][5], get_air_mails_path("/air_mails", nil, nil, nil, nil, nil, nil, nil, nil, nil, "true", nil, "false"), target: '_blank' %></u></td>
+      	<td><%= @results[2][6].to_s(:rounded, precision: 2)+"%" %></td>
+      </tr>
+    </tbody>
+  </table>
+<% end %>
