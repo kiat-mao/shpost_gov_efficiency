@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_08_064303) do
+ActiveRecord::Schema.define(version: 2025_01_13_073603) do
 
   create_table "air_mails", force: :cascade do |t|
     t.string "mail_no"
@@ -53,7 +53,6 @@ ActiveRecord::Schema.define(version: 2025_01_08_064303) do
     t.datetime "arrive_center_at"
     t.datetime "leave_center_at"
     t.datetime "arrive_sub_at"
-    t.datetime "leave_sub_at"
     t.datetime "in_delivery_at"
     t.datetime "delivered_at"
     t.index "\"last_unit\", \"is_arrive_sub\", \"is_in_delivery\", \"is_delivered_in_time\"", name: "index_air_mail_delivery_report"
