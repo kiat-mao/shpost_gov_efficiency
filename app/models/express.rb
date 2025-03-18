@@ -252,12 +252,14 @@ class Express < ApplicationRecord
         express.pre_waybill_no = pkp_waybill_base.pre_waybill_no
 
         pre_express = Express.find_by(express_no: express.pre_waybill_no)
-        express.pre_express = pre_express
-        
-        pre_express.receipt_express = express
-        # pre_express.receipt_status = Express.receipt_statuses[:receipt_receive]
+        if !pre_express.blank?
+          express.pre_express = pre_express
+          
+          pre_express.receipt_express = express
+          # pre_express.receipt_status = Express.receipt_statuses[:receipt_receive]
 
-        pre_express.receipt_receive!
+          pre_express.receipt_receive!
+        end
       end
     end
 
