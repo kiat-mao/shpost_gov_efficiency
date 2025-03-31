@@ -15,28 +15,32 @@ every :day, at: '00:05am' do
   runner "Express.init_expresses_yesterday"
 end
 
-every :day, at: ['8:00am', '9:30am', '11:00am', '01:00pm', '03:00pm', '04:30pm', '06:00pm'] do
-  runner "Express.refresh_traces_yesterday"
-end
+# every :day, at: ['8:00am', '9:30am', '11:00am', '01:00pm', '03:00pm', '04:30pm', '06:00pm'] do
+#   runner "Express.refresh_traces_yesterday"
+# end
 
-every :day, at: ['01:05am', '12:05pm'] do
-  runner "Express.refresh_traces_last_15days"
-end
+# every :day, at: ['01:05am', '12:05pm'] do
+#   runner "Express.refresh_traces_last_15days"
+# end
 
-every :day, at: '03:00am' do
-  runner "Express.refresh_traces_25days_ago"
-end
+# every :day, at: '03:00am' do
+#   runner "Express.refresh_traces_25days_ago"
+# end
 
 every :day, at: '12:30pm' do
   runner "Express.init_expresses_midday"
 end
 
-every '30 12-23 * * *' do
-  runner "Express.refresh_traces_today"
-end
+# every '30 12-23 * * *' do
+#   runner "Express.refresh_traces_today"
+# end
 
-every '0 13-23 * * *' do
-  runner "Express.refresh_traces_today"
+# every '0 13-23 * * *' do
+#   runner "Express.refresh_traces_today"
+# end
+
+every :day, at: '00:30am' do
+  runner "Express.express_is_in_time_4_zmrs"
 end
 #
 # every 2.hours do

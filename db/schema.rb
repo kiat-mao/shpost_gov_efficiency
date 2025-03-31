@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_01_13_073603) do
+ActiveRecord::Schema.define(version: 2025_03_24_065335) do
 
   create_table "air_mails", force: :cascade do |t|
     t.string "mail_no"
@@ -55,10 +55,10 @@ ActiveRecord::Schema.define(version: 2025_01_13_073603) do
     t.datetime "arrive_sub_at"
     t.datetime "in_delivery_at"
     t.datetime "delivered_at"
-    t.index "\"last_unit\", \"is_arrive_sub\", \"is_in_delivery\", \"is_delivered_in_time\"", name: "index_air_mail_delivery_report"
     t.index ["direction"], name: "index_air_mails_on_direction"
     t.index ["flight_number"], name: "index_air_mails_on_flight_number"
     t.index ["is_arrive_jm", "is_leave_jm"], name: "index_air_mail_jm_report"
+    t.index ["last_unit_id", "is_arrive_sub", "is_in_delivery", "is_delivered_in_time"], name: "index_air_mail_delivery_report"
     t.index ["last_unit_id"], name: "index_air_mails_on_last_unit_id"
     t.index ["mail_no"], name: "index_air_mails_on_mail_no"
     t.index ["post_unit_id"], name: "index_air_mails_on_post_unit_id"
@@ -73,6 +73,7 @@ ActiveRecord::Schema.define(version: 2025_01_13_073603) do
     t.boolean "is_dist"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "limit_hour"
     t.index ["code"], name: "index_areas_on_code"
   end
 
@@ -141,6 +142,10 @@ ActiveRecord::Schema.define(version: 2025_01_13_073603) do
     t.boolean "is_change_addr"
     t.boolean "is_cancelled"
     t.decimal "postage_total"
+    t.boolean "is_arrive_sub", default: false
+    t.boolean "is_in_delivery", default: false
+    t.boolean "is_delivery_failure", default: false
+    t.boolean "is_over_time", default: false
     t.index ["business_id"], name: "index_expresses_on_business_id"
     t.index ["delivered_days"], name: "index_expresses_on_delivered_days"
     t.index ["delivered_status"], name: "index_expresses_on_delivered_status"

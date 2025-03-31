@@ -340,6 +340,24 @@ class Express < ApplicationRecord
     puts("#{Time.now}, init_receipts_by_business, #{business.id} #{business.name}, count: #{expresses.size}, end")
   end
 
+  def self.express_is_in_time_4_zmrs
+    #1100207488562
+    business = Business.find_by(code: I18n.t("zmrs_business_code"))
+    return if business.blank?
+    expresses = Express.waiting.where(business: business, is_over_time: false)#.joins(:receiver_city).where.not(areas: {limit_hour: nil}).where("limit_hour < ")
+    expresses.each do x
+      if ! x.receiver_city.limit_hour.blank?
+        if (Date.today - posting_date -1).to_i * 24 >= x.receiver_city.limit_hour
+          x.update!(is_over_time: true)
+        end
+      elsif ! x.receiver_county.limit_hour.blank?
+        if (Date.today - posting_date -1).to_i * 24 >= x.receiver_county.limit_hour
+          x.update!(is_over_time: true)
+        end
+      end
+    end
+  end
+
   def init_receipt(receipt_waybill_no, business)
     pkp_waybill_base = PkpWaybillBase.where(waybill_no: receipt_waybill_no).last
     if ! pkp_waybill_base.blank?
