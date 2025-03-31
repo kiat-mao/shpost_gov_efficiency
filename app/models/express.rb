@@ -429,6 +429,25 @@ class Express < ApplicationRecord
     return need_alert
   end
 
+  def zm_deliver_report_detail_status
+    if status.eql?"delivered"
+      return "已妥投"
+    end
+    if status.eql?"returns"
+      return "退件"
+    end
+    if is_in_delivery && !is_delivery_failure && (status.eql?"waiting")
+      return "投递中"
+    end
+    if (status.eql?"waiting") && is_delivery_failure
+      return "未妥投"
+    end
+    if is_arrive_sub && !is_in_delivery
+      return "未下段"
+    end
+  end
+     
+
 end
 
 
