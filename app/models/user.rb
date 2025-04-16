@@ -30,8 +30,8 @@ class User < ApplicationRecord
   validates_length_of :username, :is => 8, :message => "请输入8位工号", if: :user?
   validates_numericality_of :username, :only_integer => true, :message => "请输入8位数字工号", if: :user?
 
-  enum role: { superadmin: 'superadmin', unitadmin: 'unitadmin', user: 'user', international: "international" }
-  ROLE = { superadmin: '超级管理员', unitadmin: '机构管理员', user: '普通用户', international: "国际出口件用户" }
+  enum role: { superadmin: 'superadmin', unitadmin: 'unitadmin', user: 'user', international: "international", zm: 'zm' }
+  ROLE = { superadmin: '超级管理员', unitadmin: '机构管理员', user: '普通用户', international: "国际出口件用户", zm: "中免用户" }
 
   STATUS_NAME = { locked: '已停用', unlocked: '已启用'}
 

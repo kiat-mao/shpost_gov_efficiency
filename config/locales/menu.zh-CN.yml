@@ -35,8 +35,8 @@ zh-CN:
             role: :Business
     report:
       needrole:
-        can: :read
-        role: :Express
+        can: :deliver_market_report
+        role: :Report
       name: "报表管理"
       submenu:
         deliver_market_report:
@@ -53,8 +53,8 @@ zh-CN:
           need_count: false
     court_report:
       needrole:
-        can: :read
-        role: :Express
+        can: :court_deliver_market_report
+        role: :Report
       name: "法院报表管理"
       submenu:
         court_deliver_market_report:
@@ -67,8 +67,8 @@ zh-CN:
           need_count: false
     receipt_report:
       needrole:
-        can: :read
-        role: :Express
+        can: :receipt_report
+        role: :Report
       name: "返单报表管理"
       submenu:
         receipt_report:
@@ -77,8 +77,8 @@ zh-CN:
           need_count: false
     monitor:
       needrole:
-        can: :read
-        role: :Express
+        can: :deliver_market_monitor
+        role: :Report
       name: "实时监控"
       submenu:
         deliver_market_monitor_today:
@@ -100,8 +100,8 @@ zh-CN:
     court_monitor:
       name: "法院实时监控"
       needrole:
-        can: :read
-        role: :Express
+        can: :court_deliver_market_monitor
+        role: :Report
       submenu:
         court_deliver_market_monitor:
           name: "投递监控(市场)"
@@ -205,6 +205,40 @@ zh-CN:
           needrole:
             can: :read
             role: :AirMail
+    zm_express:
+      name: "中免邮件"
+      needrole:
+        can: :zm_deliver_report
+        role: :Report
+      submenu:
+        zm_deliver_report:
+          name: "同城投递汇总表"
+          link: "/reports/zm_deliver_report"
+          need_count: false
+          needrole:
+            can: :zm_deliver_report
+            role: :Report
+        zm_operation_report:
+          name: "中免运营日报"
+          link: "/reports/zm_operation_report"
+          need_count: false
+          needrole:
+            can: :zm_operation_report
+            role: :Report
+        zm_province_report:
+          name: "全国在途汇总表"
+          link: "/reports/zm_province_report"
+          need_count: false
+          needrole:
+            can: :zm_province_report
+            role: :Report
+        zm_time_limit_report:
+          name: "全国时限达成情况表"
+          link: "/reports/zm_time_limit_report"
+          need_count: false
+          needrole:
+            can: :zm_time_limit_report
+            role: :Report
     # receiver_query:
     #   name: "收件人信息查询"
     #   submenu:

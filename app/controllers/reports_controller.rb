@@ -316,6 +316,405 @@ class ReportsController < ApplicationController
     end
   end
 
+	# 中免同城投递汇总表（二级单位维度）
+  def zm_deliver_report
+  	@is_search = nil
+  	@results = nil
+  	
+		unless request.get?
+	  	if !params[:posting_date_start].blank? && !params[:posting_date_end].blank? && ((params[:posting_date_end].to_date - params[:posting_date_start].to_date) < 7)
+	  		@is_search = "yes"
+	  		@posting_date_start = params[:posting_date_start].blank? ? Date.yesterday : params[:posting_date_start].to_date
+				@posting_date_end = params[:posting_date_end].blank? ? Date.today : params[:posting_date_end].to_date+1.day
+  		
+		  	expresses = Express.left_outer_joins(:business).where("businesses.code = ? and expresses.receiver_province_no = ? and expresses.is_arrive_sub = ? and posting_date  >= ? and posting_date < ?", "1100207488562", "310000", true, @posting_date_start, @posting_date_end)
+
+		  	if expresses.blank?
+		    	flash[:alert] = "无数据"
+		    else	  	
+		    	@results = Report.get_zm_deliver_result(expresses)
+		    end
+		  else
+		  	flash[:alert] = "起止日期不能超过7天 "
+	  	end
+		end
+	end
+
+	# 中免同城投递汇总表（二级单位维度）导出
+	def zm_deliver_report_export
+		if !params[:posting_date_start].blank? && !params[:posting_date_end].blank? && ((params[:posting_date_end].to_date - params[:posting_date_start].to_date) < 7)
+			@posting_date_start = params[:posting_date_start].blank? ? Date.yesterday : params[:posting_date_start].to_date
+			@posting_date_end = params[:posting_date_end].blank? ? Date.today : params[:posting_date_end].to_date+1.day
+
+	  	expresses = Express.left_outer_joins(:business).where("businesses.code = ? and expresses.receiver_province_no = ? and expresses.is_arrive_sub = ? and posting_date  >= ? and posting_date < ?", "1100207488562", "310000", true, @posting_date_start, @posting_date_end).order("expresses.express_no")
+
+	  	if expresses.blank?
+	    	flash[:alert] = "无数据"
+	    else	  	
+	    	@results = Report.get_zm_deliver_result(expresses)
+	    	send_data(zm_deliver_report_xls_content_for(params, @results, expresses),:type => "text/excel;charset=utf-8; header=present",:filename => "中免同城投递汇总表_#{Time.now.strftime("%Y%m%d")}.xls") 
+	    end
+	  else
+	  	flash[:alert] = "起止日期不能超过7天"
+  	end
+  end
+
+  def zm_deliver_report_xls_content_for(params, results, expresses)
+  	xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "中免同城投递汇总表" 
+    sheet2 = book.create_worksheet :name => "明细（总计）"  
+    
+    filter = Spreadsheet::Format.new :size => 12, :align => :left, :name => "宋体"
+    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体", :weight => :bold
+    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体"
+
+    # 中免同城投递汇总表
+    sheet1[0,0] = "收寄日期:#{params["posting_date_start"]} ~ #{params["posting_date_end"]}"
+    sheet1.row(0).default_format = filter
+
+    sheet1[2,0] = "中免项目同城邮件投递情况--#{Date.today.strftime('%Y-%m-%d')}"
+    0.upto(7) do |x|
+      sheet1.row(2).set_format(x, title)
+    end
+    sheet1.merge_cells(2, 0, 2, 7)
+
+    0.upto(7) do |x|
+      sheet1.row(3).set_format(x, title)
+    end
+  	sheet1.row(3).concat %w{区县 下段总数 投递中 已妥投 未妥投 退件 未下段 总计(解车)}  
+  	count_row = 4
+
+  	results[0].each do |k, v|
+  		sheet1[count_row,0] = k[1]
+  		sheet1[count_row,1] = v[0]
+  		sheet1[count_row,2] = v[1]
+  		sheet1[count_row,3] = v[2]
+  		sheet1[count_row,4] = v[3]
+  		sheet1[count_row,5] = v[4]
+  		sheet1[count_row,6] = v[5]
+  		sheet1[count_row,7] = v[6]
+  		
+	  	0.upto(7) do |i|
+	      sheet1.row(count_row).set_format(i, body)
+	    end
+	    count_row += 1
+	  end
+
+	  # 合计
+	  0.upto(7) do |i|
+  		sheet1[count_row,i] = results[1][i]
+  		sheet1.row(count_row).set_format(i, body)
+	  end
+
+
+	  # 明细（总计）表
+	  sheet2[0,0] = "收寄日期:#{params["posting_date_start"]} ~ #{params["posting_date_end"]}"
+    sheet2.row(0).default_format = filter
+
+    0.upto(4) do |x|
+      sheet2.row(2).set_format(x, title)
+    end
+  	sheet2.row(2).concat %w{序号 邮件号 当前处理机构 区县 妥投情况}  
+  	count_row = 3
+
+  	expresses.each do |x|
+  		sheet2[count_row,0] = count_row-2
+  		sheet2[count_row,1] = x.express_no
+  		sheet2[count_row,2] = x.last_unit.try(:name)
+  		sheet2[count_row,3] = x.last_unit.blank? ? "" : (x.last_unit.parent_unit.blank? ? "" : x.last_unit.parent_unit.try(:name))
+  		sheet2[count_row,4] = x.zm_deliver_report_detail_status.blank? ? "" : x.zm_deliver_report_detail_status
+
+  		0.upto(4) do |i|
+	      sheet2.row(count_row).set_format(i, body)
+	    end
+	    count_row += 1
+	  end
+
+	  book.write xls_report  
+    xls_report.string 
+  end
+
+  # 中免运营日报
+  def zm_operation_report
+  	@is_search = nil
+  	@results = nil
+  	
+		unless request.get?
+  		if !params[:posting_date_start].blank? && !params[:posting_date_end].blank? && ((params[:posting_date_end].to_date - params[:posting_date_start].to_date) < 7)
+  			@is_search = "yes"
+	  		@posting_date_start = params[:posting_date_start].to_date
+				@posting_date_end = params[:posting_date_end].to_date+1.day
+  		
+	  		expresses = Express.left_outer_joins(:business).where("businesses.code = ? and posting_date  >= ? and posting_date < ?", "1100207488562", @posting_date_start, @posting_date_end)
+
+				if expresses.blank?
+		    	flash[:alert] = "无数据"
+		    else	  	
+		    	@results = Report.get_zm_operation_result(expresses)
+		    end
+		  else
+		  	flash[:alert] = "起止日期不能超过7天 "
+	  	end
+		end
+	end
+
+	# 中免运营日报导出
+	def zm_operation_report_export
+		@posting_date_start = params[:posting_date_start].to_date
+		@posting_date_end = params[:posting_date_end].to_date+1.day
+	
+		expresses = Express.left_outer_joins(:business).where("businesses.code = ? and posting_date  >= ? and posting_date < ?", "1100207488562", @posting_date_start, @posting_date_end)
+
+  	if expresses.blank?
+    	flash[:alert] = "无数据"
+    else	  	
+    	@results = Report.get_zm_operation_result(expresses)
+    	send_data(zm_operation_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "中免运营日报_#{Time.now.strftime("%Y%m%d")}.xls") 
+    end
+	end
+
+  def zm_operation_report_xls_content_for(params, results)
+  	xls_report = StringIO.new  
+    book = Spreadsheet::Workbook.new  
+    sheet1 = book.create_worksheet :name => "中免运营日报" 
+    
+    filter = Spreadsheet::Format.new :size => 12, :align => :left, :name => "宋体"
+    title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体", :weight => :bold
+    body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体"
+
+    sheet1[0,0] = "收寄日期:#{params["posting_date_start"]} ~ #{params["posting_date_end"]}"
+    sheet1.row(0).default_format = filter
+
+    sheet1[2,0] = "中免日上互联科技有限公司运营日报"
+    sheet1.merge_cells(2, 0, 2, 4)
+    sheet1[2,5] = "汇总"
+    sheet1[2,7] = "华东区域江浙沪皖次日达时效"
+    sheet1.merge_cells(2, 7, 2, 9)
+    0.upto(11) do |x|
+      sheet1.row(2).set_format(x, title)
+    end
+
+  	sheet1.row(3).concat %w{日期 接收总单呈 在途 未妥投 妥投 妥投率 接收总单量 妥投 次日达 占比 运输中 配送中}
+  	0.upto(11) do |x|
+      sheet1.row(3).set_format(x, title)
+    end
+
+  	# 合计
+	  0.upto(11) do |i|
+  		sheet1[4,i] = results[1][i]
+  		sheet1.row(4).set_format(i, body)
+	  end
+
+  	count_row = 5
+
+  	results[0].each do |k, v|
+  		sheet1[count_row,0] = k
+  		0.upto(10) do |i|
+  			sheet1[count_row,i+1] = v[i]
+  		end
+
+  		0.upto(11) do |j|
+	      sheet1.row(count_row).set_format(j, body)
+	    end
+	    count_row += 1
+  	end
+
+  	book.write xls_report  
+    xls_report.string 
+  end
+
+  # 中免全国在途汇总表（省公司维度）
+  def zm_province_report
+  	@is_search = nil
+  	@results = nil
+  	
+		unless request.get?
+  		if !params[:posting_date_start].blank? && !params[:posting_date_end].blank? && ((params[:posting_date_end].to_date - params[:posting_date_start].to_date) < 7)
+  			@is_search = "yes"
+	  		@posting_date_start = params[:posting_date_start].to_date
+				@posting_date_end = params[:posting_date_end].to_date+1.day
+  		
+	  		expresses = Express.left_outer_joins(:business).where("businesses.code = ? and posting_date  >= ? and posting_date < ? and status = ?", "1100207488562", @posting_date_start, @posting_date_end, "waiting")
+
+				if expresses.blank?
+		    	flash[:alert] = "无数据"
+		    else	  	
+		    	@results = Report.get_zm_province_result(expresses)
+		    end
+		  else
+		  	flash[:alert] = "起止日期不能超过7天 "
+	  	end
+		end
+	end
+
+	# 中免全国在途汇总表（省公司维度）导出
+	def zm_province_report_export
+		@posting_date_start = params[:posting_date_start].to_date
+		@posting_date_end = params[:posting_date_end].to_date+1.day
+	
+		expresses =Express.left_outer_joins(:business).where("businesses.code = ? and posting_date  >= ? and posting_date < ? and status = ?", "1100207488562", @posting_date_start, @posting_date_end, "waiting")
+
+  	if expresses.blank?
+    	flash[:alert] = "无数据"
+    else	  	
+    	@results = Report.get_zm_province_result(expresses)
+    	send_data(zm_province_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "中免全国在途汇总表（省公司维度）_#{Time.now.strftime("%Y%m%d")}.xls") 
+    end
+	end
+
+	def zm_province_report_xls_content_for(params, results)
+		xls_report = StringIO.new  
+	  book = Spreadsheet::Workbook.new  
+	  sheet1 = book.create_worksheet :name => "中免全国在途汇总表（省公司维度）"
+
+	  filter = Spreadsheet::Format.new :size => 12, :align => :left, :name => "宋体"
+	  title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体", :weight => :bold
+	  body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体"
+
+	  sheet1[0,0] = "收寄日期:#{params["posting_date_start"]} ~ #{params["posting_date_end"]}"
+	  sheet1.row(0).default_format = filter
+
+	  0.upto(3) do |x|
+	    sheet1.row(2).set_format(x, title)
+	  end
+		sheet1.row(2).concat %w{收件省份 在途总量(件) 时限内在途量(件) 超时在途量(件)}  
+		count_row = 3
+
+		results[0].each do |k, v|
+			sheet1[count_row,0] = k[1]
+			sheet1[count_row,1] = v[0]
+			sheet1[count_row,2] = v[1]
+			sheet1[count_row,3] = v[2]
+
+			0.upto(3) do |i|
+	      sheet1.row(count_row).set_format(i, body)
+	    end
+	    count_row += 1
+	  end
+
+	  # 合计
+	  0.upto(3) do |i|
+			sheet1[count_row,i] = results[1][i]
+			sheet1.row(count_row).set_format(i, body)
+	  end
+
+	  book.write xls_report  
+	  xls_report.string 
+	end
+
+	# 中免全国时限达成情况表
+  def zm_time_limit_report
+  	@is_search = nil
+  	@results = nil
+  	
+		unless request.get?
+  		if !params[:posting_date_start].blank? && !params[:posting_date_end].blank? && ((params[:posting_date_end].to_date - params[:posting_date_start].to_date) < 7)
+  			@is_search = "yes"
+	  		@posting_date_start = params[:posting_date_start].to_date
+				@posting_date_end = params[:posting_date_end].to_date+1.day
+  			# 除上海、港澳
+	  		expresses = Express.left_outer_joins(:business).where("businesses.code = ? and posting_date  >= ? and posting_date < ?", "1100207488562", @posting_date_start, @posting_date_end).where("receiver_province_no not in (?)", ['310000', '810000', '820000'])
+
+				if expresses.blank?
+		    	flash[:alert] = "无数据"
+		    else	  	
+		    	@results = Report.get_zm_time_limit_result(expresses, params)
+		    end
+		  else
+		  	flash[:alert] = "起止日期不能超过7天 "
+	  	end
+		end
+	end
+
+	# 中免全国时限达成情况表导出
+	def zm_time_limit_report_export
+		@posting_date_start = params[:posting_date_start].to_date
+		@posting_date_end = params[:posting_date_end].to_date+1.day
+		# 除上海、港澳
+		expresses = Express.left_outer_joins(:business).where("businesses.code = ? and posting_date  >= ? and posting_date < ?", "1100207488562", @posting_date_start, @posting_date_end).where("receiver_province_no not in (?)", ['310000', '810000', '820000'])
+
+  	if expresses.blank?
+    	flash[:alert] = "无数据"
+    else	  	
+    	@results = Report.get_zm_time_limit_result(expresses, params)
+    	send_data(zm_time_limit_report_xls_content_for(params, @results),:type => "text/excel;charset=utf-8; header=present",:filename => "中免全国时限达成情况表_#{Time.now.strftime("%Y%m%d")}.xls") 
+    end
+	end
+
+	def zm_time_limit_report_xls_content_for(params, results)
+		xls_report = StringIO.new  
+	  book = Spreadsheet::Workbook.new  
+	  sheet1 = book.create_worksheet :name => "中免全国时限达成情况表"
+
+	  filter = Spreadsheet::Format.new :size => 12, :align => :left, :name => "宋体"
+	  title = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体", :weight => :bold
+	  body = Spreadsheet::Format.new :size => 12, :border => :thin, :align => :center, :name => "宋体"
+
+	  sheet1[0,0] = "收寄日期:#{params["posting_date_start"]} ~ #{params["posting_date_end"]}"
+	  sheet1.row(0).default_format = filter
+
+	  sheet1[2,0] = "上海仓始发中免项目邮件时限达成情况统计"
+	  col = ((params["posting_date_end"].to_date-params["posting_date_start"].to_date).to_i+1)*3
+    sheet1.merge_cells(2, 0, 2, col)
+    
+	  sheet1[3,0] = "收寄日期"
+	  c = 1
+	  results[2].each do |date|
+	  	sheet1[3,c] = date
+	  	sheet1.merge_cells(3, c, 3, c+2)
+	  	c += 3
+	  end
+	  
+	  sheet1[4,0] = "省份"
+	  d = 1
+	  results[2].each do |date|
+	  	sheet1[4,d] = "收寄量"
+	  	sheet1[4,d+1] = "时限内妥投"
+	  	sheet1[4,d+2] = "时限达成率"
+	  	d += 3
+	  end
+	  2.upto(4) do |y|
+	  	0.upto(col) do |x|
+	    	sheet1.row(y).set_format(x, title)
+	    end
+	  end
+
+	  count_row = 5
+	  results[3].each do |prov|
+	  	sheet1[count_row,0] = prov[1]
+	  	e = 1
+	  	results[2].each do |date|
+	  		sheet1[count_row,e] = results[0][[prov,date]][0]
+	  		sheet1[count_row,e+1] = results[0][[prov,date]][1]
+	  		sheet1[count_row,e+2] = results[0][[prov,date]][2]
+	  		e += 3
+	  	end
+
+	  	0.upto(col) do |i|
+	      sheet1.row(count_row).set_format(i, body)
+	    end
+	    count_row += 1
+	  end
+
+	  # 合计
+	  sheet1[count_row,0] = "合计"
+	  f = 1
+	  results[2].each do |date|
+	  	sheet1[count_row,f] = results[1][date][0]
+	  	sheet1[count_row,f+1] = results[1][date][1]
+	  	sheet1[count_row,f+2] = results[1][date][2]
+	  	f += 3
+  	end
+  	0.upto(col) do |i|
+      sheet1.row(count_row).set_format(i, body)
+    end
+
+    book.write xls_report  
+	  xls_report.string 
+	end
+
+
   private
   	def deliver_market_report_xls_content_for(params,results)
 	  	xls_report = StringIO.new  

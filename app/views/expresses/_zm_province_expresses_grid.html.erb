@@ -1,0 +1,53 @@
+<%- model_class = Express -%>
+
+<%= grid(@expresss_grid) do |g|
+  g.column name: model_class.human_attribute_name(:express_no), attribute: 'express_no' do |express|
+    [express.express_no,{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "寄达省", attribute: 'name', assoc: :receiver_province do |express|
+    [express.receiver_province.try(:name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "寄达市", attribute: 'name', assoc: :receiver_city do |express|
+    [express.receiver_city.try(:name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "当前所在省", attribute: 'name', assoc: :last_prov do |express|
+    [express.last_prov.try(:name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "当前所在市", attribute: 'name', assoc: :last_city do |express|
+    [express.last_city.try(:name),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "当前机构", attribute: 'name', assoc: :last_unit do |express|
+    [express.last_unit.try(:name)||express.last_unit_name,{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "邮件最后环节时间", attribute: 'last_op_at' do |express|
+    [(express.last_op_at.blank? ? "" : (l express.last_op_at)), {style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "查询报表时间", filter: false do |express|
+    [Time.now.localtime.strftime('%Y-%m-%d %H:%M'), {style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "收寄时间", attribute: 'posting_date' do |express|
+    [(express.posting_date.blank? ? "" : (express.posting_date.localtime.strftime('%Y-%m-%d'))), {style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "时限情况（小时）", filter: false do |express|
+    [express.posting_date.blank? ? "" : ((Time.now-express.posting_date.to_time)/ 60/60).round(2),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "中免时限（小时）", attribute: 'name', assoc: :receiver_city do |express|
+    [express.receiver_city.try(:limit_hour).blank? ? express.receiver_county.try(:limit_hour) : express.receiver_city.try(:limit_hour),{style: 'font-size: 12px;'}]
+  end
+
+  g.column name: "是否超时", attribute: 'is_over_time' do |express|
+    [express.is_over_time ? "是" : "否", {style: 'font-size: 12px;'}]
+  end
+
+end
+%>

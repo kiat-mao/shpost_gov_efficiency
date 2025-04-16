@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       post 'deliver_market_detail'
       get 'query_mail_trace'
       post 'query_mail_trace'
+      get 'zm_province_index'
       # get 'receiver_query'
     end
     member do
@@ -95,6 +96,18 @@ Rails.application.routes.draw do
       get 'international_express_report'
       post 'international_express_report'
       post 'international_express_report_export'
+      get 'zm_deliver_report'
+      post 'zm_deliver_report'
+      post 'zm_deliver_report_export'
+      get 'zm_operation_report'
+      post 'zm_operation_report'
+      post 'zm_operation_report_export'
+      get 'zm_province_report'
+      post 'zm_province_report'
+      post 'zm_province_report_export'
+      get 'zm_time_limit_report'
+      post 'zm_time_limit_report'
+      post 'zm_time_limit_report_export'
     end
   end
 

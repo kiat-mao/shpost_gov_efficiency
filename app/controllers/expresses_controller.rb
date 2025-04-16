@@ -20,6 +20,16 @@ class ExpressesController < ApplicationController
     export_grid_if_requested
   end
 
+  def zm_province_index
+    @expresses = Report.get_filter_expresses(params).accessible_by(current_ability)
+    @expresss_grid = initialize_grid(@expresses, :per_page => params[:page_size],
+      name: 'zm_province_expresses',
+      :enable_export_to_csv => true,
+      :csv_file_name => 'zm_province_expresses',
+      :csv_encoding => 'gbk')
+    export_grid_if_requested
+  end
+
   # GET /expresses/1
   # GET /expresses/1.json
   def show

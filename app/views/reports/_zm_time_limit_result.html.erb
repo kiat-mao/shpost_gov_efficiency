@@ -1,0 +1,41 @@
+<% if !@results.blank? %>
+<table data-toggle="table" data-height="700">
+  <tr class= 'nowrap'>
+  	<% col = (@posting_date_end.to_date-@posting_date_start.to_date).to_i*3+1 %>
+    <td colspan="<%=col%>"><b>上海仓始发中免项目邮件时限达成情况统计</b></td>
+	</tr>
+	<tr class= 'nowrap'>
+		<td><b>收寄日期</b></td>
+		<% @results[2].each do |date| %>
+			<td colspan="3"><b><%= date %></b></td>
+		<% end %>
+	</tr>
+	<tr class= 'nowrap'>
+		<td><b>省份</b></td>
+		<% @results[2].each do |date| %>
+			<td><b>收寄量</b></td>
+			<td><b>时限内妥投</b></td>
+			<td><b>时限达成率</b></td>
+		<% end %>
+	</tr>
+	<% @results[3].each do |prov| %>
+			<tr class= 'nowrap'>
+				<td><%= prov[1] %></td>
+		<% @results[2].each do |date| %>
+				<td><%= @results[0][[prov,date]][0] %></td>
+				<td><%= @results[0][[prov,date]][1] %></td>
+				<td><%= @results[0][[prov,date]][2] %></td>
+		<% end %>
+			</tr>
+	<% end %>
+	<!-- 合计 -->
+  <tr class= 'nowrap'>
+  	<td>合计</td>
+  	<% @results[2].each do |date| %>
+  	<td><%= @results[1][date][0] %></td>
+  	<td><%= @results[1][date][1] %></td>
+  	<td><%= @results[1][date][2] %></td>
+  	<% end %>
+  </tr>
+</table>
+<% end %>

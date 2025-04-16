@@ -1,0 +1,12 @@
+<%- model_class = Express -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => [:'helpers.titles.index', '%{model} Manage'], :model => model_class.model_name.human.titleize %></h1>
+  <%= render partial: '/layouts/page_size' %>
+  <div style="float:right">
+  	<button class="btn btn-primary wg-external-csv-export-button" data-grid-name="zm_province_expresses">导出</button>
+  </div>
+</div>
+<%= render partial: 'zm_province_expresses_grid' %>
+
+
+

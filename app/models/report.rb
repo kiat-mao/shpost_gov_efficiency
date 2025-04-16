@@ -504,6 +504,22 @@ class Report
       expresses = expresses.where.not(status: "delivered").or(expresses.where("status=? and delivered_days>?", "delivered", 0.5))
     end
 
+    if !params[:is_in_delivery].blank?
+      expresses = expresses.where(is_in_delivery: eval(params[:is_in_delivery]))
+    end 
+
+    if !params[:is_delivery_failure].blank?
+      expresses = expresses.where(is_delivery_failure: eval(params[:is_delivery_failure]))
+    end 
+
+    if !params[:is_arrive_sub].blank?
+      expresses = expresses.where(is_arrive_sub: eval(params[:is_arrive_sub]))
+    end 
+
+    if !params[:is_over_time].blank?
+      expresses = expresses.where(is_over_time: eval(params[:is_over_time]))
+    end 
+
     return expresses
   end
 
@@ -1575,4 +1591,167 @@ class Report
   def self.get_per(amount, amount_all)
     amount_all>0 ? (amount/amount_all.to_f*100).round(2) : 0
   end
+
+  def self.get_zm_deliver_result(expresses)
+    results = {}
+    hj_results = {}
+    
+    re = expresses.left_outer_joins(:last_unit).left_outer_joins(:last_unit=>:parent_unit).group("units.parent_id").group("parent_units_units.name").group(:is_in_delivery, :is_delivery_failure, :status).count
+    parent_units = re.map{|k,v| [k[0],k[1]]}.uniq
+
+    parent_units.each do |p|
+      # 下段总数
+      b = re.select { |key, _| (key[0].eql?p[0]) && key[2]}.values.sum
+      # 投递中
+      c = re.select { |key, _| (key[0].eql?p[0]) && key[2] && !key[3] && (key[4].eql?"waiting")}.values.sum
+      # 已妥投
+      d = re.select { |key, _| (key[0].eql?p[0]) && (key[4].eql?"delivered")}.values.sum
+      # 未妥投
+      e = re.select { |key, _| (key[0].eql?p[0]) && key[3] && (key[4].eql?"waiting")}.values.sum
+      # 退件
+      f = re.select { |key, _| (key[0].eql?p[0]) && (key[4].eql?"returns")}.values.sum
+      # 未下段=解车量-下段量
+      g = re.select { |key, _| (key[0].eql?p[0]) && !key[2]}.values.sum
+      # 总计=解车
+      h = re.select { |key, _| (key[0].eql?p[0])}.values.sum
+      # results[[parent_unit_id,parent_unit_name]] = [0下段总数, 1投递中, 2已妥投, 3未妥投, 4退件,5未下段, 6总计]
+      results[p] = [b,c,d,e,f,g,h]
+    end
+    b_hj = re.select { |key, _| key[2]}.values.sum
+    c_hj = re.select { |key, _| key[2] && !key[3] && (key[4].eql?"waiting")}.values.sum
+    d_hj = re.select { |key, _| (key[4].eql?"delivered")}.values.sum
+    e_hj = re.select { |key, _| key[3] && (key[4].eql?"waiting")}.values.sum
+    f_hj = re.select { |key, _| (key[4].eql?"returns")}.values.sum
+    g_hj = re.select { |key, _| !key[2]}.values.sum
+    h_hj = re.values.sum
+    hj_results = ["总计",b_hj,c_hj,d_hj,e_hj,f_hj,g_hj,h_hj]
+    return [results, hj_results]
+  end
+
+  def self.get_zm_operation_result(expresses)
+    results = {}  
+    hj_results = {}   
+
+    if RailsEnv.is_oracle?
+      #全部
+      all_re = expresses.order("to_char(posting_date, 'YYYY-MM-DD')").group("to_char(posting_date, 'YYYY-MM-DD')").group(:status).count
+      #江浙沪皖
+      ec_re = expresses.where("receiver_province_no in (?)", ['310000', '320000', '330000', '340000']).order("to_char(posting_date, 'YYYY-MM-DD')").group("to_char(posting_date, 'YYYY-MM-DD')").group(:status, :delivered_days, :is_in_delivery).count
+    else
+      #全部
+      all_re = expresses.order("Date(posting_date)").group("Date(posting_date)").group(:status).count
+      #江浙沪皖
+      ec_re = expresses.where("receiver_province_no in (?)", ['310000', '320000', '330000', '340000']).order("Date(posting_date)").group("Date(posting_date)").group(:status, :delivered_days, :is_in_delivery).count
+    end
+
+    dates = all_re.map{|k,v| k[0]}.uniq
+    dates.each do |d|
+      # 接收总单呈=收寄量
+      b = all_re.select { |key, _| (key[0].eql?d)}.values.sum
+      # 在途=未妥投=收寄没有妥投都是在途无 704 711 status = ‘waiting’
+      c = all_re.select { |key, _| (key[0].eql?d) && (key[1].eql?"waiting")}.values.sum
+      # 妥投=邮件opcode=704 status = ‘delivered’
+      e = all_re.select { |key, _| (key[0].eql?d) && (key[1].eql?"delivered")}.values.sum
+      # 妥投率=妥投/接收总单呈
+      f = (b>0 ? (e/b.to_f*100).round(2) : 0.00).to_s+"%"
+      # 江浙沪皖
+      # 接收总单量=江浙沪皖收寄量 receiver_province_no.in?[‘310000’, ‘320000’, ‘330000’,  ‘340000’]
+      g = ec_re.select { |key, _| (key[0].eql?d)}.values.sum
+      # 妥投
+      h = ec_re.select { |key, _| (key[0].eql?d) && (key[1].eql?"delivered")}.values.sum
+      # 次日达=收寄日第二天的妥投量 T+1量 delivered_days<=1
+      i = ec_re.select { |key, _| (key[0].eql?d) && (key[2]<=1)}.values.sum
+      # 占比=次日达/妥投（H列）*100%
+      j = (h>0 ? (i/h.to_f*100).round(2) : 0.00).to_s+"%"
+      # 运输中=收寄（opcode=203或者208）但没下段（opcode=702） is_in_delivery = false
+      k = ec_re.select { |key, _| (key[0].eql?d) && !key[3]}.values.sum
+      # 配送中=下段（opcode=702）了但还没有做妥投（没有 opcode=704 711）is_in_delivery = true
+      l = ec_re.select { |key, _| (key[0].eql?d) && key[3]}.values.sum
+
+      results[d] = [b,c,c,e,f,g,h,i,j,k,l]
+    end
+    b_hj = all_re.values.sum
+    c_hj = all_re.select { |key, _| key[1].eql?"waiting"}.values.sum
+    e_hj = all_re.select { |key, _| key[1].eql?"delivered"}.values.sum
+    f_hj = (b_hj>0 ? (e_hj/b_hj.to_f*100).round(2) : 0.00).to_s+"%"
+    g_hj = ec_re.values.sum
+    h_hj = ec_re.select { |key, _| key[1].eql?"delivered"}.values.sum
+    i_hj = ec_re.select { |key, _| key[2]<=1}.values.sum
+    j_hj = (h_hj>0 ? (i_hj/h_hj.to_f*100).round(2) : 0.00).to_s+"%"
+    k_hj = ec_re.select { |key, _| !key[3]}.values.sum
+    l_hj = ec_re.select { |key, _| key[3]}.values.sum
+
+    hj_results = ["汇总",b_hj,c_hj,c_hj,e_hj,f_hj,g_hj,h_hj,i_hj,j_hj,k_hj,l_hj]
+
+    return [results, hj_results]
+  end
+
+  def self.get_zm_province_result(expresses)
+    results = {}
+    hj_results = {}
+    
+    provinces = Area.where(is_prov: true).order(:code).map{|a| [a.code, a.name]}.compact.uniq
+
+    re = expresses.group(:receiver_province_no, :is_over_time).count
+
+    provinces.each do |p|
+      # 在途总量
+      b = re.select { |key, _| (key[0].eql?p[0])}.values.sum
+      # 时限内在途量
+      c = re.select { |key, _| (key[0].eql?p[0]) && !key[1]}.values.sum
+      # 超时在途量
+      d = b-c
+      results[p] = [b,c,d]
+    end
+
+    b_hj = re.values.sum
+    c_hj = re.select { |key, _| !key[1]}.values.sum
+    d_hj = b_hj-c_hj
+    hj_results = ["合计",b_hj,c_hj,d_hj]
+
+    return [results, hj_results]
+  end
+
+  def self.get_zm_time_limit_result(expresses, params)
+    results = {}  
+    hj_results = {}   
+
+    if RailsEnv.is_oracle?
+      re = expresses.group("to_char(posting_date, 'YYYY-MM-DD')").group(:receiver_province_no, :is_over_time).count
+    else
+      re = expresses.group("Date(posting_date)").group(:receiver_province_no, :is_over_time).count
+    end
+
+    provinces = [["330000", "浙江省"], ["320000", "江苏省"], ["340000", "安徽省"]] 
+    provinces += Area.where(is_prov: true).where("code not in (?)", ['310000', '810000', '820000', '330000', '320000', '340000']).order(:code).map{|a| [a.code, a.name]}.compact.uniq
+
+    dates = []
+    (params[:posting_date_start].to_date..params[:posting_date_end].to_date).each do |x|
+      dates<<x.to_s
+    end
+
+    provinces.each do |p|
+      dates.each do |date|
+        # 收寄量
+        b = re.select { |key, _| (key[0].eql?date) && (key[1].eql?p[0])}.values.sum
+        # 时限内妥投
+        c = re.select { |key, _| (key[0].eql?date) && (key[1].eql?p[0]) && !key[2]}.values.sum
+        # 时限达成率
+        d = (b>0 ? (c/b.to_f*100).round(2) : 0.00).to_s+"%"
+
+        results[[p,date]] = [b,c,d] 
+      end
+    end
+
+    dates.each do |date|
+      b_hj = re.select { |key, _| (key[0].eql?date)}.values.sum
+      c_hj = re.select { |key, _| (key[0].eql?date) && !key[2]}.values.sum
+      d_hj = (b_hj>0 ? (c_hj/b_hj.to_f*100).round(2) : 0.00).to_s+"%"
+
+      hj_results[date] = [b_hj,c_hj,d_hj]
+    end
+
+    return [results, hj_results, dates, provinces]
+  end
+
 end

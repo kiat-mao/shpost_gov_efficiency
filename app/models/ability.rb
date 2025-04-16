@@ -13,6 +13,7 @@ class Ability
 			can :role, :unitadmin
 			can :role, :user
 			can :role, :international
+			can :role, :zm
 			cannot [:role, :create, :destroy, :update], User, role: 'superadmin'
 			can :update, User, id: user.id
 			can :manage, UpDownload
@@ -30,6 +31,7 @@ class Ability
 			can :manage, InternationalExpress
 			can :manage, ImportFile
 			can :manage, AirMail
+			can :manage, Report
 			#can :manage, User
 		elsif user.company_admin?
 			can :manage, Unit
@@ -47,16 +49,16 @@ class Ability
 			can :role, :unitadmin
 			can :role, :international
 			can :role, :user
+			can :role, :zm
 
 			can :manage, Business, is_international: false
 
 			can [:read, :get_mail_trace, :query_mail_trace], Express
 
-			can "report", "DeliverMarketReport"
-			can "report", "DeliverUnitReport"
-			can "report", "InternationalExpressReport"
 			can [:read, :details], Message
 			can :manage, AirMail
+			can :manage, Report
+			cannot [:zm_deliver_report, :zm_operation_report, :zm_province_report, :zm_time_limit_report], Report
 		elsif user.unitadmin?
 			can [:read, :user], Unit, id: user.unit.id
 			can :read, Unit, parent_id: user.unit.id
@@ -79,6 +81,8 @@ class Ability
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
 			can [:read, :details], Message
+			can :manage, Report
+			cannot [:zm_deliver_report, :zm_operation_report, :zm_province_report, :zm_time_limit_report], Report
 		elsif user.user?#user
 			can :read, Unit, id: user.unit_id
 			can :read, Unit, parent_id: user.unit.id
@@ -95,6 +99,8 @@ class Ability
 			can "report", "DeliverMarketReport"
 			can "report", "DeliverUnitReport"
 			can [:read, :details], Message
+			can :manage, Report
+			cannot [:zm_deliver_report, :zm_operation_report, :zm_province_report, :zm_time_limit_report], Report
 		elsif user.international?
 			# can :read, Unit, id: user.unit.id
 			# can :read, Unit, parent_id: user.unit.id
@@ -106,6 +112,13 @@ class Ability
 			can :manage, ReceiverZone
 			can :manage, ImportFile
 			can "report", "InternationalExpressReport"
+		elsif user.zm?
+			# can :read, Unit, id: user.unit.id
+			# can :read, Unit, parent_id: user.unit.id
+
+			can [:read, :update, :show], User, id: user.id
+			can [:read, :get_mail_trace, :zm_province_index], Express
+			can [:zm_deliver_report, :zm_operation_report, :zm_province_report, :zm_time_limit_report], Report
 
 		end
 

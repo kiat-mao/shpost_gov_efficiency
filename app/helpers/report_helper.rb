@@ -341,4 +341,62 @@ module ReportHelper
 
 		addr
 	end
+
+	def get_zm_expresses_path(addr, parent_unit_id, is_in_delivery, is_delivery_failure, status, business, receiver_province_no, is_arrive_sub, is_over_time)
+		sep="?"
+
+		if !params[:posting_date_start].blank?
+			addr += sep+"posting_date_start=#{params[:posting_date_start]}"
+			sep = "&"
+		end
+
+		if !params[:posting_date_end].blank?
+			addr += sep+"posting_date_end=#{params[:posting_date_end]}"
+			sep = "&"
+		end
+
+		if !parent_unit_id.blank?
+			addr += sep+"parent_unit_id=#{parent_unit_id}"
+			sep = "&"
+		end
+
+		if !is_in_delivery.blank?
+			addr += sep+"is_in_delivery=#{is_in_delivery}"
+			sep = "&"
+		end
+
+		if !is_delivery_failure.blank?
+			addr += sep+"is_delivery_failure=#{is_delivery_failure}"
+			sep = "&"
+		end
+
+		if !status.blank?
+			addr += sep+"status=#{status}"
+			sep = "&"
+		end
+
+		if !business.blank?
+			addr += sep+"business=#{business}"
+			sep = "&"
+		end
+
+		if !receiver_province_no.blank?
+			addr += sep+"receiver_province_no=#{receiver_province_no}"
+			sep = "&"
+		end
+
+		if !is_arrive_sub.blank?
+			addr += sep+"is_arrive_sub=#{is_arrive_sub}"
+			sep = "&"
+		end
+
+		if !is_over_time.blank?
+			addr += sep+"is_over_time=#{is_over_time}"
+			sep = "&"
+		end
+
+		addr
+	end
+
+
 end

@@ -14,6 +14,9 @@ class Express < ApplicationRecord
   belongs_to :receiver_city, class_name: 'Area', :primary_key => 'code', :foreign_key => 'receiver_city_no', optional: true
   belongs_to :receiver_county, class_name: 'Area', :primary_key => 'code', :foreign_key => 'receiver_county_no', optional: true
 
+  belongs_to :last_prov, class_name: 'Area', :primary_key => 'code', :foreign_key => 'last_prov', optional: true
+  belongs_to :last_city, class_name: 'Area', :primary_key => 'code', :foreign_key => 'last_city', optional: true
+
   validates_presence_of :express_no, :business_id, :message => '不能为空'
   
   enum status: {waiting: 'waiting', delivered: 'delivered', returns: 'returns', del: 'del'}
@@ -347,11 +350,11 @@ class Express < ApplicationRecord
     expresses = Express.waiting.where(business: business, is_over_time: false)#.joins(:receiver_city).where.not(areas: {limit_hour: nil}).where("limit_hour < ")
     expresses.each do x
       if ! x.receiver_city.limit_hour.blank?
-        if (Date.today - posting_date -1).to_i * 24 >= x.receiver_city.limit_hour
+        if ((Date.today - x.posting_date.to_date).to_i -1) * 24 >= x.receiver_city.limit_hour
           x.update!(is_over_time: true)
         end
       elsif ! x.receiver_county.limit_hour.blank?
-        if (Date.today - posting_date -1).to_i * 24 >= x.receiver_county.limit_hour
+        if ((Date.today - x.posting_date.to_date).to_i -1) * 24 >= x.receiver_county.limit_hour
           x.update!(is_over_time: true)
         end
       end

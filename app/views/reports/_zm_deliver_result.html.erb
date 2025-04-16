@@ -1,0 +1,43 @@
+<% if !@results.blank? %>
+<table data-toggle="table" data-height="700">
+  <thead>
+    <tr class= 'nowrap'>
+      <th><b>区县</b></th>
+      <th><b>下段总数</b></th>
+      <th><b>投递中</b></th>
+      <th><b>已妥投</b></th>
+      <th><b>未妥投</b></th>
+      <th><b>退件</b></th>
+      <th><b>未下段</b></th>
+      <th><b>总计(解车)</b></th>
+    </tr>
+  </thead>
+  <tbody>
+  	<% @results[0].each do |k, v| %>
+  	<tr class= 'nowrap'>
+  		<td><%= k[1] %></td>
+    	<td><u><%= link_to v[0], get_zm_expresses_path("/expresses", k[0], "true", nil, nil, "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to v[1], get_zm_expresses_path("/expresses", k[0], "true", "false", "waiting", "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to v[2], get_zm_expresses_path("/expresses", k[0], nil, nil, "delivered", "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to v[3], get_zm_expresses_path("/expresses", k[0], nil, "true", "waiting", "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to v[4], get_zm_expresses_path("/expresses", k[0], nil, nil, "returns", "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to v[5], get_zm_expresses_path("/expresses", k[0], nil, "false", nil, "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to v[6], get_zm_expresses_path("/expresses", k[0], nil, nil, nil, "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    </tr>
+    <% end %>
+    <!-- 总计 -->
+    <tr class= 'nowrap'>
+    	<td><%= @results[1][0] %></td>
+    	<td><u><%= link_to @results[1][1], get_zm_expresses_path("/expresses", nil, "true", nil, nil, "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to @results[1][2], get_zm_expresses_path("/expresses", nil, "true", "false", "waiting", "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to @results[1][3], get_zm_expresses_path("/expresses", nil, nil, nil, "delivered", "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to @results[1][4], get_zm_expresses_path("/expresses", nil, nil, "true", "waiting", "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to @results[1][5], get_zm_expresses_path("/expresses", nil, nil, nil, "returns", "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to @results[1][6], get_zm_expresses_path("/expresses", nil, nil, "false", nil, "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    	<td><u><%= link_to @results[1][7], get_zm_expresses_path("/expresses", nil, nil, nil, nil, "1100207488562", "310000", "true", nil), target: '_blank' %></u></td>
+    </tr>
+  </tbody>
+</table>
+<% end %>
+
+
