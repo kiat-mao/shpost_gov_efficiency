@@ -54,6 +54,8 @@ class Ability
 			can :manage, Business, is_international: false
 
 			can [:read, :get_mail_trace, :query_mail_trace], Express
+			can "report", "DeliverMarketReport"
+			can "report", "DeliverUnitReport"
 
 			can [:read, :details], Message
 			can :manage, AirMail
