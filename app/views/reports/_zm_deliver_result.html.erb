@@ -1,5 +1,5 @@
 <% if !@results.blank? %>
-<table data-toggle="table" data-height="700">
+<table data-toggle="table" data-height="650">
   <thead>
     <tr class= 'nowrap'>
       <th><b>区县</b></th>
@@ -38,6 +38,9 @@
     </tr>
   </tbody>
 </table>
+揽投部未解车：<%= @not_arrive_sub %>
+<br>
+收寄总量：<%= @all %>
 <% end %>
 
 

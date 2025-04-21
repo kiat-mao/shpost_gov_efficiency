@@ -326,8 +326,13 @@ class ReportsController < ApplicationController
 	  		@is_search = "yes"
 	  		@posting_date_start = params[:posting_date_start].blank? ? Date.yesterday : params[:posting_date_start].to_date
 				@posting_date_end = params[:posting_date_end].blank? ? Date.today : params[:posting_date_end].to_date+1.day
-  		
+
 		  	expresses = Express.left_outer_joins(:business).where("businesses.code = ? and expresses.receiver_province_no = ? and expresses.is_arrive_sub = ? and posting_date  >= ? and posting_date < ?", "1100207488562", "310000", true, @posting_date_start, @posting_date_end)
+
+		  	all_expresses = Express.left_outer_joins(:business).where("businesses.code = ? and expresses.receiver_province_no = ? and posting_date  >= ? and posting_date < ?", "1100207488562", "310000", @posting_date_start, @posting_date_end).group(:is_arrive_sub).count
+				@not_arrive_sub = all_expresses.select { |key, _| !key}.values.sum
+				@all = all_expresses.values.sum
+  		
 
 		  	if expresses.blank?
 		    	flash[:alert] = "无数据"
