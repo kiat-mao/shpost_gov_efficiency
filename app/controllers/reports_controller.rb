@@ -351,20 +351,24 @@ class ReportsController < ApplicationController
 			@posting_date_start = params[:posting_date_start].blank? ? Date.yesterday : params[:posting_date_start].to_date
 			@posting_date_end = params[:posting_date_end].blank? ? Date.today : params[:posting_date_end].to_date+1.day
 
-	  	expresses = Express.left_outer_joins(:business).where("businesses.code = ? and expresses.receiver_province_no = ? and expresses.is_arrive_sub = ? and posting_date  >= ? and posting_date < ?", "1100207488562", "310000", true, @posting_date_start, @posting_date_end).order("expresses.express_no")
+	  	expresses = Express.left_outer_joins(:business).where("businesses.code = ? and expresses.receiver_province_no = ? and expresses.is_arrive_sub = ? and posting_date  >= ? and posting_date < ?", "1100207488562", "310000", true, @posting_date_start, @posting_date_end)
+
+	  	all_expresses = Express.left_outer_joins(:business).where("businesses.code = ? and expresses.receiver_province_no = ? and posting_date  >= ? and posting_date < ?", "1100207488562", "310000", @posting_date_start, @posting_date_end).group(:is_arrive_sub).count
+			not_arrive_sub = all_expresses.select { |key, _| !key}.values.sum
+			all = all_expresses.values.sum
 
 	  	if expresses.blank?
 	    	flash[:alert] = "无数据"
 	    else	  	
 	    	@results = Report.get_zm_deliver_result(expresses)
-	    	send_data(zm_deliver_report_xls_content_for(params, @results, expresses),:type => "text/excel;charset=utf-8; header=present",:filename => "中免同城投递汇总表_#{Time.now.strftime("%Y%m%d")}.xls") 
+	    	send_data(zm_deliver_report_xls_content_for(params, @results, expresses, not_arrive_sub, all),:type => "text/excel;charset=utf-8; header=present",:filename => "中免同城投递汇总表_#{Time.now.strftime("%Y%m%d")}.xls") 
 	    end
 	  else
 	  	flash[:alert] = "起止日期不能超过7天"
   	end
   end
 
-  def zm_deliver_report_xls_content_for(params, results, expresses)
+  def zm_deliver_report_xls_content_for(params, results, expresses, not_arrive_sub, all)
   	xls_report = StringIO.new  
     book = Spreadsheet::Workbook.new  
     sheet1 = book.create_worksheet :name => "中免同城投递汇总表" 
@@ -411,6 +415,13 @@ class ReportsController < ApplicationController
   		sheet1[count_row,i] = results[1][i]
   		sheet1.row(count_row).set_format(i, body)
 	  end
+
+	  sheet1[count_row+1,0] = "揽投部未解车："
+	  sheet1[count_row+1,1] = not_arrive_sub
+	  sheet1[count_row+2,0] = "收寄总量："
+	  sheet1[count_row+2,1] = all
+	  sheet1.row(count_row+1).default_format = filter
+	  sheet1.row(count_row+2).default_format = filter
 
 
 	  # 明细（总计）表
