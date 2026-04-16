@@ -1660,7 +1660,7 @@ class Report
       # 妥投
       h = ec_re.select { |key, _| (key[0].eql?d) && (key[1].eql?"delivered")}.values.sum
       # 次日达=收寄日第二天的妥投量 T+1量 delivered_days<=1
-      i = ec_re.select { |key, _| (key[0].eql?d) && (key[2]<=1)}.values.sum
+      i = ec_re.select { |key, _| (key[0].eql?d) && (!key[2].blank? && (key[2]<=1))}.values.sum
       # 占比=次日达/妥投（H列）*100%
       j = (h>0 ? (i/h.to_f*100).round(2) : 0.00).to_s+"%"
       # 运输中=收寄（opcode=203或者208）但没下段（opcode=702） is_in_delivery = false
@@ -1676,7 +1676,7 @@ class Report
     f_hj = (b_hj>0 ? (e_hj/b_hj.to_f*100).round(2) : 0.00).to_s+"%"
     g_hj = ec_re.values.sum
     h_hj = ec_re.select { |key, _| key[1].eql?"delivered"}.values.sum
-    i_hj = ec_re.select { |key, _| key[2]<=1}.values.sum
+    i_hj = ec_re.select { |key, _| !key[2].blank? && (key[2]<=1)}.values.sum
     j_hj = (h_hj>0 ? (i_hj/h_hj.to_f*100).round(2) : 0.00).to_s+"%"
     k_hj = ec_re.select { |key, _| !key[3]}.values.sum
     l_hj = ec_re.select { |key, _| key[3]}.values.sum
@@ -1717,9 +1717,9 @@ class Report
     hj_results = {}   
 
     if RailsEnv.is_oracle?
-      re = expresses.group("to_char(posting_date, 'YYYY-MM-DD')").group(:receiver_province_no, :is_over_time).count
+      re = expresses.group("to_char(posting_date, 'YYYY-MM-DD')").group(:receiver_province_no, :is_over_time, :status).count
     else
-      re = expresses.group("Date(posting_date)").group(:receiver_province_no, :is_over_time).count
+      re = expresses.group("Date(posting_date)").group(:receiver_province_no, :is_over_time, :status).count
     end
 
     provinces = [["330000", "浙江省"], ["320000", "江苏省"], ["340000", "安徽省"]] 
@@ -1735,7 +1735,7 @@ class Report
         # 收寄量
         b = re.select { |key, _| (key[0].eql?date) && (key[1].eql?p[0])}.values.sum
         # 时限内妥投
-        c = re.select { |key, _| (key[0].eql?date) && (key[1].eql?p[0]) && !key[2]}.values.sum
+        c = re.select { |key, _| (key[0].eql?date) && (key[1].eql?p[0]) && !key[2] && (key[3].eql?"delivered")}.values.sum
         # 时限达成率
         d = (b>0 ? (c/b.to_f*100).round(2) : 0.00).to_s+"%"
 
@@ -1745,7 +1745,7 @@ class Report
 
     dates.each do |date|
       b_hj = re.select { |key, _| (key[0].eql?date)}.values.sum
-      c_hj = re.select { |key, _| (key[0].eql?date) && !key[2]}.values.sum
+      c_hj = re.select { |key, _| (key[0].eql?date) && !key[2] && (key[3].eql?"delivered")}.values.sum
       d_hj = (b_hj>0 ? (c_hj/b_hj.to_f*100).round(2) : 0.00).to_s+"%"
 
       hj_results[date] = [b_hj,c_hj,d_hj]

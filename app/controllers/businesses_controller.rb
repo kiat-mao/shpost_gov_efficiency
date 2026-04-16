@@ -29,10 +29,10 @@ class BusinessesController < ApplicationController
       if current_user.international?
         @business.is_international = true 
       end
-      if params[:btype].blank?
+      if business_params[:btype].blank?
         @business.btype="其他"
       end
-      if params[:industry].blank?
+      if business_params[:industry].blank?
         @business.industry="其他"
       end
      

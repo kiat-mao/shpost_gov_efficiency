@@ -1,0 +1,2 @@
+class FakeMail < ApplicationRecord
+end

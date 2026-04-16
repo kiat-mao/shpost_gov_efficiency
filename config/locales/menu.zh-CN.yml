@@ -239,6 +239,20 @@ zh-CN:
           needrole:
             can: :zm_time_limit_report
             role: :Report
+    fake_mail:
+      name: "虚假邮件筛查"
+      needrole:
+        can: :read
+        role: :FakeMail
+      submenu:
+        fake_mail:
+          name: "虚假邮件筛查"
+          link: "/fake_mails"
+          need_count: false
+          needrole:
+            can: :read
+            role: :FakeMail
+          
     # receiver_query:
     #   name: "收件人信息查询"
     #   submenu:

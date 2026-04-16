@@ -1,5 +1,5 @@
 <% if !@results.blank? %>
-<table data-toggle="table" data-height="700">
+<table data-toggle="table" data-height="650">
   <thead>
     <tr class= 'nowrap'>
       <th><b>区县</b></th>
@@ -38,6 +38,11 @@
     </tr>
   </tbody>
 </table>
+<p style="font-size: 16px;">
+揽投部未解车：<u><%= link_to @not_arrive_sub, get_zm_expresses_path("/expresses", nil, nil, nil, nil, "1100207488562", "310000", "false", nil), target: '_blank' %></u>
+<br><br>
+收寄总量：<u><%= link_to @all, get_zm_expresses_path("/expresses", nil, nil, nil, nil, "1100207488562", "310000", nil, nil), target: '_blank' %></u>
+</p>
 <% end %>
 
 

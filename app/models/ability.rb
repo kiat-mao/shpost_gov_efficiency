@@ -32,6 +32,7 @@ class Ability
 			can :manage, ImportFile
 			can :manage, AirMail
 			can :manage, Report
+			can :manage, FakeMail
 			#can :manage, User
 		elsif user.company_admin?
 			can :manage, Unit
@@ -54,11 +55,14 @@ class Ability
 			can :manage, Business, is_international: false
 
 			can [:read, :get_mail_trace, :query_mail_trace], Express
+			can "report", "DeliverMarketReport"
+			can "report", "DeliverUnitReport"
 
 			can [:read, :details], Message
 			can :manage, AirMail
 			can :manage, Report
 			cannot [:zm_deliver_report, :zm_operation_report, :zm_province_report, :zm_time_limit_report], Report
+			can :manage, FakeMail
 		elsif user.unitadmin?
 			can [:read, :user], Unit, id: user.unit.id
 			can :read, Unit, parent_id: user.unit.id
