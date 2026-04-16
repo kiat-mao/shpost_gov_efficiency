@@ -348,7 +348,10 @@ class Express < ApplicationRecord
     business = Business.find_by(code: I18n.t("zmrs_business_code"))
     return if business.blank?
     expresses = Express.waiting.where(business: business, is_over_time: false)#.joins(:receiver_city).where.not(areas: {limit_hour: nil}).where("limit_hour < ")
-    expresses.each do x
+    expresses.each do |x|
+      if (x.receiver_city.blank? || x.receiver_county.blank?)
+        next
+      end
       if ! x.receiver_city.limit_hour.blank?
         if ((Date.today - x.posting_date.to_date).to_i -1) * 24 >= x.receiver_city.limit_hour
           x.update!(is_over_time: true)
